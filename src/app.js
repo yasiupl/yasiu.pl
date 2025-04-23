@@ -56,3 +56,27 @@ fetch(".netlify/functions/aprs?t=" + Date.now(), {
     document.getElementById("aprs-map").src = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/${data.entries[0].lng},${data.entries[0].lat},12,0/512x512?access_token=pk.eyJ1IjoieWFzaXUiLCJhIjoiY2xod2I1NXE5MGd2ODNsbWQ0cjk3OGxjbSJ9.b2FBXODDAf00U1T4iqLWag`
     document.getElementById("aprs-comment").innerHTML = `Speed: ${Number.parseFloat(data.entries[0].speed || 0).toFixed(2)} km/h</br> Course: ${Number.parseFloat(data.entries[0].course || 0).toFixed(2)} °</br> Altitude: ${Number.parseFloat(data.entries[0].altitude || 0).toFixed(2)} m</br> Comment: ${data.entries[0].comment || "Not set"}`;
   })
+
+
+// Load Hackerspace posts
+fetch("https://corsproxy.io/?https%3A%2F%2Fforum.hsp.sh%2Ftopics%2Fcreated-by%2Fyasiu.json", {
+  headers: {
+    "Accept": "application/json"
+  }
+})
+.then(response => response.json())
+.then(data => {
+  let html_target = document.getElementById("posts").firstElementChild;
+  for(let post of data.topic_list.topics) {
+    console.log(post.image_url)
+    html_target.innerHTML += `
+      <div onclick="window.open('https://forum.hsp.sh/t/${post.slug}', '_blank')" class="card horizontal">
+        <div class="card-image">
+          <img src="${post.image_url || 'https://yasiu.pl/assets/hspomorze.png'}">
+        </div>
+        <div class="card-content">
+          <span class="card-title grey-text text-darken-4">${post.title}</span>
+        </div>
+      </div>`
+  }
+})
