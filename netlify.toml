@@ -17,9 +17,8 @@
 
 [[redirects]]
   	from = "/github"
-    to = "https://github.com/yasiupl"
-
-
+    	to = "https://github.com/yasiupl"
+    
 [[redirects]]
   	from = "/patreon"
   	to = "https://www.patreon.com/yasiupl"
@@ -35,3 +34,7 @@
 [[redirects]]
   	from = "/youtube"
   	to = "https://www.youtube.com/channel/UCqFJAKOMWvS_oKHk9ppMC8w" 
+
+[[redirects]]
+  	from = "/ssh.keys"
+  	to = "https://github.com/yasiupl.keys" 
