@@ -53,6 +53,6 @@ fetch(".netlify/functions/owntracks?t=" + Date.now(), {
   })
   .then(response => response.json())
   .then(data => {
-    document.getElementById("aprs-map").src = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/${data[0].lng},${data[0].lat},12,0/512x512?access_token=pk.eyJ1IjoieWFzaXUiLCJhIjoiY2xod2I1NXE5MGd2ODNsbWQ0cjk3OGxjbSJ9.b2FBXODDAf00U1T4iqLWag`
+    document.getElementById("aprs-map").src = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/${data[0].lon},${data[0].lat},12,0/512x512?access_token=pk.eyJ1IjoieWFzaXUiLCJhIjoiY2xod2I1NXE5MGd2ODNsbWQ0cjk3OGxjbSJ9.b2FBXODDAf00U1T4iqLWag`
     document.getElementById("aprs-comment").innerHTML = `Speed: ${Number.parseFloat(data[0].vel || 0).toFixed(2)} km/h</br> Course: ${Number.parseFloat(data[0].cog || 0).toFixed(2)} °</br> Altitude: ${Number.parseFloat(data[0].alt || 0).toFixed(2)} m</br> Device: ${data[0].device || "OwnTracks"}`;
   })
