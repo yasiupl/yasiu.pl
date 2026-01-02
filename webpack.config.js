@@ -2,17 +2,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const WorkboxPlugin = require('workbox-webpack-plugin');
-const GoogleAnalyticsPlugin = require('google-analytics-webpack-plugin')
 const path = require('path');
 
 module.exports = {
     entry: ['./src/app.js', './src/style.scss'],
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.js'
+        filename: 'bundle.js',
+        clean: true
     },
     devServer: {
-        contentBase: path.join(__dirname, 'dist'),
+        static: path.join(__dirname, 'dist'),
         compress: true,
         port: 8080
     },
@@ -57,10 +57,7 @@ module.exports = {
             runtimeCaching: [{
                 urlPattern: /.*/,
                 handler: 'StaleWhileRevalidate',}]
-          }),
-        new GoogleAnalyticsPlugin({
-            id: 'UA-71778687-1'
-        })
+          })
     ],
     module: {
         rules: [{
@@ -73,7 +70,7 @@ module.exports = {
             },
             {
                 test: /\.(jpe?g|gif|png|svg|woff|ttf|wav|mp3)$/,
-                loader: "file-loader"
+                type: 'asset/resource'
             }
         ]
     }

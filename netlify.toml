@@ -1,7 +1,7 @@
 [build]
-  	publish = "dist/"
-  	command = "make deploy"
-	functions = "dist/server"
+  publish = "dist/"
+  command = "make deploy"
+  functions = "src/lambda"
 
 [[redirects]]
 	from = "/reddit"
