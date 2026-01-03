@@ -25,7 +25,7 @@ module.exports = {
             title: 'yasiu.pl',
             template: './src/index.html',
             filename: './index.html',
-            favicon: './src/assets/favicon.ico'
+            favicon: './src/favicon.ico'
         }),
         new WebpackPwaManifest({
             fingerprints: false,
@@ -40,13 +40,13 @@ module.exports = {
                 'apple-mobile-web-app-status-bar-style': 'black'
             },
             icons: [{
-                    src: path.resolve('src/assets/icon.png'),
+                    src: path.resolve('src/static/assets/icon.png'),
                     destination: './icons/',
                     sizes: [96, 128, 192, 256, 384, 512],
                     ios: true
                 },
                 {
-                    src: path.resolve('src/assets/icon.png'),
+                    src: path.resolve('src/static/assets/icon.png'),
                     destination: './icons/',
                     size: 512,
                     ios: 'startup'

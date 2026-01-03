@@ -5,7 +5,7 @@ install:
 
 copy:
 	mkdir -p dist/assets
-	cp -r src/assets dist
+	cp -r src/static/. dist/
 
 serve: copy
 	npm start
