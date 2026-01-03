@@ -2,6 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const WorkboxPlugin = require('workbox-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
 module.exports = {
@@ -17,6 +18,11 @@ module.exports = {
         port: 8080
     },
     plugins: [
+        new CopyPlugin({
+            patterns: [
+                { from: "src/static", to: "" },
+            ],
+        }),
         new MiniCssExtractPlugin({
             filename: 'style.css'
         }),
