@@ -1,4 +1,6 @@
 import fetch from "node-fetch";
+const owntracks_user = process.env.owntracks_user;
+const owntracks_device = process.env.owntracks_device;
 
 const API_ENDPOINT = `https://map.yasiu.pl/api/0/last?user=${owntracks_user}&device=${owntracks_device}`;
 
