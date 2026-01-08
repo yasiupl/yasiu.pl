@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 
-const API_ENDPOINT = `https://map.yasiu.pl/api/0/last`;
+const API_ENDPOINT = `https://map.yasiu.pl/api/0/last?user=${owntracks_user}&device=${owntracks_device}`;
 
 exports.handler = async (event, context) => {
   return fetch(API_ENDPOINT, { headers: { "Accept": "application/json" } })
