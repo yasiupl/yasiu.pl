@@ -9,7 +9,7 @@ const API_ENDPOINT = `https://map.yasiu.pl/api/0/last?user=${owntracks_user}&dev
 exports.handler = async (event, context) => {
   try {
     const response = await fetch(API_ENDPOINT, { headers: { "Accept": "application/json" } });
-    const data = await response.json();
+    let data = await response.json();
 
     // Reverse geocode the position
     if (data && data.lat != null && data.lon != null) {
