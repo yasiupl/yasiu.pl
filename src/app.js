@@ -54,11 +54,9 @@ fetch(".netlify/functions/owntracks?t=" + Date.now(), {
   .then(response => response.json())
   .then(data => {
     const last_seen = data[0];
-    const map_url = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/${last_seen.lon},${last_seen.lat},12,0/512x512?access_token=pk.eyJ1IjoieWFzaXUiLCJhIjoiY2xod2I1NXE5MGd2ODNsbWQ0cjk3OGxjbSJ9.b2FBXODDAf00U1T4iqLWag`;
     const desciption = `Speed: ${Number.parseFloat(last_seen.vel || 0).toFixed(2)} km/h</br>`;
-    
-    if (last_seen.inregions) desciption += `Place: ${last_seen.inregions[0] || "Unknown"}`;
+    if (last_seen.geocoded_name) desciption += `Place: ${last_seen.geocoded_name || "Secret location"}</br>`;
 
-    document.getElementById("aprs-map").src = map_url;
-    document.getElementById("aprs-comment").innerHTML = desciption;
+    document.getElementById("position-map").src = last_seen.map_image;
+    document.getElementById("position-comment").innerHTML = desciption;
   })
