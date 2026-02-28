@@ -63,7 +63,7 @@ fetch(".netlify/functions/owntracks?t=" + Date.now(), {
   .then(last_seen => {
 
     let position_comment = ``;
-    position_comment += `Place: ${last_seen.geocoded_name || "Secret location"}</br>`;
+    position_comment += `${last_seen.geocoded_name || "Secret location"}</br>`;
     position_comment += `Speed: ${Number.parseFloat(last_seen.vel || 0).toFixed(2)} km/h</br>`;
     document.getElementById("position-comment").innerHTML = position_comment;
 
