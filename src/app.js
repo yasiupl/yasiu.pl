@@ -54,9 +54,12 @@ fetch(".netlify/functions/owntracks?t=" + Date.now(), {
   .then(response => response.json())
   .then(data => {
     const last_seen = data[0];
-    const desciption = `Speed: ${Number.parseFloat(last_seen.vel || 0).toFixed(2)} km/h</br>`;
-    if (last_seen.geocoded_name) desciption += `Place: ${last_seen.geocoded_name || "Secret location"}</br>`;
 
-    document.getElementById("position-map").src = last_seen.map_image;
-    document.getElementById("position-comment").innerHTML = desciption;
+    let position_comment = ``;
+    position_comment += `Place: ${last_seen.geocoded_name || "Secret location"}</br>`;
+    position_comment += `Speed: ${Number.parseFloat(last_seen.vel || 0).toFixed(2)} km/h</br>`;
+    position_comment += `Last seen: ${new Date(last_seen.tst * 1000).toLocaleString()}`;
+    document.getElementById("position-comment").innerHTML = position_comment;
+
+    if (last_seen.map_image) document.getElementById("position-map").src = last_seen.map_image;
   })
