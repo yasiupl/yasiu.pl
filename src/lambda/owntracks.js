@@ -34,6 +34,9 @@ exports.handler = async (event, context) => {
       const mapRes = await fetch(mapUrl);
       const imageBuffer = await mapRes.buffer();
       const contentType = mapRes.headers.get('content-type') || 'image/png';
+      if (!contentType.startsWith('image/')) {
+        throw new Error('Invalid content type for map image');
+      }
       position.map_image = `data:${contentType};base64,${imageBuffer.toString('base64')}`;
     } catch (mapError) {
       position.map_image = mapUrl;

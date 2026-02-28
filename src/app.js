@@ -67,7 +67,7 @@ fetch(".netlify/functions/owntracks?t=" + Date.now(), {
     position_comment += `Speed: ${Number.parseFloat(last_seen.vel || 0).toFixed(2)} km/h</br>`;
     document.getElementById("position-comment").innerHTML = position_comment;
 
-    document.getElementById("position-ago").innerHTML = `Last seen: ${getAgoString(last_seen.tst)}`;
+    document.getElementById("position-ago").innerHTML = getAgoString(last_seen.tst);
 
     if (last_seen.map_image) document.getElementById("position-map").src = last_seen.map_image;
   })
