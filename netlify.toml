@@ -18,13 +18,13 @@
 [[redirects]]
   	from = "/github"
     	to = "https://github.com/yasiupl"
+
+[[redirects]]
+  	from = "/youtube"
+  	to = "https://www.youtube.com/channel/UCqFJAKOMWvS_oKHk9ppMC8w" 
     
 [[redirects]]
   	from = "/patreon"
-  	to = "https://www.patreon.com/yasiupl"
-
-[[redirects]]
-  	from = "/donate"
   	to = "https://www.patreon.com/yasiupl"
 
 [[redirects]]
@@ -32,8 +32,16 @@
   	to = "https://www.paypal.me/yasiupl"
 
 [[redirects]]
-  	from = "/youtube"
-  	to = "https://www.youtube.com/channel/UCqFJAKOMWvS_oKHk9ppMC8w" 
+  	from = "/revolut"
+  	to = "https://revolut.me/yasiu"
+
+[[redirects]]
+  	from = "/donate"
+  	to = "/revolut"
+
+[[redirects]]
+  	from = "/keybase"
+  	to = "https://keybase.io/yasiupl/"
 
 [[redirects]]
   	from = "/ssh.pub"
@@ -42,3 +50,16 @@
 [[redirects]]
   	from = "/pgp.pub"
   	to = "https://keybase.io/yasiupl/pgp_keys.asc?fingerprint=fe683591ae239dc2188c4bba1e3e8090e179f056"
+
+[[redirects]]
+  	from = "/web3"
+  	to = "https://app.ens.domains/yasiu.pl"
+
+[[redirects]]
+  	from = "/avatar"
+  	to = "https://euc.li/yasiu.pl"
+
+[[redirects]]
+  	from = "/header"
+  	to = "https://euc.li/yasiu.pl/h"
+	
