@@ -36,5 +36,9 @@
   	to = "https://www.youtube.com/channel/UCqFJAKOMWvS_oKHk9ppMC8w" 
 
 [[redirects]]
-  	from = "/ssh.keys"
+  	from = "/ssh.pub"
   	to = "https://github.com/yasiupl.keys" 
+	
+[[redirects]]
+  	from = "/pgp.pub"
+  	to = "https://keybase.io/yasiupl/pgp_keys.asc?fingerprint=fe683591ae239dc2188c4bba1e3e8090e179f056"
