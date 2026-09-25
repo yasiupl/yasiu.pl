@@ -34,25 +34,23 @@
   --ink-strong: var(--md-sys-color-on-surface);
   --ink-muted: var(--md-sys-color-on-surface-variant);
   --hairline: var(--md-sys-color-outline-variant);
-  --radius-card: 2px;
+  --radius-card: 12px;           /* both themes (Materialize 2 default) */
   --shadow-card: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
   --shadow-card-hover: 0 0 0 1px var(--brand-orange), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
 }
 
-/* Dark: Materialize 2's own card look (orange-tinted surface, 12px corners), no resting
+/* Dark: Materialize 2's orange-tinted card surface, no resting
    shadow, 1px orange outline on hover. light-dark() takes colours only, so these follow
    the same two theme rules as Materialize. */
 @media (prefers-color-scheme: dark) {
   :root:not([theme="light"]) {
     --surface-card: color-mix(in srgb, var(--md-sys-color-surface), var(--md-sys-color-surface-tint) 17%);
-    --radius-card: 12px;
     --shadow-card: none;
     --shadow-card-hover: 0 0 0 1px var(--brand-orange);
   }
 }
 :root[theme="dark"] {
   --surface-card: color-mix(in srgb, var(--md-sys-color-surface), var(--md-sys-color-surface-tint) 17%);
-  --radius-card: 12px;
   --shadow-card: none;
   --shadow-card-hover: 0 0 0 1px var(--brand-orange);
 }
@@ -116,7 +114,7 @@ nav.navbar ul > li > a:hover,
 /* Header band behind the hero cards */
 header.hero { background-color: var(--header-band); }
 
-/* Cards: back to the original Materialize 1 look (2px corners, z-depth-1, plain surface) */
+/* Cards: 12px corners in both themes; light keeps a plain white surface and z-depth-1 */
 .card {
   --background-color: var(--surface-card);
   display: block;
