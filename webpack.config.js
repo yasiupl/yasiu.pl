@@ -68,10 +68,20 @@ module.exports = {
             ]
         }),
         new WorkboxPlugin.GenerateSW({
+            // A new deploy takes over at once instead of waiting for all tabs to close.
+            skipWaiting: true,
+            clientsClaim: true,
+            // Do not precache the page itself: it changes on every content edit.
+            exclude: [/\.map$/, /^manifest.*\.js$/, /\.html$/],
             runtimeCaching: [{
+                // The page: network first, cached copy only when offline.
+                urlPattern: ({ request }) => request.mode === 'navigate',
+                handler: 'NetworkFirst',
+            }, {
                 urlPattern: /.*/,
-                handler: 'StaleWhileRevalidate',}]
-          })
+                handler: 'StaleWhileRevalidate',
+            }]
+        })
     ],
     module: {
         rules: [{

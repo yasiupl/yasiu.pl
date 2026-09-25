@@ -1,15 +1,17 @@
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-        navigator.serviceWorker
-            .register('./service-worker.js')
-            .then(function () {
-                console.log('rocket.watch serviceworker install successful');
-            })
+const isLocal = ['localhost', '127.0.0.1', ''].includes(location.hostname);
 
-            .catch(function (err) {
-                console.log('rocket.watch serviceworker install failed: ', err);
-            });
+if ('serviceWorker' in navigator) {
+  if (isLocal) {
+    // No offline cache during development: remove any worker and cache left
+    // from an earlier run, so edits always show on reload.
+    navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
+    if (window.caches) caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)));
+  } else {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .catch((err) => console.log('yasiu.pl service worker install failed: ', err));
     });
+  }
 }
 
 document.getElementById("logo-container").innerText = location.hostname;
