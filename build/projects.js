@@ -39,34 +39,39 @@ function parse(markdown, file) {
 }
 
 function card(p) {
-  const image = `<img class="card-image" src="./assets/${escape(p.image)}" alt="" loading="lazy">`;
+  const image = `<img src="./assets/${escape(p.image)}" alt="" loading="lazy">`;
   const title = `<span class="card-title">${escape(p.title)}</span>`;
   const link = `target="_blank" rel="noopener"`;
+  // Materialize card markup, one grid column per project.
   if (p.embed) {
-    return `<article class="card is-link">
-          <div class="media">
-            ${image}
-            <iframe src="${escape(p.embed)}" title="${escape(p.title)}" loading="lazy" allowfullscreen></iframe>
-          </div>
-          <div class="card-content">
-            ${title}
-            <a class="card-link" href="${escape(p.url)}" ${link}>${escape(p.label)}</a>
-          </div>
-        </article>`;
+    return `<div class="col s12 m4">
+            <div class="card is-link">
+              <div class="card-image">
+                ${image}
+                <iframe src="${escape(p.embed)}" title="${escape(p.title)}" loading="lazy" allowfullscreen></iframe>
+              </div>
+              <div class="card-content">
+                ${title}
+                <a class="card-link" href="${escape(p.url)}" ${link}>${escape(p.label)}</a>
+              </div>
+            </div>
+          </div>`;
   }
-  return `<a class="card is-link" href="${escape(p.url)}" ${link}>
-          <div class="media">
-            ${image}
-          </div>
-          <div class="card-content">
-            ${title}
-            <span class="card-link">${escape(p.label)}</span>
-          </div>
-        </a>`;
+  return `<div class="col s12 m4">
+            <a class="card is-link" href="${escape(p.url)}" ${link}>
+              <div class="card-image">
+                ${image}
+              </div>
+              <div class="card-content">
+                ${title}
+                <span class="card-link">${escape(p.label)}</span>
+              </div>
+            </a>
+          </div>`;
 }
 
 function renderProjects(file) {
-  return parse(fs.readFileSync(file, 'utf8'), file).map(card).join('\n        ');
+  return parse(fs.readFileSync(file, 'utf8'), file).map(card).join('\n          ');
 }
 
 module.exports = { parse, renderProjects };

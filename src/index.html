@@ -36,70 +36,90 @@
   </script>
   <script>
     // Apply a saved theme before first paint (no flash). No saved theme = follow the OS.
-    try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+    try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('theme', t); } catch (e) {}
   </script>
 </head>
 
 <body id="top">
-  <nav class="nav" aria-label="Main">
-    <div class="container">
-      <a href="#" id="logo-container" class="logotype">yasiu.pl</a>
-      <ul>
+  <nav class="navbar" aria-label="Main">
+    <div class="nav-wrapper">
+      <div class="container">
+      <a href="#" id="logo-container" class="brand-logo">yasiu.pl</a>
+      <ul class="hide-on-med-and-down">
         <li><a href="#work">Projects</a></li>
         <li><a href="https://www.patreon.com/yasiupl" target="_blank" rel="noopener">Patreon</a></li>
         <li><a href="https://www.amazon.com/hz/wishlist/ls/JNQ7C2Q934HA" target="_blank" rel="noopener">Wishlist</a></li>
         <li><a href="mailto:contact@yasiu.pl?subject=Website%20Contact%20Form">Contact</a></li>
       </ul>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Theme: follow system"></button>
+      </div>
     </div>
   </nav>
 
   <header class="hero">
-    <div class="container stack">
-      <article class="card card-avatar h-card">
-        <div class="card-content">
-          <img class="avatar u-photo" src="./assets/meirl.png" alt="Marcin Jasiukowicz">
-          <h1 class="card-title">Hi, I'm <span class="p-name">Marcin Jasiukowicz</span> <a class="u-url" href="https://yasiu.pl" aria-label="yasiu.pl">🅨</a></h1>
-          <p>I call myself a "<span class="p-note">Tinkerer obsessed with space 🚀</span>". Welcome to my showcase!<br>You can contact me via any of the channels below:</p>
-        </div>
-        <div class="card-actions">
-          <a rel="me" href="https://www.instagram.com/yasiu.pl/">Instagram</a>
-          <a rel="me" href="https://twitter.com/yasiupl">Twitter</a>
-          <a rel="me" href="https://github.com/yasiupl">GitHub</a>
-          <a rel="me" href="https://www.linkedin.com/in/yasiu">LinkedIn</a>
-          <a rel="me" href="https://0x3c.pl/@yasiu">Mastodon</a>
-          <a rel="me" href="https://t.me/yasiupl">Telegram</a>
-          <a rel="me" class="u-email" href="mailto:contact@yasiu.pl?subject=Website%20Contact%20Form">eMail</a>
-        </div>
-      </article>
+    <div class="section">
+      <div class="container">
+        <div class="row">
+          <div class="col s12">
+            <div class="card card-avatar h-card">
+              <div class="card-content">
+                <img class="avatar u-photo" src="./assets/meirl.png" alt="Marcin Jasiukowicz">
+                <h1 class="card-title">Hi, I'm <span class="p-name">Marcin Jasiukowicz</span> <a class="u-url" href="https://yasiu.pl" aria-label="yasiu.pl">🅨</a></h1>
+                <p>I call myself a "<span class="p-note">Tinkerer obsessed with space 🚀</span>". Welcome to my showcase!<br>You can contact me via any of the channels below:</p>
+              </div>
+              <div class="card-action">
+                <a rel="me" href="https://www.instagram.com/yasiu.pl/">Instagram</a>
+                <a rel="me" href="https://twitter.com/yasiupl">Twitter</a>
+                <a rel="me" href="https://github.com/yasiupl">GitHub</a>
+                <a rel="me" href="https://www.linkedin.com/in/yasiu">LinkedIn</a>
+                <a rel="me" href="https://0x3c.pl/@yasiu">Mastodon</a>
+                <a rel="me" href="https://t.me/yasiupl">Telegram</a>
+                <a rel="me" class="u-email" href="mailto:contact@yasiu.pl?subject=Website%20Contact%20Form">eMail</a>
+              </div>
+            </div>
+          </div>
 
-      <div class="grid grid-2">
-        <a class="card card-horizontal is-link" href="https://www.last.fm/user/yasiupl" target="_blank" rel="noopener">
-          <img id="album-cover" class="card-image" src="./assets/unknown-artist.png" alt="">
-          <div class="card-content">
-            <span id="track-status" class="eyebrow">I'm listening to...</span>
-            <p id="track" class="flow-text">Silence</p>
-            <span id="track-ago" class="ago">Just now</span>
+          <div class="col s12 l6">
+            <a class="card horizontal is-link" href="https://www.last.fm/user/yasiupl" target="_blank" rel="noopener">
+              <div class="card-image">
+                <img id="album-cover" src="./assets/unknown-artist.png" alt="">
+              </div>
+              <div class="card-stacked">
+                <div class="card-content">
+                  <span id="track-status" class="eyebrow">I'm listening to...</span>
+                  <p id="track" class="flow-text">Silence</p>
+                  <span id="track-ago" class="ago">Just now</span>
+                </div>
+              </div>
+            </a>
           </div>
-        </a>
-        <a class="card card-horizontal is-link" href="https://map.yasiu.pl" target="_blank" rel="noopener">
-          <img id="position-map" class="card-image" src="./assets/blue_marble.jpg" alt="">
-          <div class="card-content">
-            <span class="eyebrow">Last seen...</span>
-            <p id="position-comment" class="flow-text">Lost in space 👨🏻‍🚀</p>
-            <span id="position-ago" class="ago">Just now</span>
+          <div class="col s12 l6">
+            <a class="card horizontal is-link" href="https://map.yasiu.pl" target="_blank" rel="noopener">
+              <div class="card-image">
+                <img id="position-map" src="./assets/blue_marble.jpg" alt="">
+              </div>
+              <div class="card-stacked">
+                <div class="card-content">
+                  <span class="eyebrow">Last seen...</span>
+                  <p id="position-comment" class="flow-text">Lost in space 👨🏻‍🚀</p>
+                  <span id="position-ago" class="ago">Just now</span>
+                </div>
+              </div>
+            </a>
           </div>
-        </a>
+        </div>
       </div>
     </div>
   </header>
 
   <main>
-    <section class="section" id="work" aria-label="Projects">
-      <div class="container grid grid-cards">
-        <%= projects %>
+    <div class="section" id="work">
+      <div class="container">
+        <div class="row">
+          <%= projects %>
+        </div>
       </div>
-    </section>
+    </div>
   </main>
 </body>
 </html>

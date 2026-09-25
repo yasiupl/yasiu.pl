@@ -9,7 +9,7 @@ const { renderProjects } = require('./build/projects');
 const PROJECTS_FILE = path.resolve(__dirname, 'src/projects.md');
 
 module.exports = {
-    entry: ['./src/app.js', './src/style.css'],
+    entry: ['./src/app.js', '@materializecss/materialize/dist/css/materialize.min.css', './src/style.css'],
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js',

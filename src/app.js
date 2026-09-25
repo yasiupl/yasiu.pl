@@ -4,7 +4,7 @@ if ('serviceWorker' in navigator) {
   if (isLocal) {
     // No offline cache during development: remove any worker and cache left
     // from an earlier run, so edits always show on reload.
-    navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister()));
+    navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister())).catch(() => {});
     if (window.caches) caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)));
   } else {
     window.addEventListener('load', () => {
@@ -27,12 +27,13 @@ document.getElementById("logo-container").innerText = location.hostname;
     light: svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
     dark: svg('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>')
   };
-  let current = root.dataset.theme || "system";
+  let current = root.getAttribute("theme") || "system";
 
   function apply(theme) {
     current = theme;
-    if (theme === "system") delete root.dataset.theme;
-    else root.dataset.theme = theme;
+    // Materialize 2 reads the theme from <html theme="light|dark">; no attribute = follow the OS.
+    if (theme === "system") root.removeAttribute("theme");
+    else root.setAttribute("theme", theme);
     try {
       if (theme === "system") localStorage.removeItem("theme");
       else localStorage.setItem("theme", theme);

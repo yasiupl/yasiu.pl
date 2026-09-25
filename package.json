@@ -4,6 +4,7 @@
   "description": "yasiu.pl personal website",
   "main": "index.js",
   "dependencies": {
+    "@materializecss/materialize": "^2.4.0",
     "node-fetch": "^2.6.0",
     "twitter": "^1.7.1"
   },

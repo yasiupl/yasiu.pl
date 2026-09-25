@@ -1,192 +1,160 @@
-/* yasiu.pl — framework-free styles.
-   Tokens match the yasiu.pl design system. Light and dark themes:
-   the page follows the OS setting; [data-theme] on <html> overrides it. */
+/* yasiu.pl — brand layer on top of Materialize 2 (@materializecss/materialize).
+   Materialize handles the theme: it follows the OS setting, and
+   <html theme="light|dark"> overrides it. It also sets color-scheme per theme,
+   so light-dark() below follows the same switch. */
 
+/* 1. Feed the brand into Materialize's colour tokens (light and dark sources). */
 :root {
-  color-scheme: light dark;
+  --md-sys-color-primary-light: #c43c00;          /* text-orange: links on white, 5.3:1 */
+  --md-sys-color-primary-dark: #ff7a3d;           /* text-orange on dark, 6.4:1 */
+  --md-sys-color-on-primary-light: #ffffff;
+  --md-sys-color-on-primary-dark: #272727;
+  --md-sys-color-surface-tint-light: #ff4f00;
+  --md-sys-color-surface-tint-dark: #ff4f00;
+  --md-sys-color-background-light: #ffffff;
+  --md-sys-color-background-dark: #121212;
+  --md-sys-color-on-background-light: rgba(0, 0, 0, 0.87);
+  --md-sys-color-on-background-dark: rgba(255, 255, 255, 0.87);
+  --md-sys-color-surface-light: #ffffff;
+  --md-sys-color-surface-dark: #1e1e1e;
+  --md-sys-color-on-surface-light: #212121;
+  --md-sys-color-on-surface-dark: #f5f5f5;
+  --md-sys-color-on-surface-variant-light: rgba(0, 0, 0, 0.6);
+  --md-sys-color-on-surface-variant-dark: rgba(255, 255, 255, 0.6);
+  --md-sys-color-outline-variant-light: rgba(160, 160, 160, 0.2);
+  --md-sys-color-outline-variant-dark: rgba(255, 255, 255, 0.12);
 
-  /* Brand (same in both themes) */
+  /* 2. Brand tokens (names match the yasiu.pl design system). */
   --brand-orange: #ff4f00;
-  --mark-orange: #ff5722;
-  --on-brand: #ffffff;
-
-  /* Themed colours: light-dark(<light>, <dark>) */
-  --surface: light-dark(#ffffff, #121212);
-  --surface-card: light-dark(#ffffff, #1e1e1e);
+  --nav-ink: #ffffff;
   --nav-bg: light-dark(var(--brand-orange), #1e1e1e);
-  --nav-ink: #ffffff; /* white in both themes */
   --header-band: light-dark(var(--brand-orange), #121212);
-  --ink: light-dark(rgba(0, 0, 0, 0.87), rgba(255, 255, 255, 0.87));
-  --ink-strong: light-dark(#212121, #f5f5f5);
-  --ink-muted: light-dark(rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.6));
-  --text-orange: light-dark(#c43c00, #ff7a3d);
-  --hairline: light-dark(rgba(160, 160, 160, 0.2), rgba(255, 255, 255, 0.12));
-  /* Shadows: light-dark() takes colours only, so dark overrides are below */
+  --text-orange: var(--md-sys-color-primary);
+  --surface-card: var(--md-sys-color-surface);
+  --ink-strong: var(--md-sys-color-on-surface);
+  --ink-muted: var(--md-sys-color-on-surface-variant);
+  --hairline: var(--md-sys-color-outline-variant);
+  --radius-card: 2px;
   --shadow-card: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
   --shadow-card-hover: 0 0 0 1px var(--brand-orange), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-
-  /* Type */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-
-  /* Spacing, shape, size */
-  --space-card: 24px;
-  --space-action-y: 16px;
-  --space-gutter: 1.5rem;
-  --radius-card: 2px;
-  --radius-round: 50%;
-  --size-navbar: 64px;
-  --size-navbar-mobile: 56px;
-  --size-avatar: 35vmin;
-  --size-content: 1280px;
 }
 
-:root[data-theme="light"] { color-scheme: light; }
-:root[data-theme="dark"]  { color-scheme: dark; }
-
-/* Dark: no resting shadow (cards separate by surface-card); hover draws a 1px orange outline */
+/* Dark: no resting shadow (cards are lighter than the page); hover is a 1px orange outline.
+   light-dark() takes colours only, so shadows follow the same two theme rules as Materialize. */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --shadow-card: none; --shadow-card-hover: 0 0 0 1px var(--brand-orange); }
+  :root:not([theme="light"]) { --shadow-card: none; --shadow-card-hover: 0 0 0 1px var(--brand-orange); }
 }
-:root[data-theme="dark"] { --shadow-card: none; --shadow-card-hover: 0 0 0 1px var(--brand-orange); }
+:root[theme="dark"] { --shadow-card: none; --shadow-card-hover: 0 0 0 1px var(--brand-orange); }
 
 /* Base */
-*, *::before, *::after { box-sizing: border-box; }
-
-html {
-  font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--ink);
-  background: var(--surface);
-  scrollbar-color: var(--brand-orange) var(--surface);
-  scrollbar-width: thin;
-}
-@media (min-width: 992px)  { html { font-size: 14.5px; } }
-@media (min-width: 1200px) { html { font-size: 15px; } }
-
-body { margin: 0; }
-img { max-width: 100%; display: block; }
+html { scrollbar-color: var(--brand-orange) var(--md-sys-color-background); scrollbar-width: thin; }
+@media (min-width: 993px)  { html { font-size: 14.5px; } }
+@media (min-width: 1201px) { html { font-size: 15px; } }
 a { color: var(--text-orange); text-decoration: none; }
 :focus-visible { outline: 2px solid var(--text-orange); outline-offset: 2px; }
-
-.container { width: min(100% - 2 * var(--space-gutter), var(--size-content)); margin-inline: auto; }
+[onclick] { cursor: pointer; }
 
 /* Navigation bar */
-.nav {
+nav.navbar {
   position: sticky;
   top: 0;
-  z-index: 10;
-  background: var(--nav-bg);
+  z-index: 997;
+  height: var(--navbar-height);
+  background-color: var(--nav-bg);
   color: var(--nav-ink);
   border-bottom: 3px solid light-dark(transparent, var(--brand-orange));
+  box-shadow: none;
 }
-.nav .container {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  min-height: var(--size-navbar);
-}
-.logotype {
+nav.navbar .nav-wrapper { background: none; padding: 0; }
+nav.navbar .nav-wrapper > .container { display: flex; align-items: center; gap: 1rem; height: 100%; }
+nav.navbar .brand-logo {
+  position: static;
+  margin-right: auto;
+  color: var(--nav-ink);
   font-size: 2.1rem;
   font-weight: 100;
   letter-spacing: 7px;
-  color: inherit;
-  margin-right: auto;
 }
-.nav ul { display: flex; gap: 0; margin: 0; padding: 0; list-style: none; overflow-x: auto; }
-.nav ul a {
-  display: block;
-  padding: 0 15px;
-  line-height: var(--size-navbar);
+nav.navbar ul:not(.dropdown-content) { gap: 0; padding: 0; }
+nav.navbar ul:not(.dropdown-content) > li > a {
+  color: var(--nav-ink);
   font-size: 1.2rem;
   font-weight: 300;
   letter-spacing: 2px;
-  color: inherit;
+  line-height: var(--navbar-height);
+  padding: 0 15px;
 }
-.nav ul a:hover { background: rgba(127, 127, 127, 0.15); }
+nav.navbar ul > li > a:hover,
+.theme-toggle:hover { background-color: rgba(127, 127, 127, 0.15); }
 .theme-toggle {
-  font: inherit;
-  font-size: 1.2rem;
-  color: inherit;
-  background: none;
-  border: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-round);
-  cursor: pointer;
   display: grid;
   place-items: center;
+  width: 40px;
+  height: 40px;
+  color: var(--nav-ink);
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
 }
-.theme-toggle:hover { background: rgba(127, 127, 127, 0.15); }
 @media (max-width: 600px) {
-  .nav .container { flex-wrap: wrap; min-height: var(--size-navbar-mobile); }
-  .nav ul { order: 3; width: 100%; }
-  .nav ul a { line-height: 44px; font-size: 1rem; padding: 0 10px; letter-spacing: 1px; }
+  nav.navbar { height: var(--navbar-height-mobile); }
+  nav.navbar .brand-logo { font-size: 1.6rem; letter-spacing: 5px; }
 }
 
-/* Header band */
-.hero { background: var(--header-band); padding-block: var(--space-gutter); }
+/* Header band behind the hero cards */
+header.hero { background-color: var(--header-band); }
 
-/* Grid */
-.grid { display: grid; gap: var(--space-gutter); }
-.grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
-.grid-cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
-.section { padding-block: var(--space-gutter); }
-.stack > * + * { margin-top: var(--space-gutter); }
-
-/* Card */
+/* Cards: back to the original Materialize 1 look (2px corners, z-depth-1, plain surface) */
 .card {
-  display: flex;
-  flex-direction: column;
-  background: var(--surface-card);
-  color: var(--ink);
+  --background-color: var(--surface-card);
+  display: block;
+  margin: 0;
+  color: var(--md-sys-color-on-surface);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
   overflow: hidden;
-  transition: box-shadow 0.25s;
 }
+.card .card-title { color: var(--ink-strong); font-size: 24px; font-weight: 300; line-height: 32px; margin: 0 0 8px; }
 .card.is-link:hover { box-shadow: var(--shadow-card-hover); }
-.card-content { padding: var(--space-card); flex-grow: 1; }
-.card-content p { margin: 0; }
-.card-title { display: block; font-size: 24px; font-weight: 300; line-height: 32px; margin: 0 0 8px; color: var(--ink-strong); }
-.card-link { color: var(--text-orange); }
-.card-image { aspect-ratio: 1; object-fit: cover; width: 100%; }
-.card-actions {
+.card a, .card .card-link { color: var(--text-orange); }
+.card .card-image img { border-radius: 0; aspect-ratio: 1; object-fit: cover; }
+.card .card-image iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.card .card-action {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px var(--space-card);
-  padding: var(--space-action-y) var(--space-card);
+  gap: 8px 24px;
+  padding: 16px 24px;
   border-top: 1px solid var(--hairline);
 }
-.card-actions a { text-transform: uppercase; }
+.card .card-action a,
+.card .card-action a:first-child,
+.card .card-action a:last-child { margin: 0; text-transform: uppercase; }
 
-/* Horizontal widget card */
-.card-horizontal { flex-direction: row; }
-.card-horizontal .card-image { aspect-ratio: 1; width: 176px; flex-shrink: 0; }
+/* Horizontal widget cards */
+.card.horizontal .card-image { flex: 0 0 176px; max-width: 176px; }
+.card.horizontal .card-image img { width: 100%; height: 100%; }
+.card.horizontal .card-stacked { flex: 1; min-width: 0; }
+.card .eyebrow { color: var(--text-orange); }
+.card .ago { color: var(--ink-muted); }
+.card .flow-text { color: var(--ink-strong); margin: 0; }
 @media (max-width: 480px) {
-  .card-horizontal .card-image { width: 112px; }
-  .card-horizontal .card-content { padding: 16px; }
+  .card.horizontal .card-image { flex-basis: 112px; max-width: 112px; }
+  .card.horizontal .card-content { padding: 16px; }
 }
-.eyebrow { color: var(--text-orange); }
-.ago { color: var(--ink-muted); }
-.flow-text { font-size: clamp(1.2rem, 1rem + 0.8vw, 1.68rem); line-height: 1.5; color: var(--ink-strong); }
 
 /* Hero (avatar) card */
-.card-avatar { text-align: center; }
-.avatar {
-  width: var(--size-avatar);
-  height: var(--size-avatar);
+.card-avatar .card-content { text-align: center; }
+.card-avatar .avatar {
+  width: 35vmin;
+  height: 35vmin;
   max-width: 320px;
   max-height: 320px;
-  margin: 0 auto var(--space-card);
-  border-radius: var(--radius-round);
+  margin: 0 auto 24px;
+  border-radius: 50%;
   object-fit: cover;
 }
-
-/* Project card with embedded video */
-.media { position: relative; }
-.media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
