@@ -4,6 +4,9 @@ const WebpackPwaManifest = require('webpack-pwa-manifest');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
+const { renderProjects } = require('./build/projects');
+
+const PROJECTS_FILE = path.resolve(__dirname, 'src/projects.md');
 
 module.exports = {
     entry: ['./src/app.js', './src/style.css'],
@@ -31,7 +34,12 @@ module.exports = {
             title: 'yasiu.pl',
             template: './src/index.html',
             filename: './index.html',
-            favicon: './src/favicon.ico'
+            favicon: './src/favicon.ico',
+            // Project cards come from src/projects.md; re-read on every (watch) build.
+            templateParameters: (compilation) => {
+                compilation.fileDependencies.add(PROJECTS_FILE);
+                return { projects: renderProjects(PROJECTS_FILE) };
+            }
         }),
         new WebpackPwaManifest({
             fingerprints: false,
