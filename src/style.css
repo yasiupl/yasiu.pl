@@ -8,20 +8,19 @@
   /* Brand (same in both themes) */
   --brand-orange: #ff4f00;
   --mark-orange: #ff5722;
-  --on-brand: #272727; /* 4.5:1 on brand-orange */
+  --on-brand: #ffffff;
 
   /* Themed colours: light-dark(<light>, <dark>) */
   --surface: light-dark(#ffffff, #121212);
   --surface-card: light-dark(#ffffff, #1e1e1e);
   --nav-bg: light-dark(var(--brand-orange), #1e1e1e);
-  --nav-ink: light-dark(var(--on-brand), #ffffff);
+  --nav-ink: #ffffff; /* white in both themes */
   --header-band: light-dark(var(--brand-orange), #121212);
   --ink: light-dark(rgba(0, 0, 0, 0.87), rgba(255, 255, 255, 0.87));
   --ink-strong: light-dark(#212121, #f5f5f5);
   --ink-muted: light-dark(rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.6));
   --text-orange: light-dark(#c43c00, #ff7a3d);
   --hairline: light-dark(rgba(160, 160, 160, 0.2), rgba(255, 255, 255, 0.12));
-  --border-card: light-dark(rgba(0, 0, 0, 0), rgba(255, 255, 255, 0.08));
   /* Shadows: light-dark() takes colours only, so dark overrides are below */
   --shadow-card: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
   --shadow-card-hover: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
@@ -44,11 +43,11 @@
 :root[data-theme="light"] { color-scheme: light; }
 :root[data-theme="dark"]  { color-scheme: dark; }
 
-/* Dark: no shadows; cards separate by surface-card and border-card */
+/* Dark: no resting shadow (cards separate by surface-card); hover draws an orange ring */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --shadow-card: none; --shadow-card-hover: none; }
+  :root:not([data-theme="light"]) { --shadow-card: none; --shadow-card-hover: 0 0 0 2px var(--brand-orange); }
 }
-:root[data-theme="dark"] { --shadow-card: none; --shadow-card-hover: none; }
+:root[data-theme="dark"] { --shadow-card: none; --shadow-card-hover: 0 0 0 2px var(--brand-orange); }
 
 /* Base */
 *, *::before, *::after { box-sizing: border-box; }
@@ -143,18 +142,17 @@ a:hover { text-decoration: underline; }
   flex-direction: column;
   background: var(--surface-card);
   color: var(--ink);
-  border: 1px solid var(--border-card);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
   overflow: hidden;
-  transition: box-shadow 0.25s, border-color 0.25s;
+  transition: box-shadow 0.25s;
 }
-a.card:hover { text-decoration: none; box-shadow: var(--shadow-card-hover); border-color: var(--brand-orange); }
+.card.is-link:hover { text-decoration: none; box-shadow: var(--shadow-card-hover); }
 .card-content { padding: var(--space-card); flex-grow: 1; }
 .card-content p { margin: 0; }
 .card-title { display: block; font-size: 24px; font-weight: 300; line-height: 32px; margin: 0 0 8px; color: var(--ink-strong); }
 .card-link { color: var(--text-orange); }
-.card-image { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+.card-image { aspect-ratio: 1; object-fit: cover; width: 100%; }
 .card-actions {
   display: flex;
   flex-wrap: wrap;
