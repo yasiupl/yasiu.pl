@@ -6,7 +6,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
 module.exports = {
-    entry: ['./src/app.js', './src/style.scss'],
+    entry: ['./src/app.js', './src/style.css'],
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js',
@@ -67,11 +67,10 @@ module.exports = {
     ],
     module: {
         rules: [{
-                test: /\.s[ac]ss$/i,
+                test: /\.css$/i,
                 use: [
                     MiniCssExtractPlugin.loader,
                     'css-loader',
-                    'sass-loader',
                 ],
             },
             {
