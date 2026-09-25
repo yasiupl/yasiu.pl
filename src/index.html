@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#FF4F00">
+  <meta name="theme-color" content="#ff4f00" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1e1e1e" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
   <meta name="description" content="Tinkerer obsessed with space 🚀" />
   <meta name="keywords" content="personal blog" />
   <meta property="og:title" content="Marcin Jasiukowicz" />
@@ -32,82 +34,78 @@
 
     gtag('config', 'UA-71778687-1');
   </script>
+  <script>
+    // Apply a saved theme before first paint (no flash). No saved theme = follow the OS.
+    try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('theme', t); } catch (e) {}
+  </script>
 </head>
 
-<body id="top" class="scrollspy">
-  <!--Navigation-->
-  <header>
-    <div class="navbar-fixed">
-      <nav id="nav_f" class="default_color" role="navigation">
-        <div class="container">
-          <div class="nav-wrapper">
-            <a href="#" id="logo-container" class="brand-logo">yasiu.pl</a>
-            <ul class="right hide-on-med-and-down">
-              <li>
-                <a href="#work">Projects</a>
-              </li>
-              <li>
-                <a href="https://www.patreon.com/yasiupl" target="_blank">Patreon</a>
-              </li>
-              <li>
-                <a href="https://www.amazon.com/hz/wishlist/ls/JNQ7C2Q934HA" target="_blank">Wishlist</a>
-              </li>
-              <li>
-                <a href="mailto:contact@yasiu.pl?subject=Website%20Contact%20Form">Contact</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+<body id="top">
+  <nav class="navbar" aria-label="Main">
+    <div class="nav-wrapper">
+      <div class="container">
+      <a href="#" id="logo-container" class="brand-logo">yasiu.pl</a>
+      <ul class="hide-on-med-and-down">
+        <li><a href="#work">Projects</a></li>
+        <li><a href="https://www.patreon.com/yasiupl" target="_blank" rel="noopener">Patreon</a></li>
+        <li><a href="https://www.amazon.com/hz/wishlist/ls/JNQ7C2Q934HA" target="_blank" rel="noopener">Wishlist</a></li>
+        <li><a href="mailto:contact@yasiu.pl?subject=Website%20Contact%20Form">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Theme: follow system"></button>
+      </div>
     </div>
+  </nav>
 
+  <header class="hero">
     <div class="section">
-      <div class="container row">
-        <div class="col s12">
-          <div class="card card-avatar h-card">
-            <div class="card-content">
-              <img class="u-photo" src="./assets/meirl.png">
-              <span class="card-title">Hi, I'm <span class="p-name">Marcin Jasiukowicz</span> <a class="u-url" href="https://yasiu.pl" alt="Y">🅨</a></span>
-              <p>I call myself a "<a class="p-note">Tinkerer obsessed with space 🚀</a>". Welcome to my showcase!</br>You can contact me via any of the channels below:</p>
-            </div>
-            <div class="card-action">
-              <a rel="me" href="https://www.instagram.com/yasiu.pl/">Instagram</a>
-              <a rel="me" href="https://twitter.com/yasiupl">Twitter</a>
-              <a rel="me" href="https://github.com/yasiupl">GitHub</a>
-              <a rel="me" href="https://www.linkedin.com/in/yasiu">LinkedIn</a>
-              <a rel="me" href="https://0x3c.pl/@yasiu">Mastodon</a>
-              <a rel="me" href="https://t.me/yasiupl">Telegram</a>
-              <a rel="me" class="u-email" href="mailto:contact@yasiu.pl?subject=Website%20Contact%20Form">eMail</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col m12 l6">
-          <div class="card horizontal widget" onclick="window.open('https://www.last.fm/user/yasiupl', '_blank')">
-            <div class="card-image">
-              <img id="album-cover" src="./assets/unknown-artist.png">
-            </div>
-            <div class="card-stacked">
-              <div class="card-content ">
-                <a id="track-status">I'm listening to...</a>
-                <p id="track" class="flow-text">Silence</p>
-                <a id="track-ago">Just now</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col m12 l6">
-          <div class="card horizontal widget" onclick="window.open('https://map.yasiu.pl', '_blank')">
-            <div class="card-image">
-              <img id="position-map" src="./assets/blue_marble.jpg">
-            </div>
-            <div class="card-stacked">
+      <div class="container">
+        <div class="row">
+          <div class="col s12">
+            <div class="card card-avatar h-card">
               <div class="card-content">
-                <a>Last seen...</a>
-                <p id="position-comment" class="flow-text">Lost in space 👨🏻‍🚀</p>
-                <a id="position-ago">Just now</a>
+                <img class="avatar u-photo" src="./assets/meirl.png" alt="Marcin Jasiukowicz">
+                <h1 class="card-title">Hi, I'm <span class="p-name">Marcin Jasiukowicz</span> <a class="u-url" href="https://yasiu.pl" aria-label="yasiu.pl">🅨</a></h1>
+                <p>I call myself a "<span class="p-note">Tinkerer obsessed with space 🚀</span>". Welcome to my showcase!<br>You can contact me via any of the channels below:</p>
+              </div>
+              <div class="card-action">
+                <a rel="me" href="https://www.instagram.com/yasiu.pl/">Instagram</a>
+                <a rel="me" href="https://twitter.com/yasiupl">Twitter</a>
+                <a rel="me" href="https://github.com/yasiupl">GitHub</a>
+                <a rel="me" href="https://www.linkedin.com/in/yasiu">LinkedIn</a>
+                <a rel="me" href="https://0x3c.pl/@yasiu">Mastodon</a>
+                <a rel="me" href="https://t.me/yasiupl">Telegram</a>
+                <a rel="me" class="u-email" href="mailto:contact@yasiu.pl?subject=Website%20Contact%20Form">eMail</a>
               </div>
             </div>
+          </div>
+
+          <div class="col s12 l6">
+            <a class="card horizontal is-link" href="https://www.last.fm/user/yasiupl" target="_blank" rel="noopener">
+              <div class="card-image">
+                <img id="album-cover" src="./assets/unknown-artist.png" alt="">
+              </div>
+              <div class="card-stacked">
+                <div class="card-content">
+                  <span id="track-status" class="eyebrow">I'm listening to...</span>
+                  <p id="track" class="flow-text">Silence</p>
+                  <span id="track-ago" class="ago">Just now</span>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="col s12 l6">
+            <a class="card horizontal is-link" href="https://map.yasiu.pl" target="_blank" rel="noopener">
+              <div class="card-image">
+                <img id="position-map" src="./assets/blue_marble.jpg" alt="">
+              </div>
+              <div class="card-stacked">
+                <div class="card-content">
+                  <span class="eyebrow">Last seen...</span>
+                  <p id="position-comment" class="flow-text">Lost in space 👨🏻‍🚀</p>
+                  <span id="position-ago" class="ago">Just now</span>
+                </div>
+              </div>
+            </a>
           </div>
         </div>
       </div>
@@ -115,84 +113,11 @@
   </header>
 
   <main>
-    <div class="section scrollspy" id="work">
-      <div class="container row">
-
-        <div class="col s12 m4">
-          <div class="card" onclick="window.open('https://www.youtube.com/channel/UCqFJAKOMWvS_oKHk9ppMC8w', '_blank')">
-            <div class="card-image">
-              <img src="./assets/youtube.png">
-              <iframe src="https://www.youtube.com/embed/?list=UUqFJAKOMWvS_oKHk9ppMC8w&showinfo=0&rel=0&controls=0&loop=1" frameborder="0" allowfullscreen></iframe>
-            </div>
-            <div class="card-content">
-              <span class="card-title grey-text text-darken-4">📺 YouTube</span>
-              <a>yasiu.pl/youtube</a>
-            </div>
-          </div>
+    <div class="section" id="work">
+      <div class="container">
+        <div class="row">
+          <%= projects %>
         </div>
-        <div class="col s12 m4">
-          <div class="card" onclick="window.open('https://rocketwatch.yasiu.pl', '_blank')">
-            <div class="card-image">
-              <img src="./assets/rocketwatch.png">
-            </div>
-            <div class="card-content">
-              <span class="card-title grey-text text-darken-4">🚀 Rocket Watch</span>
-              <a>rocket.watch</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col s12 m4">
-          <div class="card" onclick="window.open('https://nadajniki.yasiu.pl', '_blank')">
-            <div class="card-image">
-              <img src="./assets/nadajniki.png">
-            </div>
-            <div class="card-content">
-              <span class="card-title grey-text text-darken-4">📻 Radio map</span>
-              <a>nadajniki.yasiu.pl</a>
-            </div>
-          </div>
-        </div>
-
-        
-        <div class="col s12 m4">
-          <div class="card" onclick="window.open('https://stardust.simle.pl', '_blank')">
-            <div class="card-image">
-              <img src="./assets/stardust.png">
-            </div>
-            <div class="card-content">
-              <span class="card-title grey-text text-darken-4">🎈 Stardust Project</span>
-              <a>stardust.simle.pl</a>
-            </div>
-          </div>
-        </div>
-
-        
-        <div class="col s12 m4">
-          <div class="card" onclick="window.open('https://hsp.sh', '_blank')">
-            <div class="card-image">
-              <img src="./assets/hspomorze.png">
-            </div>
-            <div class="card-content">
-              <span class="card-title grey-text text-darken-4">💡 Hackerspace Pomorze</span>
-              <a>pomorze.hackerspace.pl</a>
-            </div>
-          </div>
-        </div>
-
-        
-        <div class="col s12 m4">
-          <div class="card" onclick="window.open('https://patreon.com/yasiu', '_blank')">
-            <div class="card-image">
-              <img src="./assets/patreon.png">
-            </div>
-            <div class="card-content">
-              <span class="card-title grey-text text-darken-4">💸 Patreon</span>
-              <a>patreon.com/yasiu</a>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   </main>

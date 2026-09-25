@@ -4,9 +4,12 @@ const WebpackPwaManifest = require('webpack-pwa-manifest');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
+const { renderProjects } = require('./build/projects');
+
+const PROJECTS_FILE = path.resolve(__dirname, 'src/projects.md');
 
 module.exports = {
-    entry: ['./src/app.js', './src/style.scss'],
+    entry: ['./src/app.js', '@materializecss/materialize/dist/css/materialize.min.css', './src/style.css'],
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js',
@@ -31,7 +34,12 @@ module.exports = {
             title: 'yasiu.pl',
             template: './src/index.html',
             filename: './index.html',
-            favicon: './src/favicon.ico'
+            favicon: './src/favicon.ico',
+            // Project cards come from src/projects.md; re-read on every (watch) build.
+            templateParameters: (compilation) => {
+                compilation.fileDependencies.add(PROJECTS_FILE);
+                return { projects: renderProjects(PROJECTS_FILE) };
+            }
         }),
         new WebpackPwaManifest({
             fingerprints: false,
@@ -60,18 +68,27 @@ module.exports = {
             ]
         }),
         new WorkboxPlugin.GenerateSW({
+            // A new deploy takes over at once instead of waiting for all tabs to close.
+            skipWaiting: true,
+            clientsClaim: true,
+            // Do not precache the page itself: it changes on every content edit.
+            exclude: [/\.map$/, /^manifest.*\.js$/, /\.html$/],
             runtimeCaching: [{
+                // The page: network first, cached copy only when offline.
+                urlPattern: ({ request }) => request.mode === 'navigate',
+                handler: 'NetworkFirst',
+            }, {
                 urlPattern: /.*/,
-                handler: 'StaleWhileRevalidate',}]
-          })
+                handler: 'StaleWhileRevalidate',
+            }]
+        })
     ],
     module: {
         rules: [{
-                test: /\.s[ac]ss$/i,
+                test: /\.css$/i,
                 use: [
                     MiniCssExtractPlugin.loader,
                     'css-loader',
-                    'sass-loader',
                 ],
             },
             {

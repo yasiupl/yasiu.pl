@@ -1,18 +1,50 @@
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-        navigator.serviceWorker
-            .register('./service-worker.js')
-            .then(function () {
-                console.log('rocket.watch serviceworker install successful');
-            })
+const isLocal = ['localhost', '127.0.0.1', ''].includes(location.hostname);
 
-            .catch(function (err) {
-                console.log('rocket.watch serviceworker install failed: ', err);
-            });
+if ('serviceWorker' in navigator) {
+  if (isLocal) {
+    // No offline cache during development: remove any worker and cache left
+    // from an earlier run, so edits always show on reload.
+    navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => r.unregister())).catch(() => {});
+    if (window.caches) caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)));
+  } else {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .catch((err) => console.log('yasiu.pl service worker install failed: ', err));
     });
+  }
 }
 
-document.getElementById("logo-container").innerText = location.hostname
+document.getElementById("logo-container").innerText = location.hostname;
+
+// Theme toggle: system -> light -> dark -> system. Saved per browser.
+(function () {
+  const root = document.documentElement;
+  const button = document.getElementById("theme-toggle");
+  const order = ["system", "light", "dark"];
+  const svg = (body) => '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' + body + "</svg>";
+  const icons = {
+    system: svg('<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>'),
+    light: svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+    dark: svg('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>')
+  };
+  let current = root.getAttribute("theme") || "system";
+
+  function apply(theme) {
+    current = theme;
+    // Materialize 2 reads the theme from <html theme="light|dark">; no attribute = follow the OS.
+    if (theme === "system") root.removeAttribute("theme");
+    else root.setAttribute("theme", theme);
+    try {
+      if (theme === "system") localStorage.removeItem("theme");
+      else localStorage.setItem("theme", theme);
+    } catch (e) {}
+    button.innerHTML = icons[theme];
+    button.setAttribute("aria-label", "Theme: " + (theme === "system" ? "follow system" : theme));
+  }
+
+  apply(current);
+  button.addEventListener("click", () => apply(order[(order.indexOf(current) + 1) % order.length]));
+})();
 
 function getAgoString(timestampSeconds) {
   const minutes = Math.ceil((Date.now() / 1000 - timestampSeconds) / 60);
