@@ -23,7 +23,7 @@
   --hairline: light-dark(rgba(160, 160, 160, 0.2), rgba(255, 255, 255, 0.12));
   /* Shadows: light-dark() takes colours only, so dark overrides are below */
   --shadow-card: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-  --shadow-card-hover: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 0 0 1px var(--brand-orange), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
 
   /* Type */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
@@ -43,11 +43,11 @@
 :root[data-theme="light"] { color-scheme: light; }
 :root[data-theme="dark"]  { color-scheme: dark; }
 
-/* Dark: no resting shadow (cards separate by surface-card); hover draws an orange ring */
+/* Dark: no resting shadow (cards separate by surface-card); hover draws a 1px orange outline */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --shadow-card: none; --shadow-card-hover: 0 0 0 2px var(--brand-orange); }
+  :root:not([data-theme="light"]) { --shadow-card: none; --shadow-card-hover: 0 0 0 1px var(--brand-orange); }
 }
-:root[data-theme="dark"] { --shadow-card: none; --shadow-card-hover: 0 0 0 2px var(--brand-orange); }
+:root[data-theme="dark"] { --shadow-card: none; --shadow-card-hover: 0 0 0 1px var(--brand-orange); }
 
 /* Base */
 *, *::before, *::after { box-sizing: border-box; }
@@ -67,7 +67,6 @@ html {
 body { margin: 0; }
 img { max-width: 100%; display: block; }
 a { color: var(--text-orange); text-decoration: none; }
-a:hover { text-decoration: underline; }
 :focus-visible { outline: 2px solid var(--text-orange); outline-offset: 2px; }
 
 .container { width: min(100% - 2 * var(--space-gutter), var(--size-content)); margin-inline: auto; }
@@ -94,7 +93,6 @@ a:hover { text-decoration: underline; }
   color: inherit;
   margin-right: auto;
 }
-.logotype:hover { text-decoration: none; }
 .nav ul { display: flex; gap: 0; margin: 0; padding: 0; list-style: none; overflow-x: auto; }
 .nav ul a {
   display: block;
@@ -105,7 +103,7 @@ a:hover { text-decoration: underline; }
   letter-spacing: 2px;
   color: inherit;
 }
-.nav ul a:hover { text-decoration: none; background: rgba(127, 127, 127, 0.15); }
+.nav ul a:hover { background: rgba(127, 127, 127, 0.15); }
 .theme-toggle {
   font: inherit;
   font-size: 1.2rem;
@@ -147,7 +145,7 @@ a:hover { text-decoration: underline; }
   overflow: hidden;
   transition: box-shadow 0.25s;
 }
-.card.is-link:hover { text-decoration: none; box-shadow: var(--shadow-card-hover); }
+.card.is-link:hover { box-shadow: var(--shadow-card-hover); }
 .card-content { padding: var(--space-card); flex-grow: 1; }
 .card-content p { margin: 0; }
 .card-title { display: block; font-size: 24px; font-weight: 300; line-height: 32px; margin: 0 0 8px; color: var(--ink-strong); }
