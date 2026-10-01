@@ -5,13 +5,15 @@ image: youtube-XkWyM6bvB8A.jpg
 lang: pl
 ---
 
-Ostatnio na kanale Polskiej Fundacji Fantastyki Naukowej ukazało się nagranie z naszego panelu podczas Kongresu Futurologicznego: *„Polski kosmos 2050: W stronę Księżyca i Marsa”*. Razem z Bartoszem Paszczą i Tomkiem Barcińskim, prowadzeni przez Ištvana, próbowaliśmy zmierzyć się z pytaniem, które na pierwszy rzut oka brzmi niemal obrazoburczo: **po co Polsce w ogóle własny program kosmiczny?** Czemu nie możemy po prostu dołączyć do większych graczy, kupować gotowych rozwiązań i latać na sprzęcie sojuszników?
+Ostatnio na kanale Polskiej Fundacji Fantastyki Naukowej ukazało się nagranie z naszego panelu podczas Kongresu Futurologicznego: *„Polski kosmos 2050: W stronę Księżyca i Marsa”*. Razem z Bartoszem Paszczą i Tomkiem Barcińskim, prowadzeni przez Ištvana Vizvary'ego, próbowaliśmy zmierzyć się z pytaniem, które na pierwszy rzut oka brzmi niemal obrazoburczo: **po co Polsce w ogóle własny program kosmiczny?** Czemu nie możemy po prostu dołączyć do większych graczy, kupować gotowych rozwiązań i latać na sprzęcie sojuszników?
 
 Kiedy słucham tego nagrania z perspektywy czasu, widzę, że przez całą godzinę próbowałem przemycić jedną główną myśl: w programie kosmicznym wcale nie chodzi wyłącznie o rakiety i satelity. Chodzi o to, co cenimy w naszej kulturze, jakie mamy ambicje i jak chcemy, żeby wyglądała przyszłość Polski.
 
 Spisałem kilka wątków, które leżą mi szczególnie na sercu.
 
 * * *
+
+<iframe src="https://www.youtube-nocookie.com/embed/XkWyM6bvB8A" title="Obejrzyj panel „Polski kosmos 2050: W stronę Księżyca i Marsa” na YouTube" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ### Koniec ery pojedynczych śrubek i walka o „lewar”
 
@@ -59,8 +61,6 @@ Gdy robię sobie analizę wsteczną od tytułowego roku 2050 do tego, co musimy 
 
 Dlatego zostawiam Was z tym samym pytaniem, które rzuciłem na koniec naszego panelu: zamiast myśleć tylko o wbiciu biało-czerwonej flagi na Marsie, zastanówmy się – **jaką konkretną tajemnicę wszechświata chcemy jako Polacy zgłębić? W której gałęzi nauki i technologii kosmicznej chcemy być absolutnie najlepsi na świecie, czyniąc z niej naszą nową cechę narodową?**
 
-* * *
+***
 
-*Jeśli macie ochotę posłuchać całej, prawie godzinnej dyskusji (i dowiedzieć się m.in. jak ma się budżet misji marsjańskiej do budżetu filmu z Hollywood oraz kiedy ruszą warsztaty z projektowania polskiego łazika „Reksio”), nagranie znajdziecie tutaj:*
-
-👉 **[Obejrzyj panel „Polski kosmos 2050: W stronę Księżyca i Marsa” na YouTube](https://www.youtube.com/watch?v=XkWyM6bvB8A)**
+Kraków, Wrzesień 2026
