@@ -14,8 +14,8 @@ const TIMELINE_FILE = path.resolve(__dirname, 'src/timeline.md');
 const CV_FILE = path.resolve(__dirname, 'src/cv.md');
 const BLOG_DIR = path.resolve(__dirname, 'blog');
 const HOME_POSTS = 3;
-// Netlify builds scale the post images with the Netlify Image CDN (see netlify.toml).
-const IMAGE_CDN = process.env.NETLIFY === 'true';
+// The image CDN of the hosting platform scales the post images. Local builds use the original files.
+const IMAGE_CDN = process.env.VERCEL ? 'vercel' : process.env.NETLIFY === 'true' ? 'netlify' : null;
 
 // Posts are read once per build and shared by all blog pages; a (watch) rebuild
 // reads them again. The list of pages is fixed when webpack starts: restart it
@@ -101,14 +101,17 @@ class BlogFeedPlugin {
 module.exports = {
     entry: ['./src/app.js', '@materializecss/materialize/dist/css/materialize.min.css', './src/style.css'],
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        // Nitro serves this folder (see nitro.config.mjs).
+        path: path.resolve(__dirname, 'public'),
         filename: 'bundle.js',
         // Absolute asset URLs: pages live at / and at /blog/<slug>/.
         publicPath: '/',
         clean: true
     },
     devServer: {
-        static: path.join(__dirname, 'dist'),
+        static: path.join(__dirname, 'public'),
+        // The API routes come from "npm run dev:api" (Nitro, port 3000).
+        proxy: [{ context: ['/api', '/.well-known'], target: 'http://localhost:3000' }],
         compress: true,
         // PORT lets a second copy run next to one on 8080 (for example, the preview of an editor).
         port: Number(process.env.PORT) || 8080,

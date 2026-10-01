@@ -96,8 +96,10 @@ nav.navbar ul:not(.dropdown-content) > li > a {
   padding: 0 15px;
 }
 nav.navbar ul > li > a:hover,
-.theme-toggle:hover { background-color: rgba(127, 127, 127, 0.15); }
-.theme-toggle {
+.theme-toggle:hover,
+.nav-toggle:hover { background-color: rgba(127, 127, 127, 0.15); }
+.theme-toggle,
+.nav-toggle {
   display: grid;
   place-items: center;
   width: 40px;
@@ -111,6 +113,57 @@ nav.navbar ul > li > a:hover,
 @media (max-width: 600px) {
   nav.navbar { height: var(--navbar-height-mobile); }
   nav.navbar .brand-logo { font-size: 1.6rem; letter-spacing: 5px; }
+}
+
+/* The links of the navigation bar (#nav-menu) are a popover. On a desktop the list is always in
+   the bar. On smaller screens the menu button (.nav-toggle) opens it as a panel under the bar. */
+.nav-toggle { display: none; }
+@media (min-width: 993px) {
+  nav.navbar .nav-menu[popover] {
+    display: flex;
+    position: static;
+    inset: auto;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    color: inherit;
+    background: none;
+    border: 0;
+  }
+}
+@media (max-width: 992px) {
+  .nav-toggle { display: grid; }
+  /* Materialize shows "nav ul" as a flex row. That rule also shows a closed popover. */
+  nav.navbar .nav-menu:not(:popover-open) { display: none; }
+  nav.navbar .nav-menu:popover-open {
+    display: block;
+    position: fixed;
+    inset: var(--navbar-height) 0 auto 0;
+    width: 100%;
+    max-height: calc(100dvh - var(--navbar-height));
+    margin: 0;
+    padding: 8px 0;
+    overflow-y: auto;
+    color: var(--nav-ink);
+    background-color: var(--nav-bg);
+    border: 0;
+    border-bottom: 3px solid var(--brand-orange);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  }
+  nav.navbar .nav-menu li { float: none; }
+  nav.navbar .nav-menu:popover-open > li > a {
+    display: block;
+    padding: 0 24px;
+    line-height: 52px;
+  }
+  nav.navbar .nav-menu > li > a[aria-current="page"] { font-weight: 500; }
+  nav.navbar .nav-menu::backdrop { background: rgba(0, 0, 0, 0.4); }
+}
+@media (max-width: 600px) {
+  nav.navbar .nav-menu:popover-open {
+    inset: var(--navbar-height-mobile) 0 auto 0;
+    max-height: calc(100dvh - var(--navbar-height-mobile));
+  }
 }
 
 /* Header band behind the hero cards */

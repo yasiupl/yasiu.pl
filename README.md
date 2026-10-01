@@ -3,6 +3,63 @@
 
 Behind the scenes works of my personal website. Nothing fancy.
 
+## Hosting
+
+The site is on Vercel. It can also be on Netlify or on a Node.js server, without changes to the code.
+
+- [webpack](https://webpack.js.org/) makes the site (HTML, CSS, JavaScript, images, PDF files) in `public/`.
+- [Nitro](https://nitro.build/) makes the deployment for the platform from `public/`, from the API routes in `server/`, and from the redirects in [`nitro.config.mjs`](nitro.config.mjs).
+  Nitro finds the platform from the environment of the build. On Vercel, the output is `.vercel/output/`. On Netlify, the output is `dist/`.
+
+`npm run build` makes the CV, the site and the deployment. These are the build commands:
+
+- Vercel: the `vercel-build` script of `package.json`. It downloads Tectonic for the CV, and then runs `npm run build`.
+  If the project settings of Vercel have a "Build Command", that command replaces the script. Keep the field empty.
+- Netlify: `make deploy` (see `netlify.toml`).
+
+To add a redirect, add it to `routeRules` in `nitro.config.mjs`. Do not add redirects to `netlify.toml` or to a `vercel.json` file.
+
+### API routes
+
+The live cards of the home page get their data from the API routes in `server/api/`:
+
+- `/api/lastfm`: the last track on Last.fm ("I'm listening to...").
+- `/api/location`: the area where I am ("Last seen..."). See "Location".
+
+The CDN of the platform keeps the responses for some minutes (the `Cache-Control` header of each route).
+
+The API routes read these environment variables. Set them in the settings of the platform (on Vercel: "Settings", "Environment Variables"). Then deploy the site again.
+
+| Variable | Value |
+| --- | --- |
+| `LASTFM_API_KEY` | The API key of Last.fm. |
+| `OWNTRACKS_USER`, `OWNTRACKS_DEVICE` | The user and the device in the OwnTracks Recorder. |
+| `OWNTRACKS_PASSWORD` | The password for `/api/0/last` of the Recorder (HTTP basic authentication). |
+| `OWNTRACKS_USERNAME` | The user name for the password. If you do not set it, the route uses `OWNTRACKS_USER`. |
+| `OWNTRACKS_URL` | The address of the Recorder. The default is `https://map.yasiu.pl`. |
+| `MAPBOX_TOKEN` | The access token of Mapbox, for the map image. |
+
+The routes also accept the names of the old Netlify functions: `lastfm`, `owntracks_user`, `owntracks_device` and `mapbox_token`.
+
+To run the API routes on your computer, run `npm run dev:api` (port 3000) next to `npm start`. The development server of webpack sends `/api/` to port 3000.
+
+### Location
+
+The "Last seen..." card shows an area, not the GPS position. The response of `/api/location` does not contain the GPS position.
+
+- In a city or a town, the card shows the district and the city, for example "Wrzeszcz Górny, Gdańsk". A town without districts shows only its name, for example "Iława".
+- In the country, the card shows a geographical region from OpenStreetMap. The order is: a historical region (for example "Kaszuby"), a physiographic region (for example "Pojezierze Iławskie"), the municipality.
+- At 15 km/h or more, the card shows "En route" and the speed. The map then shows the province.
+
+The map image fits the area, not the position. [`server/utils/region.js`](server/utils/region.js) selects the area.
+The route gets the data from these services:
+
+- The OwnTracks Recorder: the last position.
+- [Nominatim](https://nominatim.org/) and the [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API): the areas around the position. These free services of OpenStreetMap permit only few requests. The CDN cache keeps the number of requests low.
+- The Mapbox Static Images API: the map image.
+
+If an Overpass server does not answer, the route tries the next server. If no server answers, the route sends an error. The CDN then continues to send the last good response.
+
 ## Projects
 
 The project cards are generated at build time from [`src/projects.md`](src/projects.md).
@@ -32,7 +89,7 @@ The build makes the CV from the data of the site. The CV has one page in English
 - [`build/cv.js`](build/cv.js) makes a LaTeX file from the two files. Then [Tectonic](https://tectonic-typesetting.github.io/) makes the PDF from the LaTeX file.
 
 The PDF is [`src/static/cv/Marcin_Jasiukowicz_CV.pdf`](src/static/cv/Marcin_Jasiukowicz_CV.pdf). The site publishes it at `/cv/Marcin_Jasiukowicz_CV.pdf`.
-On Netlify, the short address `/cv` redirects to the PDF (see `netlify.toml`).
+The short address `/cv` redirects to the PDF (see `nitro.config.mjs`).
 
 To change the CV, edit `src/timeline.md` or `src/cv.md`. Do not edit the PDF.
 `npm run build` makes the CV before the site. To make only the CV, run this command:
@@ -42,7 +99,7 @@ npm run cv
 ```
 
 You must have Tectonic on your computer to make the PDF. If Tectonic is not found, the command writes only the LaTeX file (in `build/cv-out/`) and the site keeps the PDF from the repository.
-On Netlify, `make deploy` downloads Tectonic before the build.
+On Vercel and on Netlify, the build command downloads Tectonic before the build (see "Hosting").
 Commit the new PDF after you change the CV data. Then the PDF in the repository agrees with the site, also when the download of Tectonic fails.
 
 Keep the CV on two pages. After you add text, look at the PDF. If a page overflows, the PDF has three pages.
@@ -60,10 +117,10 @@ The build makes the private CV only when the variable `CV_PHONE` has a value. Th
 - `CV_PRIVATE_NAME`: the file name of the private CV, for example `Resume_<something>.pdf`. The address is `/cv/<file name>`. If you do not set it, the build makes the name from the phone number.
 
 On your computer, write the variables in the file `.env` in the root of the repository. Git ignores this file.
-On Netlify, set the variables in "Site configuration", "Environment variables". Then deploy the site again.
+On the platform, set the variables in the settings of the project (see "API routes"). Then deploy the site again.
 
 Give the address of the private CV only to the persons who must have it.
-Keep the file name of the private CV with the prefix `Resume_`. For these files, `netlify.toml` tells search engines not to index the file.
+Keep the file name of the private CV with the prefix `Resume_`. For these files, `src/static/robots.txt` tells search engines not to read the file.
 
 ### Business card
 
@@ -146,24 +203,26 @@ The build stops with an error if the file is not in the post folder.
 Keep the original images in the post folder. Do not make smaller copies.
 The build reads the width and the height of each image and writes them into the page.
 
-On Netlify, the Netlify Image CDN makes smaller copies of the images when a browser asks for them:
+On Vercel and on Netlify, the image CDN of the platform makes smaller copies of the images when a browser asks for them.
+The [unpic](https://unpic.pics/lib/) library makes the CDN URLs. The image widths are in `IMAGE_WIDTHS` of `build/blog.js`. Vercel accepts only these widths (see `nitro.config.mjs`).
 
 - An image in the post text is 800 px or 1600 px wide. It links to the original file.
-- The header image is 800 px or 1600 px wide, with the proportions 16:9. It links to the original file.
-- The image on the post card is 480 px or 960 px wide, with the proportions 16:9.
+- The header image is 800 px or 1600 px wide. It links to the original file.
+- The image on the post card is 480 px or 960 px wide.
 
-The browser selects the width that agrees with the screen. The CDN does not make an image wider than the original.
+The CSS crops the header image and the card image to the proportions 16:9 (see `crop`).
+The browser selects the width that agrees with the screen. The build does not ask for a width that is larger than the original. If the original is narrower than all widths, the page shows the original.
 The CDN sends WebP or AVIF to browsers that accept these formats.
 An image that is already in a link keeps that link.
 
-The Netlify documentation does not tell if the CDN uses the EXIF orientation of an image.
+The documentation of the CDNs does not tell if the CDN uses the EXIF orientation of an image.
 Thus, the build does not send an image with an EXIF rotation to the CDN. The page shows the original file.
 
 Local builds (`npm start` and `npm run build`) use the original images.
 
 Keep all files of a post in the post folder. Do not link images or documents from other sites.
-If you must use an image from another host, add the host to `remote_images` in an `[images]` section of `netlify.toml`.
-Without this setting, the Netlify Image CDN does not accept the image.
+If you must use an image from another host, add the host to the image settings of the platform (on Vercel: `remotePatterns` in `vercel.config.images` of `nitro.config.mjs`).
+Without this setting, the image CDN does not accept the image.
 
 The service worker does not precache the files in `/blog/`, because they are too large.
 
@@ -190,7 +249,7 @@ The site has these parts for Bridgy Fed:
 - The h-card has a hidden `u-url` link to `acct:yasiu@yasiu.pl`. This link sets the user name `yasiu`. Without it, the handle is `@yasiu.pl@yasiu.pl`.
 - Each post page has an `h-entry` with `p-name`, `e-content`, `dt-published`, `u-url`, `p-author`, and a hidden `u-bridgy-fed` link.
 - Each post page has a `rel="alternate"` link of the type `application/activity+json`. With this link, a search for the post URL finds the post.
-- `netlify.toml` redirects `/.well-known/webfinger` and `/.well-known/host-meta` to Bridgy Fed. Without these redirects, the handle is on `web.brid.gy`, not on `yasiu.pl`.
+- `nitro.config.mjs` and `server/routes/.well-known/webfinger.get.js` redirect `/.well-known/host-meta` and `/.well-known/webfinger` to Bridgy Fed. Without these redirects, the handle is on `web.brid.gy`, not on `yasiu.pl`.
 
 To connect the site for the first time, enter `yasiu.pl` on <https://fed.brid.gy/web-site>.
 

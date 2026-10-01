@@ -1,0 +1,5 @@
+# The private CV and business card (with the phone number) are not linked from the site.
+# Search engines must not index them (see README.md, "Public and private CV").
+User-agent: *
+Disallow: /cv/Resume_
+Disallow: /cv/Card_

@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { Marked } = require('marked');
 const { imageSize } = require('image-size');
+const { transformUrl } = require('unpic');
 
 const SITE = 'https://yasiu.pl';
 const FIELDS = ['title', 'date', 'updated', 'ai', 'lang', 'description', 'image', 'crop'];
@@ -66,23 +67,27 @@ function dimensions(file) {
   return sizeCache.get(key);
 }
 
-// On Netlify the Image CDN scales the images down (the originals are up to 10 MB)
-// and sends WebP or AVIF. Other builds have no CDN and use the original file.
-// The CDN does not document EXIF orientation, so a turned image stays original.
-const cdnUrl = (src, w, h, position) =>
-  `/.netlify/images?url=${encodeURIComponent(decodeURI(src))}&w=${w}${h ? `&h=${h}&fit=cover` : ''}` +
-  (h && position ? `&position=${position}` : '');
+// The image CDN of the hosting platform scales the images down (the originals are up to 10 MB)
+// and sends WebP or AVIF. "cdn" is the platform: "vercel", "netlify" or null (no CDN, the
+// original file). The unpic library makes the CDN URLs.
+// Vercel accepts only the widths in IMAGE_WIDTHS (see nitro.config.mjs).
+// The CDNs do not document EXIF orientation, so a turned image stays original.
+const IMAGE_WIDTHS = [480, 800, 960, 1200, 1600];
+const cdnUrl = (cdn, src, width, height, position, format) => transformUrl(
+  { url: decodeURI(src), provider: cdn, width, height, format },
+  { netlify: position ? { position } : {} });
 
-// "position" (top or bottom) selects the part of the image that a crop keeps.
-function scaled(pic, cdn, widths, sizes, ratio, position) {
+// The CSS crops the header and card images to 16:9. "position" (top or bottom) selects the
+// part of the image that the crop keeps.
+function scaled(pic, cdn, widths, sizes, ratio, position, format) {
   const heightOf = (w) => (ratio ? Math.round(w / ratio) : Math.round(w * pic.height / pic.width));
   position = ratio && position !== 'center' ? position : undefined;
-  if (!cdn || !pic.width || pic.orientation !== 1) {
+  // Never ask for more pixels than the original has.
+  const list = widths.filter((w) => w <= pic.width);
+  if (!cdn || !list.length || pic.orientation !== 1) {
     return { src: pic.url, width: pic.width, height: pic.width && heightOf(pic.width), position };
   }
-  // Never ask for more pixels than the original has.
-  const list = [...new Set(widths.map((w) => Math.min(w, pic.width)))];
-  const at = (w) => cdnUrl(pic.url, w, ratio && heightOf(w), position);
+  const at = (w) => cdnUrl(cdn, pic.url, w, ratio && heightOf(w), position, format);
   const largest = list[list.length - 1];
   return {
     src: at(largest),
@@ -220,7 +225,7 @@ function loadPosts(dir, { cdn = false } = {}) {
         header: scaled(header, cdn, [800, 1600], SIZES.header, 16 / 9, crop),
         card: scaled(header, cdn, [480, 960], SIZES.card, 16 / 9, crop),
         // Link previews: JPEG, because not all sites that show previews accept WebP.
-        share: absolute(scaled(header, cdn, [1200], '', 1200 / 630, crop).src.replace(/^\/\.netlify\/images\?.*/, '$&&fm=jpg'))
+        share: absolute(scaled(header, cdn, [1200], '', 1200 / 630, crop, 'jpg').src)
       },
       html: marked.parser(tokens)
     };
@@ -312,4 +317,4 @@ ${entries}
 `;
 }
 
-module.exports = { SITE, loadPosts, renderCards, renderPost, renderFeed, escape };
+module.exports = { SITE, IMAGE_WIDTHS, loadPosts, renderCards, renderPost, renderFeed, escape };
