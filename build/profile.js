@@ -28,7 +28,8 @@ function renderProfile(cvFile, timelineFile) {
     h.mastodon && ['Mastodon', h.mastodon, `https://${mastodonHost}/@${mastodonUser}`, ' rel="me"'],
     h.instagram && ['Instagram', `@${h.instagram}`, `https://www.instagram.com/${h.instagram}/`, ' rel="me"'],
     h.twitter && ['Twitter', `@${h.twitter}`, `https://twitter.com/${h.twitter}`, ' rel="me"'],
-    h.telegram && ['Telegram', `@${h.telegram}`, `https://t.me/${h.telegram}`, ' rel="me"']
+    h.telegram && ['Telegram', `@${h.telegram}`, `https://t.me/${h.telegram}`, ' rel="me"'],
+    ['CV', 'Download PDF', '/cv/Marcin_Jasiukowicz_CV.pdf', ' class="profile-cv"']
   ].filter(Boolean);
 
   const contactList = contacts.map(([label, text, url, attrs]) => `
@@ -50,7 +51,6 @@ function renderProfile(cvFile, timelineFile) {
               <div class="profile-contact">
                 <ul class="profile-links">${contactList}
                 </ul>
-                <a class="btn profile-cv" href="/cv/Marcin_Jasiukowicz_CV.pdf">Download CV</a>
               </div>
             </div>`;
 }

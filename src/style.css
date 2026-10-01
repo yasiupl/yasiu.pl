@@ -224,13 +224,9 @@ header.hero { background-color: var(--header-band); }
 }
 .profile-card .profile-value { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-orange); }
 .profile-card .profile-links a:hover .profile-value { text-decoration: underline; }
-.profile-card .profile-cv {
-  flex: none;
-  background-color: var(--brand-orange);
-  color: #ffffff;
-  border-radius: 20px;
-}
-/* Desktop: the contact data and the CV button are on one line. */
+.profile-card .profile-cv .profile-value { font-weight: 600; }
+.profile-card .profile-cv .profile-value::after { content: " \2193"; }
+/* Desktop: the contact data and the CV link are on one line. */
 @media (min-width: 1200px) {
   .profile-card .profile-contact { flex-wrap: nowrap; justify-content: space-between; gap: 16px; }
   .profile-card .profile-links { flex: 1 1 auto; flex-wrap: nowrap; justify-content: space-between; gap: 16px; }
@@ -239,7 +235,6 @@ header.hero { background-color: var(--header-band); }
 @media (max-width: 600px) {
   .profile-card .card-content { padding: 0 16px 16px; }
   .profile-card .profile-contact { padding: 16px; }
-  .profile-card .profile-cv { width: 100%; justify-content: center; text-align: center; }
 }
 
 /* Blog: post cards (home page and /blog/) */
