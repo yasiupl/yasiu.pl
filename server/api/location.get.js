@@ -63,6 +63,18 @@ export default defineEventHandler(async (event) => {
   const [last] = await $fetch(`${fromEnv('OWNTRACKS_URL') || 'https://map.yasiu.pl'}/api/0/last`, {
     query: { user, device }, timeout: TIMEOUT,
     headers: { Authorization: `Basic ${Buffer.from(login).toString('base64')}` }
+  }).catch((error) => {
+    // The error tells which variables have a value (yes or no), never the values.
+    throw createError({
+      statusCode: 502,
+      statusMessage: `OwnTracks Recorder: ${error.status || error.message}`,
+      data: {
+        OWNTRACKS_USER: Boolean(user),
+        OWNTRACKS_DEVICE: Boolean(device),
+        OWNTRACKS_USERNAME: Boolean(fromEnv('OWNTRACKS_USERNAME')),
+        OWNTRACKS_PASSWORD: Boolean(fromEnv('OWNTRACKS_PASSWORD'))
+      }
+    });
   });
   if (!last || last.lat == null || last.lon == null) {
     throw createError({ statusCode: 404, statusMessage: 'No position' });
