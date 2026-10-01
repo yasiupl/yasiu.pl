@@ -27,6 +27,8 @@ Moja rola jako Analityka Misji polega na projektowaniu i symulowaniu trajektorii
 
 Jak z Waszej perspektywy będą wyglądać największe wyzwania dla misji serwisowych w najbliższej dekadzie? Prawo kosmiczne czy czysta fizyka?
 
+<iframe src="https://www.youtube-nocookie.com/embed/MfWttCMSoNI?start=257s" title="Czym jest RAVEN, czyli „pierwszy polski statek kosmiczny”" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> 
+
 ## Więcej
 
 - [RAVEN enters Phase B1!](https://piap.space/news/raven-enters-phase-b1/) (PIAP Space): RAVEN to In-Space Transportation Vehicle (ISTV). Konsorcjum pod przewodnictwem PIAP Space tworzą m.in. Creotech Instruments, Sieć Badawcza Łukasiewicz – Instytut Lotnictwa, Wojskowa Akademia Techniczna, GMV Polska i AROBS Polska. Faza B1 to szczegółowa definicja pierwszej misji demonstracyjnej RAVEN DEMO I.
