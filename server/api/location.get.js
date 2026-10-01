@@ -1,7 +1,8 @@
 // The "Last seen..." card of the home page: the name of the area where Marcin is, and a map of
 // that area. The response does not contain the GPS position (see server/utils/region.js).
 //
-// 1. The OwnTracks Recorder gives the last position. The Recorder needs a user name and a password.
+// 1. The OwnTracks Recorder gives the last position. The Recorder needs a login and a password
+//    (HTTP basic authentication), which give access only to /api/0/last.
 // 2. Nominatim tells if the position is in a city or a town. Overpass gives the areas around it.
 // 3. The Mapbox Static Images API makes a map that fits the area.
 //
@@ -55,28 +56,36 @@ async function map(bounds, token) {
 }
 
 export default defineEventHandler(async (event) => {
-  const user = fromEnv('OWNTRACKS_USER', 'owntracks_user');
-  const device = fromEnv('OWNTRACKS_DEVICE', 'owntracks_device');
-  // The password gives access only to /api/0/last of the Recorder.
-  const login = `${fromEnv('OWNTRACKS_USERNAME') || user}:${fromEnv('OWNTRACKS_PASSWORD')}`;
+  // The login to the Recorder (HTTP basic authentication).
+  const login = fromEnv('OWNTRACKS_USER');
+  const password = fromEnv('OWNTRACKS_PASSWORD');
+  // The user and the device in the Recorder. They are not secret. Without them, /api/0/last gives
+  // all users and devices, and the card can show the position of another person.
+  const user = fromEnv('OWNTRACKS_RECORDER_USER', 'owntracks_user') || 'yasiu';
+  const device = fromEnv('OWNTRACKS_RECORDER_DEVICE', 'owntracks_device') || 'spacewar';
   const mapboxToken = fromEnv('MAPBOX_TOKEN', 'mapbox_token');
-  const [last] = await $fetch(`${fromEnv('OWNTRACKS_URL') || 'https://map.yasiu.pl'}/api/0/last`, {
-    query: { user, device }, timeout: TIMEOUT,
-    headers: { Authorization: `Basic ${Buffer.from(login).toString('base64')}` }
+  const positions = await $fetch(`${fromEnv('OWNTRACKS_URL') || 'https://owntracks.yasiu.pl'}/api/0/last`, {
+    query: { user, device },
+    timeout: TIMEOUT,
+    headers: { Authorization: `Basic ${Buffer.from(`${login}:${password}`).toString('base64')}` }
   }).catch((error) => {
     // The error tells which variables have a value (yes or no), never the values.
     throw createError({
       statusCode: 502,
       statusMessage: `OwnTracks Recorder: ${error.status || error.message}`,
       data: {
-        OWNTRACKS_USER: Boolean(user),
-        OWNTRACKS_DEVICE: Boolean(device),
-        OWNTRACKS_USERNAME: Boolean(fromEnv('OWNTRACKS_USERNAME')),
-        OWNTRACKS_PASSWORD: Boolean(fromEnv('OWNTRACKS_PASSWORD'))
+        OWNTRACKS_USER: Boolean(login),
+        OWNTRACKS_PASSWORD: Boolean(password),
+        OWNTRACKS_RECORDER_USER: Boolean(user),
+        OWNTRACKS_RECORDER_DEVICE: Boolean(device)
       }
     });
   });
-  if (!last || last.lat == null || last.lon == null) {
+  // The newest position in the response.
+  const last = (Array.isArray(positions) ? positions : [])
+    .filter((p) => p.lat != null && p.lon != null)
+    .sort((a, b) => b.tst - a.tst)[0];
+  if (!last) {
     throw createError({ statusCode: 404, statusMessage: 'No position' });
   }
 

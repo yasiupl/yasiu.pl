@@ -33,10 +33,9 @@ The API routes read these environment variables. Set them in the settings of the
 | Variable | Value |
 | --- | --- |
 | `LASTFM_API_KEY` | The API key of Last.fm. |
-| `OWNTRACKS_USER`, `OWNTRACKS_DEVICE` | The user and the device in the OwnTracks Recorder. |
-| `OWNTRACKS_PASSWORD` | The password for `/api/0/last` of the Recorder (HTTP basic authentication). |
-| `OWNTRACKS_USERNAME` | The user name for the password. If you do not set it, the route uses `OWNTRACKS_USER`. |
-| `OWNTRACKS_URL` | The address of the Recorder. The default is `https://map.yasiu.pl`. |
+| `OWNTRACKS_USER`, `OWNTRACKS_PASSWORD` | The login and the password for `/api/0/last` of the OwnTracks Recorder (HTTP basic authentication). |
+| `OWNTRACKS_RECORDER_USER`, `OWNTRACKS_RECORDER_DEVICE` | Optional: the user and the device in the Recorder. The defaults are `yasiu` and `spacewar`. |
+| `OWNTRACKS_URL` | Optional: the address of the Recorder. The default is `https://owntracks.yasiu.pl`. |
 | `MAPBOX_TOKEN` | The access token of Mapbox, for the map image. |
 
 The routes also accept the names of the old Netlify functions: `lastfm`, `owntracks_user`, `owntracks_device` and `mapbox_token`.
