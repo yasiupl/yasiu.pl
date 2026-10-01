@@ -1,7 +1,7 @@
 ---
 title: "Flipdoty - Hurt/detal! Operacja ratunkowa flipdotów z Polskich złomowisk"
 date: 2026-03-13T22:10:46+01:00
-updated: 2026-09-30
+updated: 2026-10-01
 ai: edited
 lang: pl
 image: signal-2026-03-27-13-57-10-439-1.jpeg
@@ -9,9 +9,7 @@ image: signal-2026-03-27-13-57-10-439-1.jpeg
 
 Hej!
 
-W nawiązaniu do wątku:
-
-<https://forum.hsp.sh/t/flipdot-display-hacking/804>
+Flipdoty nie są w hackerspace'ie nowym tematem. W czerwcu 2024 roku CZARAS założył na forum wątek [Flipdot Display Hacking](https://forum.hsp.sh/t/flipdot-display-hacking/804) o dwóch wyświetlaczach z autobusów R&G. Rozpracował w nim wyprowadzenia złącza między panelem a sterownikami FP2800. Cel: zastąpić fabryczny sterownik, który wyświetla tylko tekst, własnym, który pokaże dowolną grafikę.
 
 Przekazuję ogłoszenie od znajomego, mającego dostęp do dużej ilości wyświetlaczy “Flipdot” (i LED) z pojazdów komunikacji zbiorowej. Sprzęt jest do odebrania osobiście, z złomowiska w Zawierciu na Śląsku. Może to okazja na współpracę z innymi spejsami?
 

@@ -52,9 +52,9 @@
         <li><a href="#work">Projects</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="#timeline">Timeline</a></li>
-        <li><a href="/cv/Marcin_Jasiukowicz_CV.pdf">CV</a></li>
         <li><a href="https://www.patreon.com/yasiupl" target="_blank" rel="noopener">Patreon</a></li>
         <li><a href="https://www.amazon.com/hz/wishlist/ls/JNQ7C2Q934HA" target="_blank" rel="noopener">Wishlist</a></li>
+        <li><a href="/cv/Marcin_Jasiukowicz_CV.pdf">CV</a></li>
         <li><a href="mailto:contact@yasiu.pl?subject=Website%20Contact%20Form">Contact</a></li>
       </ul>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Theme: follow system"></button>
@@ -106,6 +106,10 @@
   <main>
     <div class="section" id="work">
       <div class="container">
+        <div class="section-heading">
+          <h2>Projects</h2>
+        </div>
+        <p class="section-subtitle">Things I build and run in my free time, from space tracking tools to a hackerspace.</p>
         <div class="row">
           <%= projects %>
         </div>
@@ -118,6 +122,7 @@
           <h2>Blog</h2>
           <a href="/blog/">All posts →</a>
         </div>
+        <p class="section-subtitle"><%= blogIntro %></p>
         <div class="row h-feed">
           <%= posts %>
         </div>
@@ -130,6 +135,7 @@
           <h2>Timeline</h2>
           <a href="/cv/Marcin_Jasiukowicz_CV.pdf">Download CV (PDF)</a>
         </div>
+        <p class="section-subtitle">My work, studies, projects, talks and awards, together with the blog posts.</p>
         <%= timeline %>
       </div>
     </div>

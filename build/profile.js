@@ -28,8 +28,7 @@ function renderProfile(cvFile, timelineFile) {
     h.mastodon && ['Mastodon', h.mastodon, `https://${mastodonHost}/@${mastodonUser}`, ' rel="me"'],
     h.instagram && ['Instagram', `@${h.instagram}`, `https://www.instagram.com/${h.instagram}/`, ' rel="me"'],
     h.twitter && ['Twitter', `@${h.twitter}`, `https://twitter.com/${h.twitter}`, ' rel="me"'],
-    h.telegram && ['Telegram', `@${h.telegram}`, `https://t.me/${h.telegram}`, ' rel="me"'],
-    ['CV', 'Download PDF', '/cv/Marcin_Jasiukowicz_CV.pdf', ' class="profile-cv"']
+    h.telegram && ['Telegram', `@${h.telegram}`, `https://t.me/${h.telegram}`, ' rel="me"']
   ].filter(Boolean);
 
   const contactList = contacts.map(([label, text, url, attrs]) => `

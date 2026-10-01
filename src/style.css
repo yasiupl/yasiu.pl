@@ -64,6 +64,8 @@ a { color: var(--text-orange); text-decoration: none; }
 [onclick] { cursor: pointer; }
 
 /* Navigation bar */
+/* The navigation bar is sticky: a link to a section (for example #work) must not hide the section heading under it. */
+html { scroll-padding-top: calc(var(--navbar-height, 64px) + 8px); }
 nav.navbar {
   position: sticky;
   top: 0;
@@ -224,9 +226,7 @@ header.hero { background-color: var(--header-band); }
 }
 .profile-card .profile-value { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-orange); }
 .profile-card .profile-links a:hover .profile-value { text-decoration: underline; }
-.profile-card .profile-cv .profile-value { font-weight: 600; }
-.profile-card .profile-cv .profile-value::after { content: " \2193"; }
-/* Desktop: the contact data and the CV link are on one line. */
+/* Desktop: the contact data is on one line. */
 @media (min-width: 1200px) {
   .profile-card .profile-contact { flex-wrap: nowrap; justify-content: space-between; gap: 16px; }
   .profile-card .profile-links { flex: 1 1 auto; flex-wrap: nowrap; justify-content: space-between; gap: 16px; }
@@ -240,6 +240,7 @@ header.hero { background-color: var(--header-band); }
 /* Blog: post cards (home page and /blog/) */
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 0 0 16px; }
 .section-heading h2 { margin: 0; font-size: 2rem; font-weight: 300; color: var(--ink-strong); }
+.section-subtitle { margin: -8px 0 16px; max-width: 70ch; color: var(--ink-muted); }
 .post-card { height: 100%; }
 .post-card .card-content { display: flex; flex-direction: column; gap: 4px; }
 .post-card .card-title { margin: 0; font-size: 20px; line-height: 28px; }

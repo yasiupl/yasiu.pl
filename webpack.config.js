@@ -51,14 +51,18 @@ function blogPage(filename, page) {
     });
 }
 
+// The subtitle of the blog on the home page and on /blog/.
+const BLOG_INTRO = 'A collection of my thoughts and texts – some never published before, others first published in various places.';
+
 const blogIndex = blogPage('./blog/index.html', (all) => ({
     title: 'Blog',
-    description: 'Posts about stratospheric balloons, rockets and space by Marcin Jasiukowicz.',
+    description: BLOG_INTRO,
     url: '/blog/',
     main: `<header class="post-header">
           <h1>Blog</h1>
           <a href="/blog/feed.xml">Atom feed</a>
         </header>
+        <p class="section-subtitle">${BLOG_INTRO}</p>
         <div class="row h-feed">
           ${blog.renderCards(all)}
         </div>`
@@ -138,7 +142,8 @@ module.exports = {
                     profile: renderProfile(CV_FILE, TIMELINE_FILE),
                     projects: renderProjects(PROJECTS_FILE),
                     timeline: renderTimeline(TIMELINE_FILE, posts(compilation)),
-                    posts: blog.renderCards(posts(compilation).slice(0, HOME_POSTS))
+                    posts: blog.renderCards(posts(compilation).slice(0, HOME_POSTS)),
+                    blogIntro: BLOG_INTRO
                 };
             }
         }),
