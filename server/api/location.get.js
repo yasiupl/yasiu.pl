@@ -96,7 +96,18 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 503, statusMessage: 'OpenStreetMap services are not available' });
   });
   const bounds = region && region.bounds;
-  const mapImage = bounds && mapboxToken ? await map(bounds, mapboxToken).catch(() => null) : null;
+  // Without a map, the card keeps its default image. "mapError" tells why (never the token).
+  let mapImage = null;
+  let mapError = null;
+  if (!mapboxToken) mapError = 'MAPBOX_TOKEN is not set';
+  else if (!bounds) mapError = 'The area has no bounds';
+  else {
+    mapImage = await map(bounds, mapboxToken).catch((error) => {
+      mapError = `Mapbox: ${error.status || error.message}`;
+      return null;
+    });
+  }
+  if (mapError) console.error(`/api/location: ${mapError}`);
 
   setResponseHeader(event, 'Cache-Control', 'public, s-maxage=300, stale-while-revalidate=900');
   return {
@@ -104,6 +115,7 @@ export default defineEventHandler(async (event) => {
     tst: last.tst,
     // The speed only on the move. When Marcin stays in a place, the speed tells nothing.
     vel: enRoute ? last.vel : null,
-    map_image: mapImage
+    map_image: mapImage,
+    map_error: mapError
   };
 });
