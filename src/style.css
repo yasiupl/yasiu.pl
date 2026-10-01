@@ -160,11 +160,12 @@ header.hero { background-color: var(--header-band); }
   border-bottom: 4px solid var(--brand-orange);
 }
 .profile-card .card-content {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 8px 24px;
-  align-items: end;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   padding: 0 24px 16px;
+  text-align: center;
 }
 .profile-card .profile-photo {
   width: clamp(112px, 16vw, 160px);
@@ -176,7 +177,7 @@ header.hero { background-color: var(--header-band); }
   object-fit: cover;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
-.profile-card .profile-head { padding-top: 12px; min-width: 0; }
+.profile-card .profile-head { min-width: 0; }
 .profile-card .profile-name {
   margin: 0;
   font-size: clamp(1.8rem, 4.5vw, 2.6rem);
@@ -188,7 +189,6 @@ header.hero { background-color: var(--header-band); }
 .profile-card .profile-tagline { margin: 4px 0 0; font-size: 1.15rem; color: var(--ink-strong); }
 .profile-card .profile-job { margin: 2px 0 0; font-weight: 600; color: var(--text-orange); }
 .profile-card .profile-summary {
-  grid-column: 1 / -1;
   margin: 8px 0 0;
   max-width: 70ch;
   font-size: 1.05rem;
@@ -199,29 +199,30 @@ header.hero { background-color: var(--header-band); }
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 12px 24px;
   padding: 16px 24px;
   border-top: 1px solid var(--hairline);
 }
 .profile-card .profile-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 8px 24px;
   flex: 1 1 480px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.profile-card .profile-links li { list-style: none; }
-.profile-card .profile-links a { display: flex; flex-direction: column; min-width: 0; text-decoration: none; }
+.profile-card .profile-links li { list-style: none; min-width: 0; }
+.profile-card .profile-links a { display: flex; flex-direction: column; align-items: center; min-width: 0; text-decoration: none; }
 .profile-card .profile-label {
   font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-muted);
 }
-.profile-card .profile-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-orange); }
+.profile-card .profile-value { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-orange); }
 .profile-card .profile-links a:hover .profile-value { text-decoration: underline; }
 .profile-card .profile-cv {
   flex: none;
@@ -229,11 +230,16 @@ header.hero { background-color: var(--header-band); }
   color: #ffffff;
   border-radius: 20px;
 }
+/* Desktop: the contact data and the CV button are on one line. */
+@media (min-width: 1200px) {
+  .profile-card .profile-contact { flex-wrap: nowrap; justify-content: space-between; gap: 16px; }
+  .profile-card .profile-links { flex: 1 1 auto; flex-wrap: nowrap; justify-content: space-between; gap: 16px; }
+  .profile-card .profile-links li { flex: 0 1 auto; }
+}
 @media (max-width: 600px) {
-  .profile-card .card-content { grid-template-columns: 1fr; justify-items: center; text-align: center; padding: 0 16px 16px; }
-  .profile-card .profile-head { padding-top: 0; }
+  .profile-card .card-content { padding: 0 16px 16px; }
   .profile-card .profile-contact { padding: 16px; }
-  .profile-card .profile-cv { width: 100%; }
+  .profile-card .profile-cv { width: 100%; justify-content: center; text-align: center; }
 }
 
 /* Blog: post cards (home page and /blog/) */
