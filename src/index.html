@@ -48,7 +48,8 @@
     <div class="nav-wrapper">
       <div class="container">
       <a href="#" id="logo-container" class="brand-logo">yasiu.pl</a>
-      <ul class="hide-on-med-and-down">
+      <!-- One list for all screens: in the bar on a desktop, a popover panel on a phone (see style.css). -->
+      <ul id="nav-menu" class="nav-menu" popover>
         <li><a href="#work">Projects</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="#timeline">Timeline</a></li>
@@ -58,6 +59,9 @@
         <li><a href="mailto:contact@yasiu.pl?subject=Website%20Contact%20Form">Contact</a></li>
       </ul>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Theme: follow system"></button>
+      <button class="nav-toggle" type="button" popovertarget="nav-menu" aria-label="Menu">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
       </div>
     </div>
   </nav>
@@ -85,7 +89,8 @@
             </a>
           </div>
           <div class="col s12 l6">
-            <a class="card horizontal is-link" href="https://map.yasiu.pl" target="_blank" rel="noopener">
+            <!-- No link: the OwnTracks map (map.yasiu.pl) needs a password. -->
+            <div class="card horizontal">
               <div class="card-image">
                 <img id="position-map" src="./assets/blue_marble.jpg" alt="">
               </div>
@@ -96,7 +101,7 @@
                   <span id="position-ago" class="ago">Just now</span>
                 </div>
               </div>
-            </a>
+            </div>
           </div>
         </div>
       </div>

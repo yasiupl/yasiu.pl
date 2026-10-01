@@ -1,6 +1,12 @@
 node_modules/
+# The build output: the site (webpack) and the deployment for the platform (Nitro).
+public/
 dist/
-# The CV build (build/cv.js): the LaTeX output and the Tectonic binary of the Netlify build.
+.output/
+.nitro/
+.vercel/
+.netlify/
+# The CV build (build/cv.js): the LaTeX output and the Tectonic binary of the platform build.
 build/cv-out/
 /tectonic
 # The private CV and its settings (the phone number). This repository is public.

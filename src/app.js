@@ -16,6 +16,12 @@ if ('serviceWorker' in navigator) {
 
 document.getElementById("logo-container").innerText = location.hostname;
 
+// The menu panel on a phone: a link to a section of the same page (for example #work) does not
+// close the popover. Close it on each link.
+document.getElementById("nav-menu").addEventListener("click", (event) => {
+  if (event.target.closest("a") && event.currentTarget.matches(":popover-open")) event.currentTarget.hidePopover();
+});
+
 // Theme toggle: system -> light -> dark -> system. Saved per browser.
 (function () {
   const root = document.documentElement;
@@ -84,12 +90,14 @@ function getAgoString(timestampSeconds) {
 
 // Live widgets: only the home page has them.
 if (document.getElementById("track")) {
-  fetch(".netlify/functions/lastfm?t=" + Date.now(), {
+  // The API routes are in server/api/. The CDN keeps their responses for some minutes. Do not add
+  // a changing query (for example a time stamp): each request then goes to Last.fm and OpenStreetMap.
+  fetch("/api/lastfm", {
       headers: {
         "Accept": "application/json"
       }
     })
-    .then(response => response.json())
+    .then(response => response.ok ? response.json() : Promise.reject(response.status))
     .then(data => {
       document.getElementById("album-cover").src = data.recenttracks.track[0].image[3]["#text"] || "./assets/unknown-artist.png";
       document.getElementById("track").innerHTML = `${data.recenttracks.track[0].artist["#text"] || "Unknown Artist"}: ${data.recenttracks.track[0].name || "A beautiful song"}`;
@@ -109,22 +117,28 @@ if (document.getElementById("track")) {
         document.getElementById("track-ago").innerHTML = agoString;
       }
     })
+    // Without an answer, the card keeps its default text.
+    .catch(() => {});
   
-  fetch(".netlify/functions/owntracks?t=" + Date.now(), {
+  // The area (a district, a town or a region), not the GPS position. See server/api/location.get.js.
+  fetch("/api/location", {
       headers: {
         "Accept": "application/json"
       }
     })
-    .then(response => response.json())
+    .then(response => response.ok ? response.json() : Promise.reject(response.status))
     .then(last_seen => {
-
-      let position_comment = ``;
-      position_comment += `${last_seen.geocoded_name || "Secret location"}</br>`;
-      position_comment += `Speed: ${Number.parseFloat(last_seen.vel || 0).toFixed(2)} km/h</br>`;
-      document.getElementById("position-comment").innerHTML = position_comment;
+      // The names come from OpenStreetMap: write them as text, not as HTML.
+      const comment = document.getElementById("position-comment");
+      comment.textContent = last_seen.name || "Secret location";
+      // The speed is there only on the move ("En route").
+      if (last_seen.vel != null) {
+        comment.append(document.createElement("br"), `Speed: ${Math.round(last_seen.vel)} km/h`);
+      }
 
       document.getElementById("position-ago").innerHTML = getAgoString(last_seen.tst);
 
       if (last_seen.map_image) document.getElementById("position-map").src = last_seen.map_image;
     })
+    .catch(() => {});
 }

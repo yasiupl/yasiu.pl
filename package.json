@@ -4,9 +4,7 @@
   "description": "yasiu.pl personal website",
   "main": "index.js",
   "dependencies": {
-    "@materializecss/materialize": "^2.4.0",
-    "node-fetch": "^2.6.0",
-    "twitter": "^1.7.1"
+    "@materializecss/materialize": "^2.4.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^13.0.1",
@@ -16,7 +14,9 @@
     "image-size": "^2.0.4",
     "marked": "^18.0.14",
     "mini-css-extract-plugin": "^2.9.4",
+    "nitropack": "^2.13.4",
     "style-loader": "^4.0.0",
+    "unpic": "^4.2.2",
     "webpack": "^5.104.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.2.2",
@@ -27,8 +27,10 @@
   "scripts": {
     "cv": "node build/cv.js",
     "prebuild": "node build/cv.js",
-    "build": "webpack --mode production",
-    "start": "webpack serve --mode development"
+    "build": "webpack --mode production && nitro build",
+    "vercel-build": "(command -v tectonic >/dev/null 2>&1 || curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh || echo 'warning: could not download Tectonic') && npm run build",
+    "start": "webpack serve --mode development",
+    "dev:api": "nitro dev"
   },
   "repository": {
     "type": "git",
