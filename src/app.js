@@ -8,7 +8,7 @@ if ('serviceWorker' in navigator) {
     if (window.caches) caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)));
   } else {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js')
+      navigator.serviceWorker.register('/service-worker.js')
         .catch((err) => console.log('yasiu.pl service worker install failed: ', err));
     });
   }
@@ -46,6 +46,28 @@ document.getElementById("logo-container").innerText = location.hostname;
   button.addEventListener("click", () => apply(order[(order.indexOf(current) + 1) % order.length]));
 })();
 
+// Timeline filters: show one type of entry. Without JavaScript all entries show.
+(function () {
+  const buttons = document.querySelectorAll(".tl-filter");
+  const years = document.querySelectorAll(".tl-year");
+  const defaultOpen = [...years].map((y) => y.open);
+  buttons.forEach((button) => button.addEventListener("click", () => {
+    const filter = button.dataset.filter;
+    buttons.forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
+    years.forEach((year, i) => {
+      let shown = 0;
+      year.querySelectorAll(".tl-item").forEach((item) => {
+        item.hidden = filter !== "all" && item.dataset.type !== filter;
+        if (!item.hidden) shown++;
+      });
+      year.hidden = shown === 0;
+      year.querySelector(".tl-count").textContent = shown;
+      // A filter opens every year that has entries; "All" restores the default.
+      year.open = filter === "all" ? defaultOpen[i] : shown > 0;
+    });
+  }));
+})();
+
 function getAgoString(timestampSeconds) {
   const minutes = Math.ceil((Date.now() / 1000 - timestampSeconds) / 60);
   const hours = Math.floor(minutes / 60);
@@ -60,46 +82,49 @@ function getAgoString(timestampSeconds) {
   }
 }
 
-fetch(".netlify/functions/lastfm?t=" + Date.now(), {
-    headers: {
-      "Accept": "application/json"
-    }
-  })
-  .then(response => response.json())
-  .then(data => {
-    document.getElementById("album-cover").src = data.recenttracks.track[0].image[3]["#text"] || "./assets/unknown-artist.png";
-    document.getElementById("track").innerHTML = `${data.recenttracks.track[0].artist["#text"] || "Unknown Artist"}: ${data.recenttracks.track[0].name || "A beautiful song"}`;
-    
-    if (data.recenttracks.track[0]["@attr"] && data.recenttracks.track[0]["@attr"].nowplaying) {
-      document.getElementById("track-status").innerHTML = "I'm listening to…"
-      document.getElementById("track-ago").innerHTML = "Right now"
-    } else {
-      const agoString = getAgoString(data.recenttracks.track[0].date.uts);
-      const minutes = Math.ceil((Date.now() / 1000 - data.recenttracks.track[0].date.uts) / 60);
-      
-      if (minutes < 60) {
-        document.getElementById("track-status").innerHTML = "I just stopped listening to…"
-      } else {
-        document.getElementById("track-status").innerHTML = "Last played…"
+// Live widgets: only the home page has them.
+if (document.getElementById("track")) {
+  fetch(".netlify/functions/lastfm?t=" + Date.now(), {
+      headers: {
+        "Accept": "application/json"
       }
-      document.getElementById("track-ago").innerHTML = agoString;
-    }
-  })
+    })
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById("album-cover").src = data.recenttracks.track[0].image[3]["#text"] || "./assets/unknown-artist.png";
+      document.getElementById("track").innerHTML = `${data.recenttracks.track[0].artist["#text"] || "Unknown Artist"}: ${data.recenttracks.track[0].name || "A beautiful song"}`;
+    
+      if (data.recenttracks.track[0]["@attr"] && data.recenttracks.track[0]["@attr"].nowplaying) {
+        document.getElementById("track-status").innerHTML = "I'm listening to…"
+        document.getElementById("track-ago").innerHTML = "Right now"
+      } else {
+        const agoString = getAgoString(data.recenttracks.track[0].date.uts);
+        const minutes = Math.ceil((Date.now() / 1000 - data.recenttracks.track[0].date.uts) / 60);
+      
+        if (minutes < 60) {
+          document.getElementById("track-status").innerHTML = "I just stopped listening to…"
+        } else {
+          document.getElementById("track-status").innerHTML = "Last played…"
+        }
+        document.getElementById("track-ago").innerHTML = agoString;
+      }
+    })
   
-fetch(".netlify/functions/owntracks?t=" + Date.now(), {
-    headers: {
-      "Accept": "application/json"
-    }
-  })
-  .then(response => response.json())
-  .then(last_seen => {
+  fetch(".netlify/functions/owntracks?t=" + Date.now(), {
+      headers: {
+        "Accept": "application/json"
+      }
+    })
+    .then(response => response.json())
+    .then(last_seen => {
 
-    let position_comment = ``;
-    position_comment += `${last_seen.geocoded_name || "Secret location"}</br>`;
-    position_comment += `Speed: ${Number.parseFloat(last_seen.vel || 0).toFixed(2)} km/h</br>`;
-    document.getElementById("position-comment").innerHTML = position_comment;
+      let position_comment = ``;
+      position_comment += `${last_seen.geocoded_name || "Secret location"}</br>`;
+      position_comment += `Speed: ${Number.parseFloat(last_seen.vel || 0).toFixed(2)} km/h</br>`;
+      document.getElementById("position-comment").innerHTML = position_comment;
 
-    document.getElementById("position-ago").innerHTML = getAgoString(last_seen.tst);
+      document.getElementById("position-ago").innerHTML = getAgoString(last_seen.tst);
 
-    if (last_seen.map_image) document.getElementById("position-map").src = last_seen.map_image;
-  })
+      if (last_seen.map_image) document.getElementById("position-map").src = last_seen.map_image;
+    })
+}

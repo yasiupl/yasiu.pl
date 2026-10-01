@@ -42,3 +42,42 @@
 [[redirects]]
   	from = "/pgp.pub"
   	to = "https://keybase.io/yasiupl/pgp_keys.asc?fingerprint=fe683591ae239dc2188c4bba1e3e8090e179f056"
+
+# Bridgy Fed: the fediverse handle @yasiu@yasiu.pl (see README.md, "Fediverse").
+[[redirects]]
+  from = "/.well-known/host-meta*"
+  to = "https://fed.brid.gy/.well-known/host-meta:splat"
+  status = 302
+
+[[redirects]]
+  from = "/.well-known/webfinger*"
+  to = "https://fed.brid.gy/.well-known/webfinger"
+  status = 302
+
+# The private CV and business card (with the phone number) are not linked from the site. Search engines must not index it.
+[[headers]]
+  for = "/cv/Resume_*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/cv/Card_*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+# Short address of the CV.
+[[redirects]]
+  from = "/cv"
+  to = "/cv/Marcin_Jasiukowicz_CV.pdf"
+  status = 302
+
+# The thesis PDFs moved from /resume/ to their blog posts.
+[[redirects]]
+  from = "/resume/bachelor_thesis.pdf"
+  to = "/blog/engineering-thesis-stardust/bachelor_thesis.pdf"
+  status = 301
+
+[[redirects]]
+  from = "/resume/*"
+  to = "/blog/masters-thesis-ops-sat/:splat"
+  status = 301

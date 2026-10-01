@@ -5,25 +5,118 @@ const WorkboxPlugin = require('workbox-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 const { renderProjects } = require('./build/projects');
+const { renderTimeline } = require('./build/timeline');
+const { renderProfile } = require('./build/profile');
+const blog = require('./build/blog');
 
 const PROJECTS_FILE = path.resolve(__dirname, 'src/projects.md');
+const TIMELINE_FILE = path.resolve(__dirname, 'src/timeline.md');
+const CV_FILE = path.resolve(__dirname, 'src/cv.md');
+const BLOG_DIR = path.resolve(__dirname, 'blog');
+const HOME_POSTS = 3;
+// Netlify builds scale the post images with the Netlify Image CDN (see netlify.toml).
+const IMAGE_CDN = process.env.NETLIFY === 'true';
+
+// Posts are read once per build and shared by all blog pages; a (watch) rebuild
+// reads them again. The list of pages is fixed when webpack starts: restart it
+// after you add or rename a post.
+const postsCache = new WeakMap();
+function posts(compilation) {
+    compilation.contextDependencies.add(BLOG_DIR);
+    if (!postsCache.has(compilation)) postsCache.set(compilation, blog.loadPosts(BLOG_DIR, { cdn: IMAGE_CDN }));
+    return postsCache.get(compilation);
+}
+
+function blogPage(filename, page) {
+    return new HtmlWebpackPlugin({
+        hash: true,
+        template: './src/blog.html',
+        filename,
+        favicon: './src/favicon.ico',
+        templateParameters: (compilation) => {
+            const p = page(posts(compilation));
+            const e = blog.escape;
+            return {
+                page: {
+                    lang: e(p.lang || 'en'),
+                    type: p.type || 'website',
+                    title: e(p.title),
+                    description: e(p.description),
+                    url: e(blog.SITE + p.url),
+                    image: e(p.image || blog.SITE + '/assets/meirl.png'),
+                    main: p.main
+                }
+            };
+        }
+    });
+}
+
+const blogIndex = blogPage('./blog/index.html', (all) => ({
+    title: 'Blog',
+    description: 'Posts about stratospheric balloons, rockets and space by Marcin Jasiukowicz.',
+    url: '/blog/',
+    main: `<header class="post-header">
+          <h1>Blog</h1>
+          <a href="/blog/feed.xml">Atom feed</a>
+        </header>
+        <div class="row h-feed">
+          ${blog.renderCards(all)}
+        </div>`
+}));
+
+const startPosts = blog.loadPosts(BLOG_DIR, { cdn: IMAGE_CDN });
+
+const postPages = startPosts.map(({ slug }) => blogPage(`./blog/${slug}/index.html`, (all) => {
+    const i = all.findIndex((p) => p.slug === slug);
+    const p = all[i];
+    return {
+        lang: p.lang,
+        type: 'article',
+        title: p.title,
+        description: p.summary,
+        url: p.url,
+        image: p.image && p.image.share,
+        main: blog.renderPost(p, all[i - 1], all[i + 1])
+    };
+}));
+
+// Writes blog/feed.xml next to the pages.
+class BlogFeedPlugin {
+    apply(compiler) {
+        compiler.hooks.thisCompilation.tap('BlogFeedPlugin', (compilation) => {
+            compilation.hooks.processAssets.tap({
+                name: 'BlogFeedPlugin',
+                stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL
+            }, () => {
+                compilation.emitAsset('blog/feed.xml', new compiler.webpack.sources.RawSource(blog.renderFeed(posts(compilation))));
+            });
+        });
+    }
+}
 
 module.exports = {
     entry: ['./src/app.js', '@materializecss/materialize/dist/css/materialize.min.css', './src/style.css'],
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js',
+        // Absolute asset URLs: pages live at / and at /blog/<slug>/.
+        publicPath: '/',
         clean: true
     },
     devServer: {
         static: path.join(__dirname, 'dist'),
         compress: true,
-        port: 8080
+        // PORT lets a second copy run next to one on 8080 (for example, the preview of an editor).
+        port: Number(process.env.PORT) || 8080,
+        // Show only errors in the browser. The known size warnings hide the page.
+        client: { overlay: { errors: true, warnings: false } }
     },
     plugins: [
         new CopyPlugin({
             patterns: [
                 { from: "src/static", to: "" },
+                // The files of each post (PDFs, images) go next to its page.
+                ...startPosts.filter((p) => p.filesDir).map((p) => ({ from: p.filesDir, to: `blog/${p.slug}` })),
             ],
         }),
         new MiniCssExtractPlugin({
@@ -38,9 +131,20 @@ module.exports = {
             // Project cards come from src/projects.md; re-read on every (watch) build.
             templateParameters: (compilation) => {
                 compilation.fileDependencies.add(PROJECTS_FILE);
-                return { projects: renderProjects(PROJECTS_FILE) };
+                compilation.fileDependencies.add(TIMELINE_FILE);
+                compilation.fileDependencies.add(CV_FILE);
+                return {
+                    // The profile card: src/cv.md and the current job from src/timeline.md.
+                    profile: renderProfile(CV_FILE, TIMELINE_FILE),
+                    projects: renderProjects(PROJECTS_FILE),
+                    timeline: renderTimeline(TIMELINE_FILE, posts(compilation)),
+                    posts: blog.renderCards(posts(compilation).slice(0, HOME_POSTS))
+                };
             }
         }),
+        blogIndex,
+        ...postPages,
+        new BlogFeedPlugin(),
         new WebpackPwaManifest({
             fingerprints: false,
             name: 'yasiu.pl',
@@ -72,7 +176,9 @@ module.exports = {
             skipWaiting: true,
             clientsClaim: true,
             // Do not precache the page itself: it changes on every content edit.
-            exclude: [/\.map$/, /^manifest.*\.js$/, /\.html$/],
+            // Do not precache the blog either: its photos and PDFs are ~140 MB.
+            // Runtime caching below still keeps the pages and files a visitor opens.
+            exclude: [/\.map$/, /^manifest.*\.js$/, /\.html$/, /^blog\//, /\.pdf$/],
             runtimeCaching: [{
                 // The page: network first, cached copy only when offline.
                 urlPattern: ({ request }) => request.mode === 'navigate',

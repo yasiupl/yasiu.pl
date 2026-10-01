@@ -13,6 +13,8 @@
     "css-loader": "^3.6.0",
     "encoding": "^0.1.12",
     "html-webpack-plugin": "^5.6.5",
+    "image-size": "^2.0.4",
+    "marked": "^18.0.14",
     "mini-css-extract-plugin": "^2.9.4",
     "style-loader": "^4.0.0",
     "webpack": "^5.104.1",
@@ -23,6 +25,8 @@
     "workbox-webpack-plugin": "^7.4.0"
   },
   "scripts": {
+    "cv": "node build/cv.js",
+    "prebuild": "node build/cv.js",
     "build": "webpack --mode production",
     "start": "webpack serve --mode development"
   },

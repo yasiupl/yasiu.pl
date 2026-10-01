@@ -1,2 +1,10 @@
 node_modules/
 dist/
+# The CV build (build/cv.js): the LaTeX output and the Tectonic binary of the Netlify build.
+build/cv-out/
+/tectonic
+# The private CV and its settings (the phone number). This repository is public.
+.env
+src/static/cv/*
+!src/static/cv/Marcin_Jasiukowicz_CV.pdf
+!src/static/cv/Marcin_Jasiukowicz_card.pdf
