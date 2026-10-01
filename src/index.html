@@ -23,8 +23,11 @@
   <meta name="twitter:description" content="Tinkerer obsessed with space 🚀" />
   <meta name="twitter:image" content="https://yasiu.pl/assets/meirl.png" />
   <link rel="webmention" href="https://webmention.io/yasiu.pl/webmention" />
+  <link rel="alternate" type="application/atom+xml" title="yasiu.pl blog" href="/blog/feed.xml" />
   <link rel="pingback" href="https://webmention.io/yasiu.pl/xmlrpc" />
   <title>Marcin Jasiukowicz Showcase</title>
+  <!-- Plausible Analytics (self-hosted). Also counts file downloads (for example the CV) and outbound links. -->
+  <script defer data-domain="yasiu.pl" src="https://plausible.yasiu.pl/js/script.file-downloads.outbound-links.js"></script>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-71778687-1"></script>
   <script>
@@ -47,8 +50,11 @@
       <a href="#" id="logo-container" class="brand-logo">yasiu.pl</a>
       <ul class="hide-on-med-and-down">
         <li><a href="#work">Projects</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="#timeline">Timeline</a></li>
         <li><a href="https://www.patreon.com/yasiupl" target="_blank" rel="noopener">Patreon</a></li>
         <li><a href="https://www.amazon.com/hz/wishlist/ls/JNQ7C2Q934HA" target="_blank" rel="noopener">Wishlist</a></li>
+        <li><a href="/cv/Marcin_Jasiukowicz_CV.pdf">CV</a></li>
         <li><a href="mailto:contact@yasiu.pl?subject=Website%20Contact%20Form">Contact</a></li>
       </ul>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Theme: follow system"></button>
@@ -61,22 +67,7 @@
       <div class="container">
         <div class="row">
           <div class="col s12">
-            <div class="card card-avatar h-card">
-              <div class="card-content">
-                <img class="avatar u-photo" src="./assets/meirl.png" alt="Marcin Jasiukowicz">
-                <h1 class="card-title">Hi, I'm <span class="p-name">Marcin Jasiukowicz</span> <a class="u-url" href="https://yasiu.pl" aria-label="yasiu.pl">🅨</a></h1>
-                <p>I call myself a "<span class="p-note">Tinkerer obsessed with space 🚀</span>". Welcome to my showcase!<br>You can contact me via any of the channels below:</p>
-              </div>
-              <div class="card-action">
-                <a rel="me" href="https://www.instagram.com/yasiu.pl/">Instagram</a>
-                <a rel="me" href="https://twitter.com/yasiupl">Twitter</a>
-                <a rel="me" href="https://github.com/yasiupl">GitHub</a>
-                <a rel="me" href="https://www.linkedin.com/in/yasiu">LinkedIn</a>
-                <a rel="me" href="https://0x3c.pl/@yasiu">Mastodon</a>
-                <a rel="me" href="https://t.me/yasiupl">Telegram</a>
-                <a rel="me" class="u-email" href="mailto:contact@yasiu.pl?subject=Website%20Contact%20Form">eMail</a>
-              </div>
-            </div>
+            <%= profile %>
           </div>
 
           <div class="col s12 l6">
@@ -115,9 +106,37 @@
   <main>
     <div class="section" id="work">
       <div class="container">
+        <div class="section-heading">
+          <h2>Projects</h2>
+        </div>
+        <p class="section-subtitle">Things I build and run in my free time, from space tracking tools to a hackerspace.</p>
         <div class="row">
           <%= projects %>
         </div>
+      </div>
+    </div>
+
+    <div class="section" id="blog">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Blog</h2>
+          <a href="/blog/">All posts →</a>
+        </div>
+        <p class="section-subtitle"><%= blogIntro %></p>
+        <div class="row h-feed">
+          <%= posts %>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="timeline">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Timeline</h2>
+          <a href="/cv/Marcin_Jasiukowicz_CV.pdf">Download CV (PDF)</a>
+        </div>
+        <p class="section-subtitle">My work, studies, projects, talks and awards, together with the blog posts.</p>
+        <%= timeline %>
       </div>
     </div>
   </main>
