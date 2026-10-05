@@ -44,7 +44,7 @@ The API routes read these environment variables. For each variable, a route also
 | `OWNTRACKS_USER`, `OWNTRACKS_PASSWORD` | Optional: the login and the password for `/api/0/last` of the OwnTracks Recorder (HTTP basic authentication). The backend on blade12 needs no login. |
 | `OWNTRACKS_RECORDER_USER`, `OWNTRACKS_RECORDER_DEVICE` | Optional: the user and the device in the Recorder. The defaults are `yasiu` and `spacewar`. |
 | `OWNTRACKS_URL` | Optional: the address of the Recorder. The default is `https://owntracks.yasiu.pl`. On blade12, the address is `http://owntracks-recorder:8083`. |
-| `MAPBOX_TOKEN` | The access token of Mapbox, for the map image. |
+| `MAPBOX_TOKEN` | The access token of Mapbox, for the map image. The token has URL restrictions, so the route sends the header `Referer: https://yasiu.pl/`. Without this header, Mapbox sends 403. |
 
 The routes also accept the names of the old Netlify functions: `lastfm`, `owntracks_user`, `owntracks_device` and `mapbox_token`.
 
@@ -62,10 +62,10 @@ The map image fits the area, not the position. [`server/utils/region.js`](server
 The route gets the data from these services:
 
 - The OwnTracks Recorder: the last position.
-- [Nominatim](https://nominatim.org/) and the [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API): the areas around the position. These free services of OpenStreetMap permit only few requests. The cache of the backend keeps the number of requests low.
+- [Nominatim](https://nominatim.org/) and the [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API): the areas around the position. These free services of OpenStreetMap permit only few requests. The backend keeps the area of each spot (about 100 m) for one week. Thus these services get a request only when the position goes to a new spot.
 - The Mapbox Static Images API: the map image.
 
-If an Overpass server does not answer, the route tries the next server. If no server answers, the route sends an error. The backend then continues to send the last good response.
+If an Overpass server does not answer, the route tries again: `overpass-api.de` two times, then the next server. If no server answers, the route sends an error with the cause, for example `{"overpass": ["overpass-api.de: HTTP 504", …]}`. The backend then continues to send the last good response.
 
 ## Projects
 

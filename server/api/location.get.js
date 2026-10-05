@@ -12,8 +12,23 @@
 // response for 5 minutes (the route rules in nitro.config.mjs), so the site sends few requests.
 // An Overpass server is sometimes overloaded. Then the route tries the next server in OVERPASS.
 const HEADERS = { 'User-Agent': 'yasiu.pl (+https://yasiu.pl)' };
-const OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
+// The Mapbox token has URL restrictions: Mapbox accepts it only with a Referer of the site. Without
+// the Referer, Mapbox sends 403.
+const MAPBOX_HEADERS = { ...HEADERS, Referer: 'https://yasiu.pl/' };
+// overpass-api.de has two servers behind one address, and it sends 504 or 429 when it is overloaded.
+// Then a second try after OVERPASS_RETRY_DELAY often gets the other server.
+const OVERPASS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter'
+];
+const OVERPASS_RETRY_DELAY = 2000;
 const TIMEOUT = 10000;
+// The Overpass query permits the server 20 s ([timeout:20]). An overloaded server needs 10 s or more.
+const OVERPASS_TIMEOUT = 25000;
+// The areas of a place do not change. The backend keeps the area of each spot (about 100 m) for a
+// week, so OpenStreetMap gets requests only when Marcin goes to a new spot (see cachedArea).
+const AREA_MAX_AGE = 7 * 24 * 3600;
 
 // On the move: at this speed (km/h) or faster, if the position is not older than EN_ROUTE_AGE (s).
 // A walk is not "en route". A bicycle, a car and a train are.
@@ -24,13 +39,26 @@ async function area(lat, lon, enRoute) {
   const query = `[out:json][timeout:20];is_in(${lat},${lon})->.a;(rel(pivot.a);way(pivot.a););out tags bb;` +
     'area.a[boundary=administrative][admin_level=8]->.m;node(area.m)[place~"^(city|town)$"];out tags;';
   const overpassArea = async () => {
+    // The cause of each failure: the host and the HTTP status or the error name. Never the query,
+    // because the query contains the position.
+    const failures = [];
     for (const server of OVERPASS) {
+      if (failures.length) await new Promise((resolve) => setTimeout(resolve, OVERPASS_RETRY_DELAY));
       const data = await $fetch(server, {
-        method: 'POST', body: new URLSearchParams({ data: query }), headers: HEADERS, timeout: TIMEOUT
-      }).catch(() => null);
+        method: 'POST',
+        body: new URLSearchParams({ data: query }),
+        headers: HEADERS,
+        timeout: OVERPASS_TIMEOUT
+      }).catch((error) => {
+        const cause = error.status ? `HTTP ${error.status}` : (error.cause && error.cause.name) || error.name;
+        failures.push(`${new URL(server).host}: ${cause}`);
+        return null;
+      });
       if (data) return data;
     }
-    throw new Error('No Overpass server answered');
+    const error = new Error('No Overpass server answered');
+    error.overpass = failures;
+    throw error;
   };
   const [place, overpass] = await Promise.all([
     // Without Nominatim, settlementOf() uses only the town nodes from Overpass.
@@ -44,11 +72,27 @@ async function area(lat, lon, enRoute) {
   return selectRegion(elements, { settlement: settlementOf(elements, address), country: address.country_code, enRoute });
 }
 
+// area() with a memory per spot. The key is the position rounded to 0.001° (about 100 m), shifted
+// to positive numbers, because Nitro removes the characters "-" and "." from cache keys. The key
+// stays in the memory of the server: the response never contains the position. An error is not
+// kept, so the next request tries OpenStreetMap again.
+const cachedArea = defineCachedFunction(area, {
+  name: 'location-area',
+  maxAge: AREA_MAX_AGE,
+  getKey: (lat, lon, enRoute) =>
+    `${Math.round((lat + 90) * 1000)}_${Math.round((lon + 180) * 1000)}_${enRoute ? 1 : 0}`
+});
+
 async function map(bounds, token) {
   const box = [bounds.minlon, bounds.minlat, bounds.maxlon, bounds.maxlat].join(',');
   const response = await $fetch.raw(
     `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/[${box}]/512x512`,
-    { query: { padding: 24, access_token: token }, responseType: 'arrayBuffer' });
+    {
+      query: { padding: 24, access_token: token },
+      headers: MAPBOX_HEADERS,
+      timeout: TIMEOUT,
+      responseType: 'arrayBuffer'
+    });
   const type = response.headers.get('content-type') || '';
   if (!type.startsWith('image/')) throw new Error('Mapbox did not send an image');
   // A data URL: the page does not see the Mapbox token.
@@ -93,8 +137,12 @@ export default defineEventHandler(async (event) => {
   const enRoute = (last.vel || 0) >= EN_ROUTE_SPEED && Date.now() / 1000 - last.tst < EN_ROUTE_AGE;
   // Without the area, send an error and not "Secret location": the backend does not keep an error,
   // and it continues to send the last good response (see the route rules in nitro.config.mjs).
-  const region = await area(last.lat, last.lon, enRoute).catch(() => {
-    throw createError({ statusCode: 503, statusMessage: 'OpenStreetMap services are not available' });
+  const region = await cachedArea(last.lat, last.lon, enRoute).catch((error) => {
+    // "overpass" tells which servers failed and how. Another error tells only its name, because
+    // its message can contain the position.
+    const data = error.overpass ? { overpass: error.overpass } : { error: error.name };
+    console.error(`/api/location: OpenStreetMap: ${JSON.stringify(data)}`);
+    throw createError({ statusCode: 503, statusMessage: 'OpenStreetMap services are not available', data });
   });
   const bounds = region && region.bounds;
   // Without a map, the card keeps its default image. "mapError" tells why (never the token).
