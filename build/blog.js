@@ -267,7 +267,6 @@ function renderPost(p, newer, older) {
             <h1 class="p-name">${escape(p.title)}</h1>
             <a class="u-url" href="${SITE}${p.url}" hidden></a>
             <a class="p-author h-card" href="${SITE}/" hidden>Marcin Jasiukowicz</a>
-            <a class="u-bridgy-fed" href="https://fed.brid.gy/" hidden="from-humans"></a>
           </header>
           <div class="card post-body">${p.image ? `
             <div class="card-image">

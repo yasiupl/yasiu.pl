@@ -5,11 +5,17 @@ Behind the scenes works of my personal website. Nothing fancy.
 
 ## Hosting
 
-The site is on Vercel. It can also be on Netlify or on a Node.js server, without changes to the code.
+The site has two parts:
+
+- The site: static files on Vercel. The site can also be on Netlify, without changes to the code. The site has no server functions.
+- The backend: a Node.js server on blade12 at `api.yasiu.pl`. It runs the API routes and the WebFinger route. See [`infra/README.md`](infra/README.md).
+
+The tools make the two parts:
 
 - [webpack](https://webpack.js.org/) makes the site (HTML, CSS, JavaScript, images, PDF files) in `public/`.
-- [Nitro](https://nitro.build/) makes the deployment for the platform from `public/`, from the API routes in `server/`, and from the redirects in [`nitro.config.mjs`](nitro.config.mjs).
-  Nitro finds the platform from the environment of the build. On Vercel, the output is `.vercel/output/`. On Netlify, the output is `dist/`.
+- [Nitro](https://nitro.build/) makes the two outputs from [`nitro.config.mjs`](nitro.config.mjs):
+  - On Vercel and Netlify (the variable `VERCEL` or `NETLIFY` has a value), Nitro makes the static site with the redirects. The presets are `vercel-static` and `netlify-static`. On Vercel, the output is `.vercel/output/`. On Netlify, the output is `dist/`.
+  - With `NITRO_PRESET=node-server`, Nitro makes the backend from the routes in `server/`. [`infra/api/Dockerfile`](infra/api/Dockerfile) uses this.
 
 `npm run build` makes the CV, the site and the deployment. These are the build commands:
 
@@ -17,25 +23,27 @@ The site is on Vercel. It can also be on Netlify or on a Node.js server, without
   If the project settings of Vercel have a "Build Command", that command replaces the script. Keep the field empty.
 - Netlify: `make deploy` (see `netlify.toml`).
 
-To add a redirect, add it to `routeRules` in `nitro.config.mjs`. Do not add redirects to `netlify.toml` or to a `vercel.json` file.
+To add a redirect, add it to `routeRules` in the site part of `nitro.config.mjs`. Do not add redirects to `netlify.toml` or to a `vercel.json` file.
 
 ### API routes
 
-The live cards of the home page get their data from the API routes in `server/api/`:
+The live cards of the home page get their data from the API routes in `server/api/`. The routes run on the backend at `https://api.yasiu.pl`:
 
 - `/api/lastfm`: the last track on Last.fm ("I'm listening to...").
 - `/api/location`: the area where I am ("Last seen..."). See "Location".
 
-The CDN of the platform keeps the responses for some minutes (the `Cache-Control` header of each route).
+The site calls the backend at the address in `API_BASE` (see `webpack.config.js`). On Vercel and Netlify, the address is `https://api.yasiu.pl`. A local build uses the same origin.
 
-The API routes read these environment variables. Set them in the settings of the platform (on Vercel: "Settings", "Environment Variables"). Then deploy the site again.
+The backend keeps each answer in memory: 60 seconds for `/api/lastfm` and 5 minutes for `/api/location`. If the source of an answer fails, the route sends the last good answer. The route rules in the backend part of `nitro.config.mjs` set the times and the CORS headers.
+
+The API routes read these environment variables. For each variable, a route also reads the file in `<variable>_FILE`. On blade12, the secrets are files from sops (see [`infra/api/README.md`](infra/api/README.md)).
 
 | Variable | Value |
 | --- | --- |
 | `LASTFM_API_KEY` | The API key of Last.fm. |
-| `OWNTRACKS_USER`, `OWNTRACKS_PASSWORD` | The login and the password for `/api/0/last` of the OwnTracks Recorder (HTTP basic authentication). |
+| `OWNTRACKS_USER`, `OWNTRACKS_PASSWORD` | Optional: the login and the password for `/api/0/last` of the OwnTracks Recorder (HTTP basic authentication). The backend on blade12 needs no login. |
 | `OWNTRACKS_RECORDER_USER`, `OWNTRACKS_RECORDER_DEVICE` | Optional: the user and the device in the Recorder. The defaults are `yasiu` and `spacewar`. |
-| `OWNTRACKS_URL` | Optional: the address of the Recorder. The default is `https://owntracks.yasiu.pl`. |
+| `OWNTRACKS_URL` | Optional: the address of the Recorder. The default is `https://owntracks.yasiu.pl`. On blade12, the address is `http://owntracks-recorder:8083`. |
 | `MAPBOX_TOKEN` | The access token of Mapbox, for the map image. |
 
 The routes also accept the names of the old Netlify functions: `lastfm`, `owntracks_user`, `owntracks_device` and `mapbox_token`.
@@ -54,10 +62,10 @@ The map image fits the area, not the position. [`server/utils/region.js`](server
 The route gets the data from these services:
 
 - The OwnTracks Recorder: the last position.
-- [Nominatim](https://nominatim.org/) and the [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API): the areas around the position. These free services of OpenStreetMap permit only few requests. The CDN cache keeps the number of requests low.
+- [Nominatim](https://nominatim.org/) and the [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API): the areas around the position. These free services of OpenStreetMap permit only few requests. The cache of the backend keeps the number of requests low.
 - The Mapbox Static Images API: the map image.
 
-If an Overpass server does not answer, the route tries the next server. If no server answers, the route sends an error. The CDN then continues to send the last good response.
+If an Overpass server does not answer, the route tries the next server. If no server answers, the route sends an error. The backend then continues to send the last good response.
 
 ## Projects
 
@@ -71,7 +79,7 @@ The card at the top of the home page is like a business card. [`build/profile.js
 - the name, the tagline, the summary (`summary-en`), the photos and the contact data come from the `header` part of [`src/cv.md`](src/cv.md),
 - the current job is the first `work` entry in `src/timeline.md` with the end `now`.
 
-The card is also the representative h-card of the site. Bridgy Fed uses the summary as the fediverse profile text (see "Fediverse").
+The card is also the representative h-card of the site.
 
 ## Timeline
 
@@ -238,33 +246,16 @@ The script also counts file downloads (for example, the CV and the thesis PDF fi
 To see the statistics, log in to `plausible.yasiu.pl`.
 If the site `yasiu.pl` is not in Plausible, add it there before you deploy. Plausible does not record visits for an unknown site.
 
-## Fediverse (Bridgy Fed)
+## Fediverse
 
-[Bridgy Fed](https://fed.brid.gy/docs) connects the site to the fediverse and to Bluesky.
 The fediverse handle of the site is `@yasiu@yasiu.pl`.
-The site has these parts for Bridgy Fed:
+At this time, the handle is an alias of the Mastodon account `@yasiu@0x3c.pl`:
 
-- The home page has a representative h-card (`u-url`, `u-uid`, `u-photo`, `p-name`, `p-note`). Bridgy Fed makes the profile from it.
-- The h-card has a hidden `u-url` link to `acct:yasiu@yasiu.pl`. This link sets the user name `yasiu`. Without it, the handle is `@yasiu.pl@yasiu.pl`.
-- Each post page has an `h-entry` with `p-name`, `e-content`, `dt-published`, `u-url`, `p-author`, and a hidden `u-bridgy-fed` link.
-- Each post page has a `rel="alternate"` link of the type `application/activity+json`. With this link, a search for the post URL finds the post.
-- `nitro.config.mjs` and `server/routes/.well-known/webfinger.get.js` redirect `/.well-known/host-meta` and `/.well-known/webfinger` to Bridgy Fed. Without these redirects, the handle is on `web.brid.gy`, not on `yasiu.pl`.
+- The site redirects `/.well-known/webfinger` to the backend (`nitro.config.mjs`).
+- On the backend, [`server/routes/.well-known/webfinger.get.js`](server/routes/.well-known/webfinger.get.js) answers the WebFinger requests for `acct:yasiu@yasiu.pl`.
+- The answer has the subject `acct:yasiu@0x3c.pl`. The other server then finds the account on `0x3c.pl` and shows it as `@yasiu@0x3c.pl`.
 
-To connect the site for the first time, enter `yasiu.pl` on <https://fed.brid.gy/web-site>.
-
-Bridgy Fed reads new posts from `/blog/feed.xml`. It finds the feed through the link on the home page.
-To publish a post faster, deploy the site and then send a webmention for the post:
-
-```bash
-curl -d source=https://yasiu.pl/blog/<slug>/ -d target=https://fed.brid.gy/ https://fed.brid.gy/webmention
-```
-
-**Warning:** After the first webmention, Bridgy Fed stops reading the feed.
-After that, send a webmention for each new post, each changed post, and each deleted post.
-
-Bridgy Fed does not publish a post that is more than two weeks old.
-Each post has a title, so Bridgy Fed sends it as an article. Mastodon shows the title and a link to the post.
-Bridgy Fed sends replies, likes, and reposts back to the site as webmentions. The endpoint is webmention.io.
+The site receives webmentions at webmention.io (see the `rel="webmention"` links in `src/index.html` and `src/blog.html`).
 
 The blog pages also have the tag `<meta name="fediverse:creator" content="@yasiu@0x3c.pl">`.
 With this tag, Mastodon shows `@yasiu@0x3c.pl` as the author on link previews of the blog.

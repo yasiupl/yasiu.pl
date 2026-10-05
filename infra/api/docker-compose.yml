@@ -1,0 +1,49 @@
+# The backend of yasiu.pl at api.yasiu.pl: the API routes of the site. See README.md.
+#
+# This stack runs on blade12. The infrastruktura repository includes this repository as a
+# submodule at hosts/argo/blade12/services/yasiu.pl. The host part (the sops secrets) is in
+# hosts/argo/blade12/configuration.nix in that repository.
+#
+# Explicit project name: it must not change with the directory.
+name: yasiu-pl
+
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: infra/api/Dockerfile
+    image: yasiu-pl-api
+    container_name: yasiu-pl-api
+    restart: unless-stopped
+    # uid 1000 = yasiu on the host and `node` in the image. The sops secrets belong to uid 1000.
+    user: "1000:1000"
+    environment:
+      # The OwnTracks Recorder of the iot stack, in the docker network "iot". This address needs no
+      # login. The login of owntracks.yasiu.pl is in Traefik, not in the Recorder.
+      OWNTRACKS_URL: http://owntracks-recorder:8083
+      # The routes read the secrets from these files (server/utils/env.js).
+      LASTFM_API_KEY_FILE: /run/secrets/yasiu-pl/lastfm-api-key
+      MAPBOX_TOKEN_FILE: /run/secrets/yasiu-pl/mapbox-token
+    volumes:
+      # Run `nixos-rebuild switch` before the first `up`. If a secret is not there yet, docker
+      # creates a directory at its path and sops-nix cannot replace it. See README.md.
+      - "/run/secrets/yasiu-pl/lastfm-api-key:/run/secrets/yasiu-pl/lastfm-api-key:ro"
+      - "/run/secrets/yasiu-pl/mapbox-token:/run/secrets/yasiu-pl/mapbox-token:ro"
+    # No `ports:`. Docker publishes ports through its own NAT chains and bypasses nixos-fw.
+    networks:
+      - web
+      - iot
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.yasiu-pl-api.rule: "Host(`api.yasiu.pl`)"
+      traefik.http.routers.yasiu-pl-api.entrypoints: websecure
+      traefik.http.routers.yasiu-pl-api.tls.certresolver: myresolver
+      traefik.http.services.yasiu-pl-api.loadbalancer.server.port: "3000"
+      traefik.docker.network: web
+
+networks:
+  web:
+    external: true
+  # Made by the iot stack (hosts/argo/blade12/services/iot in the infrastruktura repository).
+  iot:
+    external: true

@@ -90,9 +90,10 @@ function getAgoString(timestampSeconds) {
 
 // Live widgets: only the home page has them.
 if (document.getElementById("track")) {
-  // The API routes are in server/api/. The CDN keeps their responses for some minutes. Do not add
-  // a changing query (for example a time stamp): each request then goes to Last.fm and OpenStreetMap.
-  fetch("/api/lastfm", {
+  // The API routes are in server/api/ and run on the backend (API_BASE, see webpack.config.js). The
+  // backend keeps their responses for some minutes. Do not add a changing query (for example a time
+  // stamp): each request then goes to Last.fm and OpenStreetMap.
+  fetch(API_BASE + "/api/lastfm", {
       headers: {
         "Accept": "application/json"
       }
@@ -121,7 +122,7 @@ if (document.getElementById("track")) {
     .catch(() => {});
   
   // The area (a district, a town or a region), not the GPS position. See server/api/location.get.js.
-  fetch("/api/location", {
+  fetch(API_BASE + "/api/location", {
       headers: {
         "Accept": "application/json"
       }

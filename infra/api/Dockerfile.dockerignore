@@ -1,0 +1,7 @@
+# The Dockerfile needs only these files. Without this list, docker sends node_modules/, the blog
+# images and the build output to the build.
+*
+!package.json
+!package-lock.json
+!nitro.config.mjs
+!server/
