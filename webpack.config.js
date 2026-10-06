@@ -3,6 +3,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const { DefinePlugin } = require('webpack');
 const path = require('path');
 const { renderProjects } = require('./build/projects');
 const { renderTimeline } = require('./build/timeline');
@@ -16,6 +17,9 @@ const BLOG_DIR = path.resolve(__dirname, 'blog');
 const HOME_POSTS = 3;
 // The image CDN of the hosting platform scales the post images. Local builds use the original files.
 const IMAGE_CDN = process.env.VERCEL ? 'vercel' : process.env.NETLIFY === 'true' ? 'netlify' : null;
+// The address of the backend with the API routes (see nitro.config.mjs and infra/api/README.md).
+// Local builds use the same origin: the development server sends /api/ to "npm run dev:api".
+const API_BASE = process.env.API_BASE ?? (process.env.VERCEL || process.env.NETLIFY ? 'https://api.yasiu.pl' : '');
 
 // Posts are read once per build and shared by all blog pages; a (watch) rebuild
 // reads them again. The list of pages is fixed when webpack starts: restart it
@@ -119,6 +123,7 @@ module.exports = {
         client: { overlay: { errors: true, warnings: false } }
     },
     plugins: [
+        new DefinePlugin({ API_BASE: JSON.stringify(API_BASE) }),
         new CopyPlugin({
             patterns: [
                 { from: "src/static", to: "" },

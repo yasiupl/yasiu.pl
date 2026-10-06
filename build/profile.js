@@ -1,6 +1,6 @@
 // Makes the profile card at the top of the home page from src/cv.md (name, tagline, summary,
 // contact data) and src/timeline.md (current job). The card is the representative h-card of the
-// site: Bridgy Fed makes the fediverse profile from it (see README.md, "Fediverse").
+// site.
 const fs = require('fs');
 const path = require('path');
 const { parseCv } = require('./cv');
@@ -43,8 +43,6 @@ function renderProfile(cvFile, timelineFile) {
                   <p class="profile-tagline">${escape(h['tagline-en'] || '')}</p>${job ? `
                   <p class="profile-job"><span class="p-job-title">${escape(job.title)}</span> · <span class="p-org">${escape(job.org)}</span></p>` : ''}
                 </div>
-                <!-- Bridgy Fed: the fediverse handle is @yasiu@yasiu.pl, not @yasiu.pl@yasiu.pl. -->
-                <a class="u-url" href="acct:yasiu@yasiu.pl" hidden></a>
                 <p class="profile-summary p-note">${escape(h['summary-en'] || '')}</p>
               </div>
               <div class="profile-contact">
