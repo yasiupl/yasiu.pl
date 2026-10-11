@@ -7,7 +7,7 @@ const { DefinePlugin } = require('webpack');
 const path = require('path');
 const { renderProjects } = require('./build/projects');
 const { renderTimeline } = require('./build/timeline');
-const { renderProfile } = require('./build/profile');
+const { renderProfile, renderProfileJsonLd, authorData } = require('./build/profile');
 const blog = require('./build/blog');
 
 const PROJECTS_FILE = path.resolve(__dirname, 'src/projects.md');
@@ -48,6 +48,10 @@ function blogPage(filename, page) {
                     description: e(p.description),
                     url: e(blog.SITE + p.url),
                     image: e(p.image || blog.SITE + '/assets/meirl.png'),
+                    robots: e(p.robots || ''),
+                    // A post page has a narrow column of text. The list of posts (/blog/) has the full width,
+                    // like the home page.
+                    narrow: Boolean(p.narrow),
                     main: p.main
                 }
             };
@@ -80,15 +84,18 @@ const postPages = startPosts.map(({ slug }) => blogPage(`./blog/${slug}/index.ht
     return {
         lang: p.lang,
         type: 'article',
+        narrow: true,
         title: p.title,
         description: p.summary,
         url: p.url,
         image: p.image && p.image.share,
-        main: blog.renderPost(p, all[i - 1], all[i + 1])
+        robots: blog.robots(p),
+        main: blog.renderPost(p, all[i - 1], all[i + 1], authorData(CV_FILE, TIMELINE_FILE))
     };
 }));
 
-// Writes blog/feed.xml next to the pages.
+// Writes blog/feed.xml next to the pages, and robots.txt and sitemap.xml (they list the posts
+// that search engines may index, see "Search engines" in README.md).
 class BlogFeedPlugin {
     apply(compiler) {
         compiler.hooks.thisCompilation.tap('BlogFeedPlugin', (compilation) => {
@@ -96,7 +103,11 @@ class BlogFeedPlugin {
                 name: 'BlogFeedPlugin',
                 stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL
             }, () => {
-                compilation.emitAsset('blog/feed.xml', new compiler.webpack.sources.RawSource(blog.renderFeed(posts(compilation))));
+                const { RawSource } = compiler.webpack.sources;
+                const all = posts(compilation);
+                compilation.emitAsset('blog/feed.xml', new RawSource(blog.renderFeed(all)));
+                compilation.emitAsset('robots.txt', new RawSource(blog.renderRobots(all)));
+                compilation.emitAsset('sitemap.xml', new RawSource(blog.renderSitemap(all)));
             });
         });
     }
@@ -148,6 +159,7 @@ module.exports = {
                 return {
                     // The profile card: src/cv.md and the current job from src/timeline.md.
                     profile: renderProfile(CV_FILE, TIMELINE_FILE),
+                    profileJsonLd: renderProfileJsonLd(CV_FILE, TIMELINE_FILE),
                     projects: renderProjects(PROJECTS_FILE),
                     timeline: renderTimeline(TIMELINE_FILE, posts(compilation)),
                     posts: blog.renderCards(posts(compilation).slice(0, HOME_POSTS)),

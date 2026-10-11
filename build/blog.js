@@ -7,16 +7,54 @@ const { imageSize } = require('image-size');
 const { transformUrl } = require('unpic');
 
 const SITE = 'https://yasiu.pl';
-const FIELDS = ['title', 'date', 'updated', 'ai', 'lang', 'description', 'image', 'crop'];
+const FIELDS = ['title', 'date', 'updated', 'ai', 'lang', 'description', 'image', 'crop', 'index', 'video'];
 // The "ai" field: how much of the post an AI wrote. The post header shows it.
 const AI = {
   written: { en: 'Written with AI from the author’s materials',pl: 'Tekst napisany przez AI na podstawie materiałów autora' },
   edited: { en: 'Edited with AI', pl: 'Tekst zredagowany z pomocą AI' }
 };
 const AI_NOTE = ['written'];
-const WORDS = { en: { updated: 'Last edited' }, pl: { updated: 'Ostatnia edycja' } };
+const WORDS = {
+  en: {
+    updated: 'Last edited',
+    // The forms of Intl.PluralRules: the script that writes the number selects one.
+    views: { one: 'view', other: 'views' },
+    comments: 'Comments',
+    commentsText: 'Soon you will be able to comment on this post and react to it from Mastodon and the rest of the fediverse. Until then, write to me:',
+    support: 'Support',
+    supportText: 'Do you like what I do? Support me on Patreon. It helps me find time for new projects, videos and posts.',
+    patreon: 'Become a patron',
+    about: 'More about me'
+  },
+  pl: {
+    updated: 'Ostatnia edycja',
+    views: { one: 'wyświetlenie', few: 'wyświetlenia', many: 'wyświetleń', other: 'wyświetlenia' },
+    comments: 'Komentarze',
+    commentsText: 'Wkrótce skomentujesz ten wpis i zareagujesz na niego z Mastodona i reszty fediwersum. Do tego czasu napisz do mnie:',
+    support: 'Wsparcie',
+    supportText: 'Podoba Ci się to, co robię? Wesprzyj mnie na Patreonie. Dzięki temu znajduję czas na nowe projekty, filmy i wpisy.',
+    patreon: 'Zostań patronem',
+    about: 'Więcej o mnie'
+  }
+};
+// The contact links of the post footer.
+const MASTODON = { handle: '@yasiu@0x3c.pl', url: 'https://0x3c.pl/@yasiu' };
+const EMAIL = 'contact@yasiu.pl';
+const PATREON = 'https://www.patreon.com/yasiupl';
 const words = (lang) => WORDS[lang] || WORDS.en;
 const CROPS = ['top', 'center', 'bottom'];
+// The video in the header of a post: a YouTube URL (youtu.be/<ID>, watch?v=<ID> or embed/<ID>)
+// with an optional start time (t= or start=, in seconds or as 1h2m3s).
+function youtube(url) {
+  const id = url.match(/(?:youtu\.be\/|[?&]v=|\/embed\/)([A-Za-z0-9_-]{11})/);
+  if (!id) return null;
+  const t = url.match(/[?&](?:t|start)=([0-9hms]+)/);
+  const parts = t && t[1].match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/);
+  const start = parts ? (+parts[1] || 0) * 3600 + (+parts[2] || 0) * 60 + (+parts[3] || 0) : 0;
+  return { id: id[1], start };
+}
+const embedUrl = (v) => `https://www.youtube-nocookie.com/embed/${v.id}${v.start ? `?start=${v.start}` : ''}`;
+
 const FILE_NAME = /^(\d{4}-\d{2}-\d{2})-([a-z0-9-]+)\.md$/;
 
 const escape = (s) => String(s)
@@ -159,6 +197,8 @@ function loadPosts(dir, { cdn = false } = {}) {
     if (!/^\d{4}-\d{2}-\d{2}/.test(date)) throw new Error(`${file}: date must start with YYYY-MM-DD`);
     const updated = fields.updated || null;
     if (updated && !/^\d{4}-\d{2}-\d{2}/.test(updated)) throw new Error(`${file}: updated must start with YYYY-MM-DD`);
+    if (fields.index && !['yes', 'no'].includes(fields.index)) throw new Error(`${file}: index must be yes or no`);
+    if (fields.video && !youtube(fields.video)) throw new Error(`${file}: video must be a YouTube URL`);
     if (fields.ai && !AI[fields.ai]) throw new Error(`${file}: ai must be ${Object.keys(AI).join(' or ')}`);
     const url = `/blog/${parts[2]}/`;
 
@@ -196,7 +236,20 @@ function loadPosts(dir, { cdn = false } = {}) {
     const header = fields.image ? picture(fields.image) : firstImage(tokens);
     const crop = fields.crop || 'center';
     if (!CROPS.includes(crop)) throw new Error(`${file}: crop must be ${CROPS.join(', ')}`);
-    const same = header ? tokens.findIndex((t) => t.type === 'paragraph' && t.tokens.length === 1 &&
+
+    // Header video: the "video" field, else the video of a YouTube thumbnail youtube-<ID>.jpg in the
+    // header. The page shows the player in place of the header image. The header image stays for
+    // the post card and the link previews. If the post text has a player of the same video on its
+    // own, the header replaces it.
+    const thumbnail = header && header.url.match(/\/youtube-([A-Za-z0-9_-]{11})\.jpg$/);
+    const video = fields.video ? youtube(fields.video) : thumbnail && { id: thumbnail[1], start: 0 };
+    if (video) {
+      const player = new RegExp(`^<iframe[^>]+/embed/${video.id}[^>]*>\\s*</iframe>\\s*$`);
+      const index = tokens.findIndex((t) => t.type === 'html' && player.test(t.raw.trim()));
+      if (index >= 0) tokens.splice(index, 1);
+    }
+    // A header video replaces the header image on the page: then the text keeps that image.
+    const same = header && !video ? tokens.findIndex((t) => t.type === 'paragraph' && t.tokens.length === 1 &&
       t.tokens[0].type === 'image' && t.tokens[0].href === header.url) : -1;
     if (same >= 0) tokens.splice(same, 1);
     marked.walkTokens(tokens, (t) => {
@@ -217,6 +270,9 @@ function loadPosts(dir, { cdn = false } = {}) {
       updated: updated && updated.slice(0, 10) !== date.slice(0, 10) ? updated : null,
       displayUpdated: updated && updated.slice(0, 10) !== date.slice(0, 10) ? formatDate(updated, lang) : null,
       ai: fields.ai || null,
+      // Search engines index the post page and its files only with "index: yes" (see renderRobots).
+      indexed: fields.index === 'yes',
+      video,
       // Only posts that an AI wrote get a note; posts that an AI only edited do not.
       aiLabel: AI_NOTE.includes(fields.ai) ? (AI[fields.ai][lang] || AI[fields.ai].en) : null,
       summary: fields.description || summary(tokens),
@@ -238,9 +294,12 @@ function loadPosts(dir, { cdn = false } = {}) {
   return posts.sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
+// The card of a post with a header video shows a play button. A post with a short clip in the
+// text does not get the button.
+
 function card(p) {
   return `<div class="col s12 m6 l4">
-            <a class="card is-link post-card h-entry" href="${p.url}" lang="${escape(p.lang)}">${p.image ? `
+            <a class="card is-link post-card h-entry${p.video ? ' video-card' : ''}" href="${p.url}" lang="${escape(p.lang)}">${p.image ? `
               <div class="card-image">
                 ${img(p.image.card, ' class="u-featured" alt="" loading="lazy"')}
               </div>` : ''}
@@ -257,7 +316,49 @@ function renderCards(posts) {
   return posts.map(card).join('\n          ');
 }
 
-function renderPost(p, newer, older) {
+// The small author card at the top of a post, for readers who come from a link. It is the
+// p-author of the h-entry. "author" comes from
+// authorData in build/profile.js.
+function authorCard(author, lang) {
+  return `<a class="card is-link author-card p-author h-card" href="${SITE}/">
+            <img class="u-photo" src="${escape(author.photo)}" alt="" width="48" height="48">
+            <span class="author-text">
+              <span class="author-name p-name">${escape(author.name)}</span>
+              <span class="author-tagline p-note">${escape(author.tagline[lang] || author.tagline.en)}</span>${author.job ? `
+              <span class="author-job">${escape(author.job[lang] || author.job.en)}</span>` : ''}
+              <span class="author-more">${escape(words(lang).about)} →</span>
+            </span>
+          </a>`;
+}
+
+// The footer under each post: the number of views, the comments and the support on Patreon.
+// The number of views stays hidden until src/app.js fills it (data-views-path). The comments
+// will come from the fediverse (ActivityPub). Until then, the footer links to Mastodon and email.
+function renderFooter(p) {
+  const w = words(p.lang);
+  const subject = encodeURIComponent(p.title);
+  return `<aside class="post-footer" lang="${escape(p.lang)}">
+          <p class="post-views" data-views-path="${escape(p.url)}"${Object.entries(w.views).map(([form, word]) => ` data-${form}="${escape(word)}"`).join('')} hidden><span class="post-views-count"></span> <span class="post-views-word"></span></p>
+          <div class="post-footer-grid">
+            <section class="card post-footer-card">
+              <div class="card-content">
+                <h2 class="eyebrow">${escape(w.comments)}</h2>
+                <p>${escape(w.commentsText)}</p>
+                <p class="post-footer-links"><a href="${MASTODON.url}">${escape(MASTODON.handle)}</a> <a href="mailto:${EMAIL}?subject=${subject}">${EMAIL}</a></p>
+              </div>
+            </section>
+            <section class="card post-footer-card">
+              <div class="card-content">
+                <h2 class="eyebrow">${escape(w.support)}</h2>
+                <p>${escape(w.supportText)}</p>
+                <p class="post-footer-links"><a class="post-footer-button" href="${PATREON}" target="_blank" rel="noopener">${escape(w.patreon)}</a></p>
+              </div>
+            </section>
+          </div>
+        </aside>`;
+}
+
+function renderPost(p, newer, older, author) {
   const link = (q, rel, label) => q
     ? `<a class="post-nav-${rel}" href="${q.url}" rel="${rel}"><span class="eyebrow">${label}</span><span lang="${escape(q.lang)}">${escape(q.title)}</span></a>`
     : '<span></span>';
@@ -266,9 +367,13 @@ function renderPost(p, newer, older) {
             <time class="dt-published" datetime="${escape(p.date)}">${escape(p.displayDate)}</time>
             <h1 class="p-name">${escape(p.title)}</h1>
             <a class="u-url" href="${SITE}${p.url}" hidden></a>
-            <a class="p-author h-card" href="${SITE}/" hidden>Marcin Jasiukowicz</a>
-          </header>
-          <div class="card post-body">${p.image ? `
+            ${author ? '' : `<a class="p-author h-card" href="${SITE}/" hidden>Marcin Jasiukowicz</a>`}
+          </header>${author ? `
+          ${authorCard(author, p.lang)}` : ''}
+          <div class="card post-body">${p.video ? `
+            <div class="card-image post-video">
+              <iframe src="${embedUrl(p.video)}" title="${escape(p.title)}" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>` : p.image ? `
             <div class="card-image">
               <a class="u-featured" href="${escape(p.image.original)}">${img(p.image.header, ' alt="" fetchpriority="high"')}</a>
             </div>` : ''}
@@ -278,6 +383,7 @@ ${p.html}
           </div>${p.updated || p.aiLabel ? `
           <p class="post-notes">${p.updated ? `${escape(words(p.lang).updated)}: <time class="dt-updated" datetime="${escape(p.updated)}">${escape(p.displayUpdated)}</time>.` : ''}${p.updated && p.aiLabel ? ' ' : ''}${p.aiLabel ? `${escape(p.aiLabel)}.` : ''}</p>` : ''}
         </article>
+        ${renderFooter(p)}
         <nav class="post-nav" aria-label="More posts">
           ${link(older, 'prev', '← Older')}
           ${link(newer, 'next', 'Newer →')}
@@ -316,4 +422,51 @@ ${entries}
 `;
 }
 
-module.exports = { SITE, IMAGE_WIDTHS, loadPosts, renderCards, renderPost, renderFeed, escape };
+// The robots meta tag of a post page. A page that search engines do not index still lets them
+// follow its links (to the older and newer post).
+const robots = (p) => (p.indexed ? '' : 'noindex, follow, noimageindex');
+
+// robots.txt. Search engines see the blog list (/blog/) with the title and the summary of each
+// post, but not the posts. A post with "index: yes" is fully visible.
+// - The post page stays open to crawlers: they must read its "noindex" tag.
+// - The files of the post (images, PDF files, archives) are closed to crawlers.
+// - Google Images gets no images of these posts and no scaled images of the image CDN (the cards
+//   on /blog/ and the images in the post text use the CDN).
+function renderRobots(posts) {
+  const hidden = posts.filter((p) => !p.indexed);
+  return `# The private CV and business card (with the phone number) are not linked from the site.
+# Search engines must not index them (see README.md, "Public and private CV").
+# The blog posts without "index: yes": see README.md, "Search engines".
+User-agent: *
+Disallow: /cv/Resume_
+Disallow: /cv/Card_
+${hidden.map((p) => `Allow: ${p.url}$\nDisallow: ${p.url}`).join('\n')}
+
+User-agent: Googlebot-Image
+Disallow: /cv/Resume_
+Disallow: /cv/Card_
+Disallow: /_vercel/image
+Disallow: /.netlify/images
+${hidden.map((p) => `Disallow: ${p.url}`).join('\n')}
+
+Sitemap: ${SITE}/sitemap.xml
+`;
+}
+
+// sitemap.xml: the pages for search engines. Posts without "index: yes" are not in it.
+function renderSitemap(posts) {
+  const lastmod = (p) => (p.updated || p.date).slice(0, 10);
+  const newest = posts.map(lastmod).sort().pop();
+  const pages = [
+    { loc: `${SITE}/` },
+    { loc: `${SITE}/blog/`, lastmod: newest },
+    ...posts.filter((p) => p.indexed).map((p) => ({ loc: SITE + p.url, lastmod: lastmod(p) }))
+  ];
+  return `<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pages.map((u) => `  <url><loc>${escape(u.loc)}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}</url>`).join('\n')}
+</urlset>
+`;
+}
+
+module.exports = { SITE, IMAGE_WIDTHS, loadPosts, renderCards, renderPost, renderFeed, renderRobots, renderSitemap, robots, escape };

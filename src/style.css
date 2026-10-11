@@ -298,11 +298,27 @@ header.hero { background-color: var(--header-band); }
 .post-card .card-content { display: flex; flex-direction: column; gap: 4px; }
 .post-card .card-title { margin: 0; font-size: 20px; line-height: 28px; }
 .post-card p { margin: 4px 0 0; color: var(--ink-muted); }
+.post-body .post-video { position: relative; aspect-ratio: 16 / 9; background: #000; }
 .post-card .card-image img,
 .post-body .card-image img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 0; }
 
+/* Blog: the card of a post about a video (YouTube thumbnail) has a play button */
+.video-card .card-image { position: relative; }
+.video-card .card-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 64px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgb(0 0 0 / 0.65) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M8 5v14l11-7z'/%3E%3C/svg%3E") center / 28px no-repeat;
+  transition: background-color 0.2s;
+}
+.video-card:hover .card-image::after { background-color: #ff4f00; }
+
 /* Blog: post pages */
-.blog-container { max-width: 800px; }
+.blog-container { max-width: 800px; } /* post pages only; /blog/ has the full width */
 .post-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 16px; margin: 8px 0 24px; }
 .post-header time { flex-basis: 100%; color: var(--text-orange); }
 /* Under the post card: the date of the last edit and the AI note, in grey */
@@ -322,6 +338,25 @@ header.hero { background-color: var(--header-band); }
 .post-body iframe { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border: 0; border-radius: 8px; }
 .post-body video { display: block; max-width: 100%; max-height: 80vh; margin: 0 auto 1em; border-radius: 8px; background: #000; }
 .post-body a:hover { text-decoration: underline; }
+/* The author card at the top of a post. Under the post: views, comments and Patreon */
+.post-footer { display: flex; flex-direction: column; gap: 16px; margin: 32px 0 0; }
+.post-views { margin: 0; font-size: 0.9rem; color: var(--ink-muted); }
+.post-footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.post-footer-card { height: 100%; }
+.post-footer-card .card-content { display: flex; flex-direction: column; gap: 8px; height: 100%; }
+.post-footer-card h2 { margin: 0; font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
+.post-footer-card p { margin: 0; color: var(--ink-muted); }
+.post-footer-card .post-footer-links { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: auto; padding-top: 8px; overflow-wrap: anywhere; }
+.post-footer-button { display: inline-block; padding: 8px 20px; border-radius: 999px; background: #ff4f00; color: #fff !important; font-weight: 500; }
+.post-footer-button:hover { background: #e04500; }
+.author-card { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin: 0 0 16px; }
+.author-card img { flex: none; width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+.author-text { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; min-width: 0; }
+.author-text > * { flex-basis: 100%; }
+.author-name { color: var(--ink-strong); font-size: 1.05rem; }
+.author-tagline, .author-job { color: var(--ink-muted); font-size: 0.9rem; }
+.author-more { color: var(--text-orange); font-size: 0.9rem; }
+
 .post-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0 8px; }
 .post-nav a { display: flex; flex-direction: column; color: var(--ink-strong); }
 .post-nav .eyebrow { color: var(--text-orange); }

@@ -31,10 +31,11 @@ The live cards of the home page get their data from the API routes in `server/ap
 
 - `/api/lastfm`: the last track on Last.fm ("I'm listening to...").
 - `/api/location`: the area where I am ("Last seen..."). See "Location".
+- `/api/views`: the number of views of each blog post, from Plausible (see "Post footer").
 
 The site calls the backend at the address in `API_BASE` (see `webpack.config.js`). On Vercel and Netlify, the address is `https://api.yasiu.pl`. A local build uses the same origin.
 
-The backend keeps each answer in memory: 60 seconds for `/api/lastfm` and 5 minutes for `/api/location`. If the source of an answer fails, the route sends the last good answer. The route rules in the backend part of `nitro.config.mjs` set the times and the CORS headers.
+The backend keeps each answer in memory: 60 seconds for `/api/lastfm`, 5 minutes for `/api/location` and 10 minutes for `/api/views`. If the source of an answer fails, the route sends the last good answer. The route rules in the backend part of `nitro.config.mjs` set the times and the CORS headers.
 
 The API routes read these environment variables. For each variable, a route also reads the file in `<variable>_FILE`. On blade12, the secrets are files from sops (see [`infra/api/README.md`](infra/api/README.md)).
 
@@ -44,6 +45,8 @@ The API routes read these environment variables. For each variable, a route also
 | `OWNTRACKS_USER`, `OWNTRACKS_PASSWORD` | Optional: the login and the password for `/api/0/last` of the OwnTracks Recorder (HTTP basic authentication). The backend on blade12 needs no login. |
 | `OWNTRACKS_RECORDER_USER`, `OWNTRACKS_RECORDER_DEVICE` | Optional: the user and the device in the Recorder. The defaults are `yasiu` and `spacewar`. |
 | `OWNTRACKS_URL` | Optional: the address of the Recorder. The default is `https://owntracks.yasiu.pl`. On blade12, the address is `http://owntracks-recorder:8083`. |
+| `PLAUSIBLE_API_KEY` | The Stats API key of Plausible, for `/api/views`. Make it in Plausible: "Settings", "API Keys", type "Stats API". |
+| `PLAUSIBLE_URL` | Optional: the address of Plausible. The default is `https://plausible.yasiu.pl`. On blade12, the address is `http://plausible:8000`. |
 | `MAPBOX_TOKEN` | The access token of Mapbox, for the map image. The token has URL restrictions, so the route sends the header `Referer: https://yasiu.pl/`. Without this header, Mapbox sends 403. |
 
 The routes also accept the names of the old Netlify functions: `lastfm`, `owntracks_user`, `owntracks_device` and `mapbox_token`.
@@ -127,7 +130,7 @@ On your computer, write the variables in the file `.env` in the root of the repo
 On the platform, set the variables in the settings of the project (see "API routes"). Then deploy the site again.
 
 Give the address of the private CV only to the persons who must have it.
-Keep the file name of the private CV with the prefix `Resume_`. For these files, `src/static/robots.txt` tells search engines not to read the file.
+Keep the file name of the private CV with the prefix `Resume_`. For these files, `robots.txt` tells search engines (see "Search engines") not to read the file.
 
 ### Business card
 
@@ -188,12 +191,30 @@ image: header.jpg
 - `updated`: the date of the last edit, as `YYYY-MM-DD`. Set it when you change the text of a post after its publication.
   The post page shows it in grey under the post, above the links to the older and newer post, if the date is not the day of publication. The Atom feed uses it in `<updated>`.
   With this date, a reader can see the difference between a historical post and a post that was written or changed later.
+- `index`: `yes` lets search engines index the post page and its files (see "Search engines"). The default is `no`.
+- `video`: the YouTube URL of the main video of the post, for example `https://youtu.be/MfWttCMSoNI?t=257`. A start time (`t=` or `start=`, in seconds or as `4m17s`) is optional.
+  The post page shows the player in place of the header image. The header image stays on the post card and in the link previews, and the post card shows a play button.
+  If the header image is a YouTube thumbnail `youtube-<ID>.jpg`, the post gets the player of that video without this field.
+  If the post text has a player of the same video as a separate block, the build removes it from the text. Do not set the field for a short clip next to the text.
 - `ai`: how much of the post an AI wrote.
   - `written`: an AI wrote the post from the materials of the author (for example notes, transcripts, forum threads). The author checked it.
     The post page shows a note in grey under the post, next to the date of the last edit.
   - `edited`: the author wrote the post. An AI edited it or added parts (for example the "More" section with sources).
     The post page does not show a note. The field only records the fact in the source file.
   - Do not set the field for a post that the author wrote without an AI.
+
+### Post footer
+
+Above the post text, the page shows the author card: the photo, the name, the tagline (in the language of the post) and the current job, with a link to the home page. It is for readers who come to a post from a link. The data comes from `src/cv.md` and `src/timeline.md`, like the profile card (`authorData` in `build/profile.js`).
+
+Under each post, the page shows a footer (`renderFooter` in `build/blog.js`):
+
+- The number of views. The element `.post-views` has the path of the post in `data-views-path` and stays hidden until a script writes the number into `.post-views-count`.
+  `src/app.js` gets the numbers from the backend (`/api/views`, see "API routes"). Without an answer, or with 0 views, the number stays hidden.
+- Comments: at this time, a request to write on Mastodon or by email (the subject is the post title). Later, the comments and the reactions will come from the fediverse (ActivityPub).
+- Support: a link to Patreon.
+
+The texts of the footer are in English and in Polish (`WORDS` in `build/blog.js`). The footer is not in the Atom feed.
 
 ### Post files
 
@@ -216,6 +237,7 @@ The [unpic](https://unpic.pics/lib/) library makes the CDN URLs. The image width
 - An image in the post text is 800 px or 1600 px wide. It links to the original file.
 - The header image is 800 px or 1600 px wide. It links to the original file.
 - The image on the post card is 480 px or 960 px wide.
+- The post card shows a play button if the post has a header video (see `video`). Use the name `youtube-<ID>.jpg` for the thumbnail of a post about a video.
 
 The CSS crops the header image and the card image to the proportions 16:9 (see `crop`).
 The browser selects the width that agrees with the screen. The build does not ask for a width that is larger than the original. If the original is narrower than all widths, the page shows the original.
@@ -235,6 +257,26 @@ The service worker does not precache the files in `/blog/`, because they are too
 
 The build stops with an error if a post has a wrong file name, an unknown field, or no title.
 If you add or rename a post while `npm start` runs, restart `npm start`.
+
+### Search engines
+
+Search engines show the blog, but not the details of the posts:
+
+- They index `/blog/` and the home page. These pages show the title, the date and the summary of each post.
+- They do not index the post pages. Each post page has the tag `<meta name="robots" content="noindex, follow, noimageindex">`.
+  The search engines follow the links on the page, but they do not show the page in the results.
+- They do not read the files of the posts (images, PDF files, archives). `robots.txt` closes the post folders to crawlers, but not the post page itself: a crawler must read the page to see its `noindex` tag.
+- Google Images gets no images of the posts and no images from the image CDN (`/_vercel/image`, `/.netlify/images`). The cards on `/blog/` use the CDN, thus Google Images does not show them.
+
+To show a post in search engines, set `index: yes` in its front matter. The post page then has no `robots` tag, its folder is open to crawlers, and the post is in `sitemap.xml`. Google Images can then index the original images of the post, but not the CDN copies.
+
+The build makes `robots.txt` and `sitemap.xml` from the posts (`renderRobots` and `renderSitemap` in `build/blog.js`). Do not add a `robots.txt` file to `src/static/`.
+The links in social media and in Mastodon still show a preview of a post: the `noindex` tag does not stop the previews.
+
+The home page has the profile data in JSON-LD (schema.org `Person`) from the `header` part of `src/cv.md`. Google can use it for the knowledge panel.
+
+`robots.txt` does not remove the pages and files that Google already has in its index. To remove them faster, use "Removals" in Google Search Console.
+Submit `https://yasiu.pl/sitemap.xml` in Google Search Console once.
 
 ## Analytics
 

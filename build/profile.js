@@ -14,7 +14,7 @@ const escape = (s) => String(s)
 // Path of a file in src/static as a URL of the site.
 const siteUrl = (file) => './' + path.relative(path.join('src', 'static'), file).split(path.sep).join('/');
 
-function renderProfile(cvFile, timelineFile) {
+function load(cvFile, timelineFile) {
   const h = parseCv(fs.readFileSync(cvFile, 'utf8'), path.basename(cvFile)).header.fields;
   const timeline = parseTimeline(fs.readFileSync(timelineFile, 'utf8'), path.basename(timelineFile));
   const job = timeline.find((t) => t.type === 'work' && t.end === 'now');
@@ -25,12 +25,17 @@ function renderProfile(cvFile, timelineFile) {
     h.email && ['Email', h.email, `mailto:${h.email}?subject=Website%20Contact%20Form`, ' class="u-email"'],
     h.linkedin && ['LinkedIn', `in/${h.linkedin}`, `https://www.linkedin.com/in/${h.linkedin}`, ' rel="me"'],
     h.github && ['GitHub', `@${h.github}`, `https://github.com/${h.github}`, ' rel="me"'],
+    h.youtube && ['YouTube', 'yasiu.pl/youtube', `https://www.youtube.com/channel/${h.youtube}`, ' rel="me"'],
     h.mastodon && ['Mastodon', h.mastodon, `https://${mastodonHost}/@${mastodonUser}`, ' rel="me"'],
     h.instagram && ['Instagram', `@${h.instagram}`, `https://www.instagram.com/${h.instagram}/`, ' rel="me"'],
     h.twitter && ['Twitter', `@${h.twitter}`, `https://twitter.com/${h.twitter}`, ' rel="me"'],
     h.telegram && ['Telegram', `@${h.telegram}`, `https://t.me/${h.telegram}`, ' rel="me"']
   ].filter(Boolean);
+  return { h, job, contacts };
+}
 
+function renderProfile(cvFile, timelineFile) {
+  const { h, job, contacts } = load(cvFile, timelineFile);
   const contactList = contacts.map(([label, text, url, attrs]) => `
                   <li><a${attrs} href="${escape(url)}"${/^https?:/.test(url) ? ' target="_blank"' : ''}><span class="profile-label">${escape(label)}</span><span class="profile-value">${escape(text)}</span></a></li>`).join('');
 
@@ -52,4 +57,36 @@ function renderProfile(cvFile, timelineFile) {
             </div>`;
 }
 
-module.exports = { renderProfile };
+// The data of the author card under each blog post (authorCard in build/blog.js).
+function authorData(cvFile, timelineFile) {
+  const { h, job } = load(cvFile, timelineFile);
+  return {
+    name: h.name,
+    photo: siteUrl(h.photo).replace(/^\./, ''),
+    tagline: { en: h['tagline-en'] || '', pl: h['tagline-pl'] || h['tagline-en'] || '' },
+    job: job && {
+      en: `${job.title} · ${job.org}`,
+      pl: `${job['title-pl'] || job.title} · ${job.org}`
+    }
+  };
+}
+
+// The same data for search engines: a schema.org Person in JSON-LD. "sameAs" are the profiles
+// on other sites.
+function renderProfileJsonLd(cvFile, timelineFile) {
+  const { h, job, contacts } = load(cvFile, timelineFile);
+  const person = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: h.name,
+    url: SITE,
+    image: new URL(siteUrl(h.photo), SITE).href,
+    description: h['summary-en'],
+    ...(job && { jobTitle: job.title, worksFor: { '@type': 'Organization', name: job.org } }),
+    sameAs: contacts.map((c) => c[2]).filter((url) => /^https:/.test(url))
+  };
+  // "<" in a string would end the <script> element.
+  return `<script type="application/ld+json">${JSON.stringify(person).replace(/</g, '\\u003c')}</script>`;
+}
+
+module.exports = { renderProfile, renderProfileJsonLd, authorData };

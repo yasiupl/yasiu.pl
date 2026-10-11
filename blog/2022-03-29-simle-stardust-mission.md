@@ -1,6 +1,7 @@
 ---
 title: "SimLE Stardust Mission"
 date: 2022-03-29T19:59:26+00:00
+video: https://youtu.be/vfBzfLm3els
 ---
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/vfBzfLm3els" title="SimLE Stardust - misja stratosferyczna z Iławy | 27 Lutego 2022" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

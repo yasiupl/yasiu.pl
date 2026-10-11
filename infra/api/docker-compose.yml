@@ -24,11 +24,15 @@ services:
       # The routes read the secrets from these files (server/utils/env.js).
       LASTFM_API_KEY_FILE: /run/secrets/yasiu-pl/lastfm-api-key
       MAPBOX_TOKEN_FILE: /run/secrets/yasiu-pl/mapbox-token
+      PLAUSIBLE_API_KEY_FILE: /run/secrets/yasiu-pl/plausible-api-key
+      # Plausible of the plausible stack, in the docker network "web" (no trip through Traefik).
+      PLAUSIBLE_URL: http://plausible:8000
     volumes:
       # Run `nixos-rebuild switch` before the first `up`. If a secret is not there yet, docker
       # creates a directory at its path and sops-nix cannot replace it. See README.md.
       - "/run/secrets/yasiu-pl/lastfm-api-key:/run/secrets/yasiu-pl/lastfm-api-key:ro"
       - "/run/secrets/yasiu-pl/mapbox-token:/run/secrets/yasiu-pl/mapbox-token:ro"
+      - "/run/secrets/yasiu-pl/plausible-api-key:/run/secrets/yasiu-pl/plausible-api-key:ro"
     # No `ports:`. Docker publishes ports through its own NAT chains and bypasses nixos-fw.
     networks:
       - web

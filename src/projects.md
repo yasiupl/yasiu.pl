@@ -11,12 +11,6 @@ with an emoji). The list below the heading sets the fields:
 
 Cards appear in the same order as in this file. Text outside the lists is ignored.
 
-## 📺 YouTube
-- url: https://www.youtube.com/channel/UCqFJAKOMWvS_oKHk9ppMC8w
-- label: yasiu.pl/youtube
-- image: youtube.png
-- embed: https://www.youtube.com/embed/?list=UUqFJAKOMWvS_oKHk9ppMC8w&showinfo=0&rel=0&controls=0&loop=1
-
 ## 🚀 Rocket Watch
 - url: https://rocketwatch.yasiu.pl
 - label: rocket.watch
@@ -35,6 +29,10 @@ Cards appear in the same order as in this file. Text outside the lists is ignore
 - label: pomorze.hackerspace.pl
 - image: hspomorze.png
 
-## 💸 Patreon
-- url: https://patreon.com/yasiu
-- image: patreon.png
+## 🛰️ PSPA
+- url: https://pspa.pl
+- image: pspa.png
+
+## 💬 14-200.pl
+- url: https://14-200.pl
+- image: 14-200.png

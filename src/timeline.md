@@ -7,6 +7,7 @@ Each `##` heading is one entry. The heading is the title of the entry.
 The list below the heading sets the fields:
 
 - `type` (required): `work`, `education`, `org`, `project`, `talk`, `award` or `cert`.
+- `title-pl`: the title in Polish. The author card of the Polish blog posts shows it for the current job. The default is the title.
 - `start` (required): the start date, as `YYYY`, `YYYY-MM` or `YYYY-MM-DD`.
 - `end`: the end date, as `YYYY-MM`, or `now` for an entry that continues.
 - `org`: the organization.
@@ -20,6 +21,7 @@ Text outside the lists is ignored.
 
 ## Mission Analyst
 - type: work
+- title-pl: Analityk Misji
 - org: PIAP Space
 - place: Warsaw, Poland
 - start: 2026-07

@@ -2,7 +2,7 @@
 // Format: see the top of src/timeline.md.
 const fs = require('fs');
 
-const FIELDS = ['type', 'org', 'start', 'end', 'place', 'url', 'text'];
+const FIELDS = ['type', 'title-pl', 'org', 'start', 'end', 'place', 'url', 'text'];
 const TYPES = {
   work: { label: 'Work', icon: '💼' },
   education: { label: 'Education', icon: '🎓' },
@@ -30,7 +30,7 @@ function parse(markdown, file) {
       entries.push(current);
       return;
     }
-    const field = line.match(/^\s*[-*]\s+([a-z]+)\s*:\s*(.+?)\s*$/);
+    const field = line.match(/^\s*[-*]\s+([a-z-]+)\s*:\s*(.+?)\s*$/);
     if (current && field) {
       if (!FIELDS.includes(field[1])) {
         throw new Error(`${file}:${i + 1}: unknown field "${field[1]}" (use ${FIELDS.join(', ')})`);

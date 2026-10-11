@@ -29,7 +29,7 @@ The private version has the phone number. The site does not link to it. Its addr
 The phone number and the file name of the private version come from the variables `CV_PHONE` and `CV_PRIVATE_NAME` (see README.md, "CV").
 Do not write the phone number in this file. This repository is public.
 
-In the `header` part, `summary-en` is the description on the card of the home page (`summary-pl` is for a Polish version). The home page card also shows the name, the tagline, the current job, the contact data and the profiles in `instagram`, `twitter` and `telegram`.
+In the `header` part, `summary-en` is the description on the card of the home page (`summary-pl` is for a Polish version). The home page card also shows the name, the tagline, the current job, the contact data and the profiles in `youtube` (the channel ID), `instagram`, `twitter` and `telegram`.
 
 In the `header` part, `photo` and `background` are paths from the root of the repository.
 The `photo` is the profile photo. The `background` is the image behind the name, with the proportions 210:44 (the width of an A4 page and the height of the header).
@@ -49,6 +49,7 @@ Text outside the lists is ignored.
 - website: yasiu.pl
 - linkedin: yasiu
 - github: yasiupl
+- youtube: UCqFJAKOMWvS_oKHk9ppMC8w
 - mastodon: @yasiu@0x3c.pl
 - instagram: yasiu.pl
 - twitter: yasiupl

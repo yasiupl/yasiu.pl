@@ -88,6 +88,25 @@ function getAgoString(timestampSeconds) {
   }
 }
 
+// The number of views under a blog post (see server/api/views.get.js). The number stays hidden
+// if the backend does not answer or if the post has no views yet.
+const postViews = document.querySelector(".post-views[data-views-path]");
+if (postViews) {
+  fetch(API_BASE + "/api/views", { headers: { "Accept": "application/json" } })
+    .then(response => response.ok ? response.json() : Promise.reject(response.status))
+    .then(views => {
+      const count = views[postViews.dataset.viewsPath];
+      if (!count) return;
+      // The word agrees with the number (for example 1 wyświetlenie, 2 wyświetlenia, 5 wyświetleń).
+      const lang = postViews.closest("[lang]").lang;
+      const form = new Intl.PluralRules(lang).select(count);
+      postViews.querySelector(".post-views-count").textContent = count.toLocaleString(lang);
+      postViews.querySelector(".post-views-word").textContent = postViews.dataset[form] || postViews.dataset.other;
+      postViews.hidden = false;
+    })
+    .catch(() => {});
+}
+
 // Live widgets: only the home page has them.
 if (document.getElementById("track")) {
   // The API routes are in server/api/ and run on the backend (API_BASE, see webpack.config.js). The

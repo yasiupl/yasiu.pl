@@ -62,10 +62,12 @@ function backendConfig() {
     // The site calls the API routes from another origin (yasiu.pl), so the routes send CORS headers.
     // Each route keeps its answer in memory ("swr"). After maxAge, the next request gets the kept
     // answer, and the route gets a new answer in the background. If the source fails, the route
-    // keeps the last good answer. Thus the site sends few requests to Last.fm and OpenStreetMap.
+    // keeps the last good answer. Thus the site sends few requests to Last.fm, OpenStreetMap and
+    // Plausible.
     routeRules: {
       '/api/lastfm': { cors: true, cache: { maxAge: 60, swr: true, staleMaxAge: 300 } },
-      '/api/location': { cors: true, cache: { maxAge: 300, swr: true, staleMaxAge: 900 } }
+      '/api/location': { cors: true, cache: { maxAge: 300, swr: true, staleMaxAge: 900 } },
+      '/api/views': { cors: true, cache: { maxAge: 600, swr: true, staleMaxAge: 3600 } }
     }
   };
 }

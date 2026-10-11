@@ -1,11 +1,12 @@
 ---
 title: "Czym jest RAVEN, czyli „pierwszy polski statek kosmiczny”"
 date: 2026-07-29T11:39:30+02:00
-updated: 2026-10-01
+updated: 2026-10-11
 ai: edited
 lang: pl
 image: raven-tvp3.jpg
 crop: top
+video: https://youtu.be/MfWttCMSoNI?t=257
 description: "RAVEN, rozwijany przez PIAP Space na zlecenie ESA, to nie kolejny satelita, tylko wielozadaniowy statek serwisowy. Krótko o tym, czym jest i na czym polega moja praca jako analityka misji."
 ---
 
@@ -14,6 +15,8 @@ W ostatnich dniach zrobiło się głośno o „pierwszym polskim statku kosmiczn
 Telewizja wymaga skrótów, więc tutaj – w gronie inżynierów i specjalistów – czas na twardy konkret. Czym tak naprawdę jest RAVEN i dlaczego nie jest to po prostu „kolejny satelita”?
 
 Typowe obiekty okrążające Ziemię (jak Copernicus czy systemy GNSS/Galileo) spełniają jedną, dedykowaną misję. To podejście stosowane od początku eksploracji kosmosu – pozwala zoptymalizować zasoby, zapewniając ekonomię i niezawodność, ale zamyka satelitę w sztywnych ramach jego pierwotnego przeznaczenia.
+
+![Logo RAVEN – In-Space Transportation Vehicle](raven-logo.png)
 
 RAVEN, rozwijany przez PIAP Space na zlecenie European Space Agency, to zupełnie nowa kategoria. Wchodzimy w erę nowej ekonomii kosmicznej, zdominowanej przez tanie koszty wynoszenia, komercyjne stacje kosmiczne, centra danych, a wkrótce z pewnością również fabryki w stanie nieważkości. RAVEN widzi swoją przyszłość jako aktywny element tego ekosystemu – wielozadaniowy statek serwisowy.
 
@@ -26,8 +29,6 @@ Co to oznacza w praktyce?
 Moja rola jako Analityka Misji polega na projektowaniu i symulowaniu trajektorii dla nadchodzącej misji Demo (planowanej na 2029 r.). Przejście od przewidywalnej orbity do aktywnego manewrowania względem innych satelitów to fascynujące wyzwanie z zakresu dynamiki orbitalnej, które ma bezpośredni wpływ na kształt całego systemu.
 
 Jak z Waszej perspektywy będą wyglądać największe wyzwania dla misji serwisowych w najbliższej dekadzie? Prawo kosmiczne czy czysta fizyka?
-
-<iframe src="https://www.youtube-nocookie.com/embed/MfWttCMSoNI?start=257s" title="Czym jest RAVEN, czyli „pierwszy polski statek kosmiczny”" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> 
 
 ## Więcej
 

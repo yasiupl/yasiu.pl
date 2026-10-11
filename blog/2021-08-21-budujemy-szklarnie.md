@@ -1,11 +1,12 @@
 ---
 title: "Budujemy szklarnię!"
 date: 2021-08-21T12:00:00+02:00
-updated: 2026-10-01
+updated: 2026-10-11
 ai: written
 lang: pl
 image: ads_7918.jpeg
 description: "Wiosną 2021 roku Hackerspace Pomorze zbudował własną szklarnię: kopuła z rurek ze złomu, folia, panel słoneczny, Raspberry Pi i telemetria przez APRS."
+video: https://youtu.be/qY4m3wcmOoo
 ---
 
 Wiosną 2021 roku, kiedy spejs dopiero budził się po pandemii, w Hackerspace Pomorze wyrosła szklarnia. Zaczęło się od wątku na forum, a skończyło na kopule z rurek ze złomu, w której rosły pomidory, a dane z czujników leciały przez radio.
@@ -18,9 +19,7 @@ Wątek szybko obrósł w pomysły: FarmBot, bramka LoRa, nawóz z pobliskiego hi
 
 ## Kopuła z rurek
 
-8 maja pojechaliśmy do [tuBazy i FabLabu Trójmiasto](/blog/zwiedzamy-tubaza-i-fablab-trojmiasto/). Ich geodom-szklarnia tak nas zainspirował, że już następnego dnia zaczęliśmy budować własny prototyp. Pierwszy dzień budowy nagrałem w formie timelapse'u:
-
-<iframe src="https://www.youtube-nocookie.com/embed/qY4m3wcmOoo" title="Budujemy Szklarnię!" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+8 maja pojechaliśmy do [tuBazy i FabLabu Trójmiasto](/blog/zwiedzamy-tubaza-i-fablab-trojmiasto/). Ich geodom-szklarnia tak nas zainspirował, że już następnego dnia zaczęliśmy budować własny prototyp. Pierwszy dzień budowy nagrałem w formie timelapse'u - to film na górze wpisu.
 
 Do skończenia konstrukcji zabrakło nam czterech rurek. Znalazłem je w starych łóżkach na złomie: kupiłem jeden bok łóżka i przewiozłem go rowerem critbita, z rurkami przywiązanymi wzdłuż ramy. Dojechałem cały, a na złomie zostało jeszcze materiału na drugą szklarnię.
 
@@ -34,7 +33,9 @@ Do skończenia konstrukcji zabrakło nam czterech rurek. Znalazłem je w starych
 
 ## Elektronika i radio
 
-Latem szklarnia zamieniła się w poligon elektroniczny. 11 lipca karo z ekipą zamontowali panel słoneczny i Raspberry Pi. Dwa tygodnie później, przy pikniku na działce (na zdjęciu w nagłówku), przetestowaliśmy łączność radiową: pakiety APRS ze szklarni docierały bez problemu przy mocy 1 W.
+Latem szklarnia zamieniła się w poligon elektroniczny. 11 lipca karo z ekipą zamontowali panel słoneczny i Raspberry Pi. Dwa tygodnie później, przy pikniku na działce (na zdjęciu poniżej), przetestowaliśmy łączność radiową: pakiety APRS ze szklarni docierały bez problemu przy mocy 1 W.
+
+![Piknik przy szklarni](ads_7918.jpeg)
 
 Z tego wyjazdu wyszedł plan na dalszą pracę. Raspberry Pi miało wystawiać własną, ukrytą sieć WiFi i mieć awaryjne połączenie kablem, bo modem LTE przestał działać. Zamiast osobnego Arduino zdecydowaliśmy się na czujniki na NodeMCU, które łączą się z Raspberry przez WiFi, a Domoticz miał je konfigurować automatycznie. Telemetrię miał wysyłać direwolf, przez kabel audio do radia Baofeng UV-3R.
 

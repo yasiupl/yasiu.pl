@@ -1,11 +1,12 @@
 ---
 title: "Clifford Stoll - Spotkanie z ojcem cyberbezpieczeństwa"
 date: 2025-04-25T19:11:49+02:00
-updated: 2026-09-30
+updated: 2026-10-11
 ai: edited
 lang: pl
 image: IMG_20250424_164017004.jpeg
 crop: top
+video: https://youtu.be/_HqCAKAguwk
 ---
 
 Najserdeczniejsze pozdrowienia dla całego HSP od Clifforda Stolla z słonecznego Oakland, Kalifornia!
@@ -53,9 +54,7 @@ Proszę obchodzić się delikatnie, będę smutny jeżeli się stłucze 🙁
 
 ### 1 marca 2026
 
-Spóźnione nagranie z Cliffem:
-
-<iframe src="https://www.youtube-nocookie.com/embed/_HqCAKAguwk" title="YouTube" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+Spóźnione nagranie z Cliffem jest na górze wpisu.
 
 <https://photos.app.goo.gl/NmHsk8rjkiYKD1hE7>
 

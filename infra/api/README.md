@@ -6,16 +6,17 @@ The site on Vercel is static. The site gets the data for the live cards from the
 | Item | Value |
 | --- | --- |
 | Address | `https://api.yasiu.pl` |
-| Routes | `/api/lastfm`, `/api/location`, `/.well-known/webfinger` |
+| Routes | `/api/lastfm`, `/api/location`, `/api/views`, `/.well-known/webfinger` |
 | Container | `yasiu-pl-api` (compose project `yasiu-pl`) |
 | Image | `yasiu-pl-api`, built on blade12 from this repository ([`Dockerfile`](Dockerfile)) |
-| Secrets | `yasiu-pl/lastfm-api-key` and `yasiu-pl/mapbox-token` in `hosts/argo/blade12/secrets.yaml` (repository `infrastruktura`, sops) |
+| Secrets | `yasiu-pl/lastfm-api-key`, `yasiu-pl/mapbox-token` and `yasiu-pl/plausible-api-key` in `hosts/argo/blade12/secrets.yaml` (repository `infrastruktura`, sops) |
 | Data | None. The routes keep their answers in memory. |
 
 ## How the backend works
 
 - The [`Dockerfile`](Dockerfile) builds the routes with Nitro (preset `node-server`). The image contains only the server (`.output/`).
-- The routes read the secrets from the files in `LASTFM_API_KEY_FILE` and `MAPBOX_TOKEN_FILE` (see `server/utils/env.js`).
+- The routes read the secrets from the files in `LASTFM_API_KEY_FILE`, `MAPBOX_TOKEN_FILE` and `PLAUSIBLE_API_KEY_FILE` (see `server/utils/env.js`).
+- The route `/api/views` reads Plausible in the docker network `web` (`http://plausible:8000`, the plausible stack on blade12).
 - The route `/api/location` reads the OwnTracks Recorder in the docker network `iot` (`http://owntracks-recorder:8083`). This connection needs no login.
 - Each route keeps its last good answer in memory (see the route rules in `nitro.config.mjs`). After a restart, the first request gets a new answer.
 - Traefik sends the requests for `api.yasiu.pl` to the container. The container publishes no ports.
@@ -59,8 +60,25 @@ If `docker compose up` runs before the rebuild of blade12, docker creates a dire
    ```bash
    curl -s https://api.yasiu.pl/api/lastfm | head -c 200
    curl -s https://api.yasiu.pl/api/location | head -c 200
+   curl -s https://api.yasiu.pl/api/views | head -c 200
    curl -s 'https://api.yasiu.pl/.well-known/webfinger?resource=acct:yasiu@yasiu.pl'
    ```
+
+## Add the views of the blog posts (`/api/views`)
+
+The route `/api/views` needs a Stats API key of Plausible. For a backend that runs already:
+
+1. In Plausible (`plausible.yasiu.pl`), make a key: "Settings", "API Keys", "New API Key", type "Stats API".
+2. Add the key to sops (in the `infrastruktura` repository, in `nix develop`):
+
+   ```bash
+   sops set hosts/argo/blade12/secrets.yaml '["yasiu-pl"]["plausible-api-key"]' '"<Stats API key of Plausible>"'
+   ```
+
+3. Declare the secret `yasiu-pl/plausible-api-key` for blade12 like `yasiu-pl/lastfm-api-key` (owner uid 1000), and rebuild blade12. Do this before step 4: else docker creates a directory at the path of the secret.
+4. On blade12, run `docker compose up -d --build` in this folder, and test: `curl -s https://api.yasiu.pl/api/views | head -c 200`.
+
+Without the key, the route sends `{"statusMessage": "Plausible: 401", "data": {"PLAUSIBLE_API_KEY": false}}`, and the posts show no number of views.
 
 ## Update
 
