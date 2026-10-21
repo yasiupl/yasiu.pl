@@ -29,7 +29,8 @@ The private version has the phone number. The site does not link to it. Its addr
 The phone number and the file name of the private version come from the variables `CV_PHONE` and `CV_PRIVATE_NAME` (see README.md, "CV").
 Do not write the phone number in this file. This repository is public.
 
-In the `header` part, `summary-en` is the description on the card of the home page (`summary-pl` is for a Polish version). The home page card also shows the name, the tagline, the current job, the contact data and the profiles in `youtube` (the channel ID), `instagram`, `twitter` and `telegram`.
+In the `header` part, `summary-en` is the description on the card of the home page (`summary-pl` is for a Polish version). The home page card also shows the name, the tagline, the current job, the contact data and the profiles in `youtube` (the channel ID), `bluesky` (the handle), `instagram`, `twitter` and `telegram`.
+The card also shows the keys: `pgp` is the fingerprint of the PGP key, and `keybase` is the user on Keybase. The links `/pgp.pub` and `/ssh.pub` send to the keys on Keybase and GitHub (see `nitro.config.mjs`). The build puts the key in the Web Key Directory of yasiu.pl for the `email` address (see `build/keys.js`); the build stops if the key on Keybase or GitHub has another fingerprint. If you change the PGP key, change the fingerprint in both files. If you change the Bluesky handle, change `src/static/.well-known/atproto-did`.
 
 In the `header` part, `photo` and `background` are paths from the root of the repository.
 The `photo` is the profile photo. The `background` is the image behind the name, with the proportions 210:44 (the width of an A4 page and the height of the header).
@@ -51,9 +52,12 @@ Text outside the lists is ignored.
 - github: yasiupl
 - youtube: UCqFJAKOMWvS_oKHk9ppMC8w
 - mastodon: @yasiu@0x3c.pl
+- bluesky: yasiu.pl
 - instagram: yasiu.pl
 - twitter: yasiupl
 - telegram: yasiupl
+- keybase: yasiupl
+- pgp: FE683591AE239DC2188C4BBA1E3E8090E179F056
 - summary-en: Mission Analyst at PIAP Space, plotting trajectories for RAVEN – the Polish in-space transportation vehicle built for ESA. Before that, I flew OPS-SAT from ESA's mission control in Darmstadt, sent a microbiology experiment to the edge of space on BEXUS 30, and led the SimLE science club through balloons and rockets. Board member of PSPA, glider pilot in training, and a hacker and maker at heart.
 - summary-pl: Analityk misji w PIAP Space – projektuję trajektorie dla RAVEN, polskiego pojazdu do transportu orbitalnego budowanego dla ESA. Wcześniej sterowałem satelitą OPS-SAT z centrum kontroli misji ESA w Darmstadt, wysłałem eksperyment mikrobiologiczny na skraj kosmosu na balonie BEXUS 30 i prowadziłem koło naukowe SimLE przez balony i rakiety. Członek zarządu PSPA, szybownik w trakcie szkolenia, z duszy haker i maker.
 - consent-en: I agree to the processing of personal data provided in this document for realizing the recruitment process.

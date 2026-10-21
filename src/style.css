@@ -279,6 +279,12 @@ header.hero { background-color: var(--header-band); }
 }
 .profile-card .profile-value { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-orange); }
 .profile-card .profile-links a:hover .profile-value { text-decoration: underline; }
+/* The public keys, under the contact data. */
+.profile-card .profile-keys { padding: 12px 24px; border-top: 1px solid var(--hairline); font-size: 0.9rem; }
+.profile-card .profile-keys ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 24px; margin: 0; padding: 0; }
+.profile-card .profile-keys li { list-style: none; min-width: 0; overflow-wrap: anywhere; text-align: center; }
+.profile-card .profile-keys a { color: var(--text-orange); }
+.profile-card .profile-fingerprint { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 /* Desktop: the contact data is on one line. */
 @media (min-width: 1200px) {
   .profile-card .profile-contact { flex-wrap: nowrap; justify-content: space-between; gap: 16px; }

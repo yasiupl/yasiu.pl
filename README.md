@@ -84,6 +84,16 @@ The card at the top of the home page is like a business card. [`build/profile.js
 
 The card is also the representative h-card of the site.
 
+### Keys and identities
+
+The last line of the card shows the public keys. The fields `pgp` (the fingerprint), `keybase` and `email` of `src/cv.md` set it.
+
+- `/pgp.pub` and `/ssh.pub` send to the keys on Keybase and GitHub (`routeRules` in `nitro.config.mjs`).
+- Web Key Directory (WKD): `gpg --locate-keys contact@yasiu.pl` gets the key from `/.well-known/openpgpkey/hu/`. The build downloads the key from Keybase (or from GitHub), and stops if its fingerprint is not `pgp`. See [`build/keys.js`](build/keys.js). After you change the key on Keybase, deploy the site again.
+  The DNS of `yasiu.pl` has a wildcard record, so `openpgpkey.yasiu.pl` must have a TXT record and no A record. Without it, GnuPG uses the "advanced method" on that host and fails.
+- Keyoxide (`/keyoxide`) reads the key from the WKD and shows the identity proofs in it.
+- Bluesky: the handle `@yasiu.pl` is in `src/static/.well-known/atproto-did` and in the TXT record `_atproto.yasiu.pl`.
+
 ## Timeline
 
 The build makes the "Timeline" section of the home page from [`src/timeline.md`](src/timeline.md) and from all blog posts.

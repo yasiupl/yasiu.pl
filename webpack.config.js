@@ -9,6 +9,8 @@ const { renderProjects } = require('./build/projects');
 const { renderTimeline } = require('./build/timeline');
 const { renderProfile, renderProfileJsonLd, authorData } = require('./build/profile');
 const blog = require('./build/blog');
+const { wkdFiles } = require('./build/keys');
+const { parseCv } = require('./build/cv');
 
 const PROJECTS_FILE = path.resolve(__dirname, 'src/projects.md');
 const TIMELINE_FILE = path.resolve(__dirname, 'src/timeline.md');
@@ -113,6 +115,28 @@ class BlogFeedPlugin {
     }
 }
 
+// Writes the Web Key Directory (.well-known/openpgpkey/) with the PGP key of the "email" and "pgp"
+// fields of src/cv.md (see build/keys.js). The key is downloaded once per run of webpack, not on
+// each (watch) rebuild.
+class WkdPlugin {
+    apply(compiler) {
+        let files;
+        compiler.hooks.thisCompilation.tap('WkdPlugin', (compilation) => {
+            compilation.hooks.processAssets.tapPromise({
+                name: 'WkdPlugin',
+                stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL
+            }, async () => {
+                const { RawSource } = compiler.webpack.sources;
+                const h = parseCv(require('fs').readFileSync(CV_FILE, 'utf8'), 'src/cv.md').header.fields;
+                files ??= wkdFiles({ email: h.email, fingerprint: h.pgp, github: h.github });
+                for (const [file, content] of Object.entries(await files)) {
+                    compilation.emitAsset(file, new RawSource(content));
+                }
+            });
+        });
+    }
+}
+
 module.exports = {
     entry: ['./src/app.js', '@materializecss/materialize/dist/css/materialize.min.css', './src/style.css'],
     output: {
@@ -170,6 +194,7 @@ module.exports = {
         blogIndex,
         ...postPages,
         new BlogFeedPlugin(),
+        new WkdPlugin(),
         new WebpackPwaManifest({
             fingerprints: false,
             name: 'yasiu.pl',
@@ -203,7 +228,7 @@ module.exports = {
             // Do not precache the page itself: it changes on every content edit.
             // Do not precache the blog either: its photos and PDFs are ~140 MB.
             // Runtime caching below still keeps the pages and files a visitor opens.
-            exclude: [/\.map$/, /^manifest.*\.js$/, /\.html$/, /^blog\//, /\.pdf$/],
+            exclude: [/\.map$/, /^manifest.*\.js$/, /\.html$/, /^blog\//, /\.pdf$/, /^\.well-known\//],
             runtimeCaching: [{
                 // The page: network first, cached copy only when offline.
                 urlPattern: ({ request }) => request.mode === 'navigate',

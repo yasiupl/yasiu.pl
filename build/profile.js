@@ -27,17 +27,31 @@ function load(cvFile, timelineFile) {
     h.github && ['GitHub', `@${h.github}`, `https://github.com/${h.github}`, ' rel="me"'],
     h.youtube && ['YouTube', 'yasiu.pl/youtube', `https://www.youtube.com/channel/${h.youtube}`, ' rel="me"'],
     h.mastodon && ['Mastodon', h.mastodon, `https://${mastodonHost}/@${mastodonUser}`, ' rel="me"'],
+    h.bluesky && ['Bluesky', `@${h.bluesky}`, `https://bsky.app/profile/${h.bluesky}`, ' rel="me"'],
     h.instagram && ['Instagram', `@${h.instagram}`, `https://www.instagram.com/${h.instagram}/`, ' rel="me"'],
     h.twitter && ['Twitter', `@${h.twitter}`, `https://twitter.com/${h.twitter}`, ' rel="me"'],
     h.telegram && ['Telegram', `@${h.telegram}`, `https://t.me/${h.telegram}`, ' rel="me"']
   ].filter(Boolean);
-  return { h, job, contacts };
+
+  // The public keys. /pgp.pub and /ssh.pub send to the keys on Keybase and GitHub (nitro.config.mjs).
+  // [label, shown text, URL, extra attributes]
+  const fingerprint = (h.pgp || '').toUpperCase().replace(/\s/g, '').replace(/(.{4})(?!$)/g, '$1 ');
+  const keys = [
+    h.pgp && ['PGP', fingerprint, '/pgp.pub', ' class="u-key profile-fingerprint"'],
+    h.github && ['SSH', `github.com/${h.github}.keys`, '/ssh.pub', ''],
+    // Keyoxide shows the identity proofs in the key. It gets the key from the WKD (build/keys.js).
+    h.pgp && h.email && ['Keyoxide', h.email, `https://keyoxide.org/wkd/${encodeURIComponent(h.email)}`, ' rel="me"'],
+    h.keybase && ['Keybase', `keybase.io/${h.keybase}`, `https://keybase.io/${h.keybase}`, ' rel="me"']
+  ].filter(Boolean);
+  return { h, job, contacts, keys };
 }
 
 function renderProfile(cvFile, timelineFile) {
-  const { h, job, contacts } = load(cvFile, timelineFile);
+  const { h, job, contacts, keys } = load(cvFile, timelineFile);
   const contactList = contacts.map(([label, text, url, attrs]) => `
                   <li><a${attrs} href="${escape(url)}"${/^https?:/.test(url) ? ' target="_blank"' : ''}><span class="profile-label">${escape(label)}</span><span class="profile-value">${escape(text)}</span></a></li>`).join('');
+  const keyList = keys.map(([label, text, url, attrs]) => `
+                  <li><span class="profile-label">${escape(label)}</span> <a${attrs} href="${escape(url)}"${/^https?:/.test(url) ? ' target="_blank"' : ''}>${escape(text)}</a></li>`).join('');
 
   return `<div class="card profile-card h-card">
               <div class="profile-cover" style="background-image: url('${escape(siteUrl(h.background))}')" role="img" aria-label="New Zealand, photographed from orbit by OPS-SAT"></div>
@@ -53,7 +67,11 @@ function renderProfile(cvFile, timelineFile) {
               <div class="profile-contact">
                 <ul class="profile-links">${contactList}
                 </ul>
-              </div>
+              </div>${keyList ? `
+              <div class="profile-keys">
+                <ul>${keyList}
+                </ul>
+              </div>` : ''}
             </div>`;
 }
 

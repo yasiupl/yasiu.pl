@@ -35,6 +35,9 @@ function siteConfig() {
       '/donate': redirect('https://www.patreon.com/yasiupl'),
       '/paypal': redirect('https://www.paypal.me/yasiupl'),
       '/youtube': redirect('https://www.youtube.com/channel/UCqFJAKOMWvS_oKHk9ppMC8w'),
+      '/keybase': redirect('https://keybase.io/yasiupl'),
+      // The public keys (the profile card links to them). The fingerprint of the PGP key is also in
+      // src/cv.md ("pgp").
       '/ssh.pub': redirect('https://github.com/yasiupl.keys'),
       '/pgp.pub': redirect('https://keybase.io/yasiupl/pgp_keys.asc?fingerprint=fe683591ae239dc2188c4bba1e3e8090e179f056'),
       '/cv': redirect('/cv/Marcin_Jasiukowicz_CV.pdf', 302),
@@ -42,6 +45,17 @@ function siteConfig() {
       // The thesis PDF files moved from /resume/ to their blog posts.
       '/resume/bachelor_thesis.pdf': redirect('/blog/engineering-thesis-stardust/bachelor_thesis.pdf'),
       '/resume/**': redirect('/blog/masters-thesis-ops-sat/**'),
+
+      // The Web Key Directory (build/keys.js). GnuPG and other programs, also in browsers, read the
+      // key from any origin.
+      '/.well-known/openpgpkey/**': {
+        headers: { 'content-type': 'application/octet-stream', 'access-control-allow-origin': '*' }
+      },
+      // The Bluesky handle @yasiu.pl (src/static/.well-known/atproto-did). DNS also has it
+      // (_atproto.yasiu.pl).
+      '/.well-known/atproto-did': { headers: { 'content-type': 'text/plain' } },
+      '/bluesky': redirect('https://bsky.app/profile/yasiu.pl'),
+      '/keyoxide': redirect('https://keyoxide.org/wkd/contact%40yasiu.pl'),
 
       // The backend answers the WebFinger requests (server/routes/.well-known/webfinger.get.js).
       // Vercel keeps the query of the request (?resource=acct:...) in the redirect.
