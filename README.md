@@ -225,7 +225,8 @@ Under each post, the page shows a footer (`renderFooter` in `build/blog.js`):
 
 - The number of views. The element `.post-views` has the path of the post in `data-views-path` and stays hidden until a script writes the number into `.post-views-count`.
   `src/app.js` gets the numbers from the backend (`/api/views`, see "API routes"). Without an answer, or with 0 views, the number stays hidden.
-- Comments: the replies, likes and boosts from the fediverse (see "Fediverse"). The element `.post-comments` has the slug of the post in `data-comments-slug` and stays hidden until `src/app.js` writes the data from `/api/comments` into it. Next to it, a card tells how to reply from the fediverse, with a button that copies the address of the post, and a link for email (the subject is the post title).
+- Comments: the replies, likes and boosts from the fediverse (see "Fediverse"). The element `.post-comments` has the slug of the post in `data-comments-slug`. `src/app.js` writes the data from `/api/comments` into it. If the post has no replies, the card shows "be the first". The card always shows the steps to comment from a fediverse app, with a button that copies the address of the post, and a link for email (the subject is the post title).
+  Without the public key of the actor (see "The key of the actor"), the card shows only the link for email.
 - Support: a link to Patreon.
 
 The texts of the footer are in English and in Polish (`WORDS` in `build/blog.js`). The footer is not in the Atom feed.

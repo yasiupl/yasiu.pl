@@ -347,7 +347,6 @@ header.hero { background-color: var(--header-band); }
 /* The author card at the top of a post. Under the post: views, comments and Patreon */
 .post-footer { display: flex; flex-direction: column; gap: 16px; margin: 32px 0 0; }
 .post-views { margin: 0; font-size: 0.9rem; color: var(--ink-muted); }
-.post-footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 .post-footer-card { height: 100%; }
 .post-footer-card .card-content { display: flex; flex-direction: column; gap: 8px; height: 100%; }
 .post-footer-card h2 { margin: 0; font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
@@ -355,13 +354,22 @@ header.hero { background-color: var(--header-band); }
 .post-footer-card .post-footer-links { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: auto; padding-top: 8px; overflow-wrap: anywhere; }
 .post-footer-button { display: inline-block; padding: 8px 20px; border-radius: 999px; background: #ff4f00; color: #fff !important; font-weight: 500; }
 .post-footer-button:hover { background: #e04500; }
-.post-copy-link { padding: 0; border: 0; background: none; color: var(--text-orange); font: inherit; cursor: pointer; }
-.post-copy-link:hover { text-decoration: underline; }
+.post-copy { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; max-width: 100%; }
+.post-copy-url { overflow-wrap: anywhere; user-select: all; font-size: 0.85rem; }
+.post-copy-link { padding: 2px 12px; border: 1px solid var(--text-orange); border-radius: 999px; background: none; color: var(--text-orange); font: inherit; font-size: 0.85rem; cursor: pointer; }
+.post-copy-link:hover { background: var(--text-orange); color: var(--md-sys-color-surface); }
 
 /* Replies and reactions from the fediverse (src/app.js). */
-.post-comments h2 { margin: 0 0 8px; font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
-.post-reactions { margin: 0 0 8px; color: var(--ink-muted); }
+.post-comments h2 { margin: 0; font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
+.post-reactions { color: var(--ink-muted); }
+.post-comments .card-content { display: flex; flex-direction: column; gap: 12px; }
+.post-comments p { margin: 0; }
 .post-comments-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.post-comments-empty { font-size: 1.1rem; font-weight: 500; }
+.post-comments-how { display: flex; flex-direction: column; gap: 8px; color: var(--ink-muted); }
+.post-comments-list:not([hidden]) ~ .post-comments-how { padding-top: 12px; border-top: 1px solid var(--hairline); }
+.post-comments-steps { margin: 0; padding-left: 24px; display: flex; flex-direction: column; gap: 4px; }
+.post-comments-steps li { list-style: decimal; }
 .post-comment { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; overflow-wrap: anywhere; }
 .post-comment.is-reply { margin-left: 24px; padding-left: 12px; border-left: 2px solid var(--md-sys-color-outline-variant); }
 .post-comment-author { display: flex; align-items: center; gap: 8px; min-width: 0; color: inherit !important; }

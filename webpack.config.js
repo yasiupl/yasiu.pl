@@ -96,7 +96,7 @@ const postPages = startPosts.map(({ slug }) => blogPage(`./blog/${slug}/index.ht
         image: p.image && p.image.share,
         robots: blog.robots(p),
         activity: activitypub.hasKey() ? activitypub.objectId(p) : '',
-        main: blog.renderPost(p, all[i - 1], all[i + 1], authorData(CV_FILE, TIMELINE_FILE))
+        main: blog.renderPost(p, all[i - 1], all[i + 1], authorData(CV_FILE, TIMELINE_FILE), { fediverse: activitypub.hasKey() })
     };
 }));
 

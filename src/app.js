@@ -108,7 +108,7 @@ if (postViews) {
 }
 
 // The replies, likes and boosts from the fediverse under a blog post (see server/api/comments.get.js).
-// The backend makes the HTML of the replies safe. The section stays hidden if there is nothing to show.
+// The backend makes the HTML of the replies safe. With no replies, the card shows "be the first".
 const postComments = document.querySelector(".post-comments[data-comments-slug]");
 if (postComments) {
   fetch(API_BASE + "/api/comments?slug=" + encodeURIComponent(postComments.dataset.commentsSlug), { headers: { "Accept": "application/json" } })
@@ -173,7 +173,8 @@ if (postComments) {
         }
         list.append(item);
       }
-      postComments.hidden = !reactions.length && !data.replies.length;
+      list.hidden = !data.replies.length;
+      postComments.querySelector(".post-comments-empty").hidden = data.replies.length > 0;
     })
     .catch(() => {});
 }
@@ -183,7 +184,7 @@ const copyLink = document.querySelector(".post-copy-link");
 if (copyLink && navigator.clipboard) {
   copyLink.hidden = false;
   copyLink.addEventListener("click", () => {
-    navigator.clipboard.writeText(copyLink.dataset.url).then(() => {
+    navigator.clipboard.writeText(document.querySelector(".post-copy-url").textContent).then(() => {
       const label = copyLink.textContent;
       copyLink.textContent = copyLink.dataset.copied;
       setTimeout(() => { copyLink.textContent = label; }, 2000);
