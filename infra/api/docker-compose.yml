@@ -25,6 +25,10 @@ services:
       LASTFM_API_KEY_FILE: /run/secrets/yasiu-pl/lastfm-api-key
       MAPBOX_TOKEN_FILE: /run/secrets/yasiu-pl/mapbox-token
       PLAUSIBLE_API_KEY_FILE: /run/secrets/yasiu-pl/plausible-api-key
+      # The private key of the actor @blog@yasiu.pl (see README.md, "Fediverse").
+      BLOG_PRIVATE_KEY_FILE: /run/secrets/yasiu-pl/blog-private-key
+      # The database of the actor @blog@yasiu.pl: followers, replies, reactions, delivery queue.
+      DATA_DIR: /data
       # Plausible of the plausible stack, in the docker network "web" (no trip through Traefik).
       PLAUSIBLE_URL: http://plausible:8000
     volumes:
@@ -33,6 +37,9 @@ services:
       - "/run/secrets/yasiu-pl/lastfm-api-key:/run/secrets/yasiu-pl/lastfm-api-key:ro"
       - "/run/secrets/yasiu-pl/mapbox-token:/run/secrets/yasiu-pl/mapbox-token:ro"
       - "/run/secrets/yasiu-pl/plausible-api-key:/run/secrets/yasiu-pl/plausible-api-key:ro"
+      - "/run/secrets/yasiu-pl/blog-private-key:/run/secrets/yasiu-pl/blog-private-key:ro"
+      # A named volume gets the owner of /data in the image (uid 1000, see Dockerfile).
+      - "api-data:/data"
     # No `ports:`. Docker publishes ports through its own NAT chains and bypasses nixos-fw.
     networks:
       - web
@@ -44,6 +51,9 @@ services:
       traefik.http.routers.yasiu-pl-api.tls.certresolver: myresolver
       traefik.http.services.yasiu-pl-api.loadbalancer.server.port: "3000"
       traefik.docker.network: web
+
+volumes:
+  api-data:
 
 networks:
   web:

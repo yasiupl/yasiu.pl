@@ -14,3 +14,6 @@ build/cv-out/
 src/static/cv/*
 !src/static/cv/Marcin_Jasiukowicz_CV.pdf
 !src/static/cv/Marcin_Jasiukowicz_card.pdf
+
+# The local database of the actor @blog@yasiu.pl (npm run dev:api).
+.data/

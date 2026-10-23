@@ -107,6 +107,91 @@ if (postViews) {
     .catch(() => {});
 }
 
+// The replies, likes and boosts from the fediverse under a blog post (see server/api/comments.get.js).
+// The backend makes the HTML of the replies safe. With no replies, the card shows "be the first".
+const postComments = document.querySelector(".post-comments[data-comments-slug]");
+if (postComments) {
+  fetch(API_BASE + "/api/comments?slug=" + encodeURIComponent(postComments.dataset.commentsSlug), { headers: { "Accept": "application/json" } })
+    .then(response => response.ok ? response.json() : Promise.reject(response.status))
+    .then(data => {
+      const lang = postComments.closest("[lang]").lang;
+      const counted = (count, kind) => {
+        const form = new Intl.PluralRules(lang).select(count);
+        const key = kind + form.charAt(0).toUpperCase() + form.slice(1);
+        return count.toLocaleString(lang) + " " + (postComments.dataset[key] || postComments.dataset[kind + "Other"]);
+      };
+      const reactions = [data.likes && counted(data.likes, "likes"), data.boosts && counted(data.boosts, "boosts")].filter(Boolean);
+      if (reactions.length) {
+        const line = postComments.querySelector(".post-reactions");
+        line.textContent = reactions.join(" · ");
+        line.hidden = false;
+      }
+      const list = postComments.querySelector(".post-comments-list");
+      const date = new Intl.DateTimeFormat(lang, { dateStyle: "medium", timeStyle: "short" });
+      for (const reply of data.replies) {
+        const item = document.createElement("li");
+        item.className = "post-comment" + (reply.inReplyTo !== data.object ? " is-reply" : "");
+        const author = document.createElement("a");
+        author.className = "post-comment-author";
+        author.href = reply.author.url;
+        author.rel = "nofollow noopener ugc";
+        author.target = "_blank";
+        if (reply.author.icon) {
+          const icon = document.createElement("img");
+          icon.src = reply.author.icon;
+          icon.alt = "";
+          icon.width = icon.height = 32;
+          icon.loading = "lazy";
+          icon.referrerPolicy = "no-referrer";
+          author.append(icon);
+        }
+        const name = document.createElement("span");
+        name.className = "post-comment-name";
+        name.textContent = reply.author.name;
+        const handle = document.createElement("span");
+        handle.className = "post-comment-handle";
+        handle.textContent = reply.author.handle;
+        author.append(name, handle);
+        const time = document.createElement("a");
+        time.className = "post-comment-date";
+        time.href = reply.url;
+        time.rel = "nofollow noopener ugc";
+        time.target = "_blank";
+        time.textContent = date.format(new Date(reply.published));
+        const content = document.createElement("div");
+        content.className = "post-comment-content";
+        content.innerHTML = reply.content;
+        if (reply.summary) {
+          // A content warning: the text stays closed until the reader opens it.
+          const details = document.createElement("details");
+          const summary = document.createElement("summary");
+          summary.textContent = reply.summary;
+          details.append(summary, content);
+          item.append(author, time, details);
+        } else {
+          item.append(author, time, content);
+        }
+        list.append(item);
+      }
+      list.hidden = !data.replies.length;
+      postComments.querySelector(".post-comments-empty").hidden = data.replies.length > 0;
+    })
+    .catch(() => {});
+}
+
+// The button that copies the address of a post (for the search of a fediverse app).
+const copyLink = document.querySelector(".post-copy-link");
+if (copyLink && navigator.clipboard) {
+  copyLink.hidden = false;
+  copyLink.addEventListener("click", () => {
+    navigator.clipboard.writeText(document.querySelector(".post-copy-url").textContent).then(() => {
+      const label = copyLink.textContent;
+      copyLink.textContent = copyLink.dataset.copied;
+      setTimeout(() => { copyLink.textContent = label; }, 2000);
+    }).catch(() => {});
+  });
+}
+
 // Live widgets: only the home page has them.
 if (document.getElementById("track")) {
   // The API routes are in server/api/ and run on the backend (API_BASE, see webpack.config.js). The

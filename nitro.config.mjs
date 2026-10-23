@@ -60,6 +60,15 @@ function siteConfig() {
       // The backend answers the WebFinger requests (server/routes/.well-known/webfinger.get.js).
       // Vercel keeps the query of the request (?resource=acct:...) in the redirect.
       '/.well-known/webfinger': redirect(`${BACKEND}/.well-known/webfinger`, 302),
+      // The static part of the actor @blog@yasiu.pl (build/activitypub.js). Fediverse servers accept
+      // only these content types. The short cache time lets them see a changed post soon.
+      '/ap/**': {
+        headers: {
+          'content-type': 'application/activity+json; charset=utf-8',
+          'access-control-allow-origin': '*',
+          'cache-control': 'public, max-age=300'
+        }
+      },
     },
 
     // Vercel Image Optimization scales the blog images (see build/blog.js).
@@ -81,7 +90,16 @@ function backendConfig() {
     routeRules: {
       '/api/lastfm': { cors: true, cache: { maxAge: 60, swr: true, staleMaxAge: 300 } },
       '/api/location': { cors: true, cache: { maxAge: 300, swr: true, staleMaxAge: 900 } },
-      '/api/views': { cors: true, cache: { maxAge: 600, swr: true, staleMaxAge: 3600 } }
+      '/api/views': { cors: true, cache: { maxAge: 600, swr: true, staleMaxAge: 3600 } },
+      // The replies and reactions of a post change often, so the answer is kept only for one minute.
+      '/api/comments': { cors: true, cache: { maxAge: 60, swr: true, staleMaxAge: 600 } }
+    },
+    // The actor @blog@yasiu.pl (see README.md, "Fediverse"): blog:sync finds new and changed posts in
+    // the outbox of the site, blog:deliver sends the delivery queue.
+    experimental: { tasks: true },
+    scheduledTasks: {
+      '*/5 * * * *': ['blog:sync'],
+      '* * * * *': ['blog:deliver']
     }
   };
 }

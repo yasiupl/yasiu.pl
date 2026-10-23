@@ -6,11 +6,11 @@ The site on Vercel is static. The site gets the data for the live cards from the
 | Item | Value |
 | --- | --- |
 | Address | `https://api.yasiu.pl` |
-| Routes | `/api/lastfm`, `/api/location`, `/api/views`, `/.well-known/webfinger` |
+| Routes | `/api/lastfm`, `/api/location`, `/api/views`, `/api/comments`, `/.well-known/webfinger`, `/ap/blog/inbox`, `/ap/blog/followers` |
 | Container | `yasiu-pl-api` (compose project `yasiu-pl`) |
 | Image | `yasiu-pl-api`, built on blade12 from this repository ([`Dockerfile`](Dockerfile)) |
-| Secrets | `yasiu-pl/lastfm-api-key`, `yasiu-pl/mapbox-token` and `yasiu-pl/plausible-api-key` in `hosts/argo/blade12/secrets.yaml` (repository `infrastruktura`, sops) |
-| Data | None. The routes keep their answers in memory. |
+| Secrets | `yasiu-pl/lastfm-api-key`, `yasiu-pl/mapbox-token`, `yasiu-pl/plausible-api-key` and `yasiu-pl/blog-private-key` in `hosts/argo/blade12/secrets.yaml` (repository `infrastruktura`, sops) |
+| Data | The volume `yasiu-pl_api-data` at `/data`: the database of the actor `@blog@yasiu.pl`. The other routes keep their answers in memory. |
 
 ## How the backend works
 
@@ -79,6 +79,40 @@ The route `/api/views` needs a Stats API key of Plausible. For a backend that ru
 4. On blade12, run `docker compose up -d --build` in this folder, and test: `curl -s https://api.yasiu.pl/api/views | head -c 200`.
 
 Without the key, the route sends `{"statusMessage": "Plausible: 401", "data": {"PLAUSIBLE_API_KEY": false}}`, and the posts show no number of views.
+
+## Add the actor of the blog (`@blog@yasiu.pl`)
+
+The actor needs a key and a volume for its database (see "Fediverse" in [`../../README.md`](../../README.md)). For a backend that runs already:
+
+1. Make the key as "The key of the actor" in `../../README.md` tells. Commit `src/activitypub/blog.pub.pem`.
+2. Add the private key to sops (in the `infrastruktura` repository, in `nix develop`). The value has line breaks, so give it as a JSON string:
+
+   ```bash
+   sops set hosts/argo/blade12/secrets.yaml '["yasiu-pl"]["blog-private-key"]' "$(jq -Rs . < blog.key)"
+   ```
+
+3. Declare the secret `yasiu-pl/blog-private-key` for blade12 like `yasiu-pl/lastfm-api-key` (owner uid 1000), and rebuild blade12. Do this before step 5: else docker creates a directory at the path of the secret.
+4. Deploy the site with the public key. Then test: `curl -s https://yasiu.pl/ap/blog.json | head -c 300`.
+5. On blade12, run `docker compose up -d --build` in this folder. Docker makes the volume `yasiu-pl_api-data` with the owner uid 1000.
+6. Test the backend:
+
+   ```bash
+   curl -s 'https://api.yasiu.pl/.well-known/webfinger?resource=acct:blog@yasiu.pl'
+   curl -s https://api.yasiu.pl/ap/blog/followers
+   docker logs yasiu-pl-api 2>&1 | grep blog
+   ```
+
+7. In a fediverse app, search for `@blog@yasiu.pl` and follow the account.
+
+The first run of the task `blog:sync` (in the first five minutes) records the posts that exist. It does not send them to the followers.
+
+Do not delete the volume: it has the followers. To make a copy of the database, stop the container first:
+
+```bash
+docker compose stop api
+docker run --rm -v yasiu-pl_api-data:/data -v "$PWD":/backup alpine cp /data/activitypub.sqlite /backup/
+docker compose start api
+```
 
 ## Update
 

@@ -4,7 +4,8 @@
   "description": "yasiu.pl personal website",
   "main": "index.js",
   "dependencies": {
-    "@materializecss/materialize": "^2.4.0"
+    "@materializecss/materialize": "^2.4.0",
+    "sanitize-html": "^2.18.1"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^13.0.1",

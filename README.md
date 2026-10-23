@@ -8,7 +8,7 @@ Behind the scenes works of my personal website. Nothing fancy.
 The site has two parts:
 
 - The site: static files on Vercel. The site can also be on Netlify, without changes to the code. The site has no server functions.
-- The backend: a Node.js server on blade12 at `api.yasiu.pl`. It runs the API routes and the WebFinger route. See [`infra/README.md`](infra/README.md).
+- The backend: a Node.js server on blade12 at `api.yasiu.pl`. It runs the API routes, the WebFinger route and the dynamic part of the actor `@blog@yasiu.pl` (see "Fediverse"). See [`infra/README.md`](infra/README.md).
 
 The tools make the two parts:
 
@@ -32,10 +32,11 @@ The live cards of the home page get their data from the API routes in `server/ap
 - `/api/lastfm`: the last track on Last.fm ("I'm listening to...").
 - `/api/location`: the area where I am ("Last seen..."). See "Location".
 - `/api/views`: the number of views of each blog post, from Plausible (see "Post footer").
+- `/api/comments?slug=<slug>`: the replies, likes and boosts of a blog post from the fediverse (see "Fediverse").
 
 The site calls the backend at the address in `API_BASE` (see `webpack.config.js`). On Vercel and Netlify, the address is `https://api.yasiu.pl`. A local build uses the same origin.
 
-The backend keeps each answer in memory: 60 seconds for `/api/lastfm`, 5 minutes for `/api/location` and 10 minutes for `/api/views`. If the source of an answer fails, the route sends the last good answer. The route rules in the backend part of `nitro.config.mjs` set the times and the CORS headers.
+The backend keeps each answer in memory: 60 seconds for `/api/lastfm` and `/api/comments`, 5 minutes for `/api/location` and 10 minutes for `/api/views`. If the source of an answer fails, the route sends the last good answer. The route rules in the backend part of `nitro.config.mjs` set the times and the CORS headers.
 
 The API routes read these environment variables. For each variable, a route also reads the file in `<variable>_FILE`. On blade12, the secrets are files from sops (see [`infra/api/README.md`](infra/api/README.md)).
 
@@ -47,6 +48,9 @@ The API routes read these environment variables. For each variable, a route also
 | `OWNTRACKS_URL` | Optional: the address of the Recorder. The default is `https://owntracks.yasiu.pl`. On blade12, the address is `http://owntracks-recorder:8083`. |
 | `PLAUSIBLE_API_KEY` | The Stats API key of Plausible, for `/api/views`. Make it in Plausible: "Settings", "API Keys", type "Stats API". |
 | `PLAUSIBLE_URL` | Optional: the address of Plausible. The default is `https://plausible.yasiu.pl`. On blade12, the address is `http://plausible:8000`. |
+| `BLOG_PRIVATE_KEY` | The private key (PEM) of the actor `@blog@yasiu.pl`. See "Fediverse". |
+| `DATA_DIR` | Optional: the folder of the database of the actor `@blog@yasiu.pl`. The default is `./.data`. On blade12, the folder is the volume `/data`. |
+| `BLOG_OUTBOX_URL` | Optional: the outbox that the task `blog:sync` reads. The default is the outbox of the site. Use it to test with a local build. |
 | `MAPBOX_TOKEN` | The access token of Mapbox, for the map image. The token has URL restrictions, so the route sends the header `Referer: https://yasiu.pl/`. Without this header, Mapbox sends 403. |
 
 The routes also accept the names of the old Netlify functions: `lastfm`, `owntracks_user`, `owntracks_device` and `mapbox_token`.
@@ -221,7 +225,8 @@ Under each post, the page shows a footer (`renderFooter` in `build/blog.js`):
 
 - The number of views. The element `.post-views` has the path of the post in `data-views-path` and stays hidden until a script writes the number into `.post-views-count`.
   `src/app.js` gets the numbers from the backend (`/api/views`, see "API routes"). Without an answer, or with 0 views, the number stays hidden.
-- Comments: at this time, a request to write on Mastodon or by email (the subject is the post title). Later, the comments and the reactions will come from the fediverse (ActivityPub).
+- Comments: the replies, likes and boosts from the fediverse (see "Fediverse"). The element `.post-comments` has the slug of the post in `data-comments-slug`. `src/app.js` writes the data from `/api/comments` into it. If the post has no replies, the card shows "be the first". The card always shows the steps to comment from a fediverse app, with a button that copies the address of the post, and a link for email (the subject is the post title).
+  Without the public key of the actor (see "The key of the actor"), the card shows only the link for email.
 - Support: a link to Patreon.
 
 The texts of the footer are in English and in Polish (`WORDS` in `build/blog.js`). The footer is not in the Atom feed.
@@ -300,12 +305,71 @@ If the site `yasiu.pl` is not in Plausible, add it there before you deploy. Plau
 
 ## Fediverse
 
-The fediverse handle of the site is `@yasiu@yasiu.pl`.
-At this time, the handle is an alias of the Mastodon account `@yasiu@0x3c.pl`:
+The site has two fediverse handles:
 
-- The site redirects `/.well-known/webfinger` to the backend (`nitro.config.mjs`).
-- On the backend, [`server/routes/.well-known/webfinger.get.js`](server/routes/.well-known/webfinger.get.js) answers the WebFinger requests for `acct:yasiu@yasiu.pl`.
-- The answer has the subject `acct:yasiu@0x3c.pl`. The other server then finds the account on `0x3c.pl` and shows it as `@yasiu@0x3c.pl`.
+- `@blog@yasiu.pl`: the actor of the blog. It publishes each post as an ActivityPub `Article`. The replies, likes and boosts of a post show under the post.
+- `@yasiu@yasiu.pl`: an alias of the Mastodon account `@yasiu@0x3c.pl`.
+
+The site redirects `/.well-known/webfinger` to the backend (`nitro.config.mjs`).
+On the backend, [`server/routes/.well-known/webfinger.get.js`](server/routes/.well-known/webfinger.get.js) answers for both handles:
+
+- For `acct:blog@yasiu.pl`, the answer has the actor of the blog.
+- For `acct:yasiu@yasiu.pl`, the answer has the subject `acct:yasiu@0x3c.pl`. The other server then finds the account on `0x3c.pl` and shows it as `@yasiu@0x3c.pl`.
+
+### The actor of the blog
+
+The actor has a static part on the site and a dynamic part on the backend.
+If the backend stops, the fediverse can still read the actor and all posts. Other servers send their activities again later.
+
+The addresses are in [`server/utils/blog-actor.json`](server/utils/blog-actor.json). The build and the backend read this file.
+
+| Part | Address | Source |
+| --- | --- | --- |
+| Actor | `https://yasiu.pl/ap/blog.json` | [`build/activitypub.js`](build/activitypub.js) (static) |
+| Outbox: all posts | `https://yasiu.pl/ap/blog/outbox.json` | `build/activitypub.js` (static) |
+| One object for each post | `https://yasiu.pl/ap/blog/posts/<slug>.json` | `build/activitypub.js` (static) |
+| Inbox | `https://api.yasiu.pl/ap/blog/inbox` | [`server/routes/ap/blog/inbox.post.js`](server/routes/ap/blog/inbox.post.js) |
+| Followers: the number only | `https://api.yasiu.pl/ap/blog/followers` | `server/routes/ap/blog/followers.get.js` |
+
+The page of each post has the tag `<link rel="alternate" type="application/activity+json">` with the address of its object.
+Thus, a search for the address of the page in a fediverse app finds the post. A reader can then reply, like or boost.
+The site sends the files in `/ap/` with the content type `application/activity+json` (see the route rules in `nitro.config.mjs`).
+
+The inbox accepts only requests with a valid HTTP signature of the actor of the activity. It keeps:
+
+- The followers. The inbox answers each `Follow` with an `Accept` at once.
+- The public replies to a post, and the public replies in the thread of a post. The backend removes all HTML except the elements of a short text post ([`server/utils/ap-sanitize.js`](server/utils/ap-sanitize.js)). Replies only for followers or mentioned people are not kept.
+- The likes and the boosts of a post.
+- The changes (`Update`), the deletions (`Delete`) and the cancellations (`Undo`) of these items.
+
+The backend keeps the data in one SQLite file in `DATA_DIR` ([`server/utils/ap-db.js`](server/utils/ap-db.js)).
+The backend sends requests only to public HTTPS servers ([`server/utils/ap-http.js`](server/utils/ap-http.js)).
+
+Two tasks run on the backend (the scheduled tasks in `nitro.config.mjs`):
+
+- `blog:sync`, every five minutes: reads the outbox of the site. For a new post, it sends `Create` to the followers. For a post with a new `updated` date, it sends `Update`. For a removed post, it sends `Delete`. The first run only records the posts: the archive does not go to the followers.
+- `blog:deliver`, each minute: sends the delivery queue. If a delivery fails, the next attempt is later each time, up to 6 hours. After about three days, the backend stops.
+
+Thus, a new post reaches the followers some minutes after the deployment of the site.
+To send a changed post again, set `updated` in its front matter.
+
+### The key of the actor
+
+The actor signs its requests with an RSA key.
+The public key is in `src/activitypub/blog.pub.pem`. The private key is a secret of the backend (`BLOG_PRIVATE_KEY`).
+Without the public key, the build makes no files in `/ap/`, and the post pages have no link to an object.
+
+To make the key, do these commands on a device that you trust:
+
+```bash
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out blog.key
+openssl pkey -in blog.key -pubout -out src/activitypub/blog.pub.pem
+```
+
+Add the content of `blog.key` to the secrets of the backend (see [`infra/api/README.md`](infra/api/README.md)), and then delete `blog.key`.
+Do not change the key after the first deployment: other servers keep the public key of the actor.
+
+### Webmentions and link previews
 
 The site receives webmentions at webmention.io (see the `rel="webmention"` links in `src/index.html` and `src/blog.html`).
 

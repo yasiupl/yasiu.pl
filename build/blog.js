@@ -20,7 +20,20 @@ const WORDS = {
     // The forms of Intl.PluralRules: the script that writes the number selects one.
     views: { one: 'view', other: 'views' },
     comments: 'Comments',
-    commentsText: 'Soon you will be able to comment on this post and react to it from Mastodon and the rest of the fediverse. Until then, write to me:',
+    empty: 'No comments yet. Be the first!',
+    howTo: 'Comment from Mastodon or another fediverse app:',
+    steps: [
+      'Copy the address of this post:',
+      'Paste it into the search of your app and open the post.',
+      'Reply, like or boost. Your comment shows here in a minute.'
+    ],
+    follow: 'To get new posts, follow',
+    email: 'Or write to me:',
+    noFediverse: 'Write to me:',
+    copy: 'Copy',
+    copied: 'Copied',
+    likes: { one: 'like', other: 'likes' },
+    boosts: { one: 'boost', other: 'boosts' },
     support: 'Support',
     supportText: 'Do you like what I do? Support me on Patreon. It helps me find time for new projects, videos and posts.',
     patreon: 'Become a patron',
@@ -30,7 +43,20 @@ const WORDS = {
     updated: 'Ostatnia edycja',
     views: { one: 'wyświetlenie', few: 'wyświetlenia', many: 'wyświetleń', other: 'wyświetlenia' },
     comments: 'Komentarze',
-    commentsText: 'Wkrótce skomentujesz ten wpis i zareagujesz na niego z Mastodona i reszty fediwersum. Do tego czasu napisz do mnie:',
+    empty: 'Nikt jeszcze nie skomentował tego wpisu. Bądź pierwszy!',
+    howTo: 'Skomentuj z Mastodona lub innej aplikacji fediwersum:',
+    steps: [
+      'Skopiuj adres tego wpisu:',
+      'Wklej go w wyszukiwarkę swojej aplikacji i otwórz wpis.',
+      'Odpowiedz, polub lub podbij. Twój komentarz pojawi się tutaj po minucie.'
+    ],
+    follow: 'Nowe wpisy dostaniesz, obserwując',
+    email: 'Albo napisz do mnie:',
+    noFediverse: 'Napisz do mnie:',
+    copy: 'Kopiuj',
+    copied: 'Skopiowano',
+    likes: { one: 'polubienie', few: 'polubienia', many: 'polubień', other: 'polubienia' },
+    boosts: { one: 'podbicie', few: 'podbicia', many: 'podbić', other: 'podbicia' },
     support: 'Wsparcie',
     supportText: 'Podoba Ci się to, co robię? Wesprzyj mnie na Patreonie. Dzięki temu znajduję czas na nowe projekty, filmy i wpisy.',
     patreon: 'Zostań patronem',
@@ -38,7 +64,6 @@ const WORDS = {
   }
 };
 // The contact links of the post footer.
-const MASTODON = { handle: '@yasiu@0x3c.pl', url: 'https://0x3c.pl/@yasiu' };
 const EMAIL = 'contact@yasiu.pl';
 const PATREON = 'https://www.patreon.com/yasiupl';
 const words = (lang) => WORDS[lang] || WORDS.en;
@@ -332,33 +357,52 @@ function authorCard(author, lang) {
 }
 
 // The footer under each post: the number of views, the comments and the support on Patreon.
-// The number of views stays hidden until src/app.js fills it (data-views-path). The comments
-// will come from the fediverse (ActivityPub). Until then, the footer links to Mastodon and email.
-function renderFooter(p) {
+// The comments are the replies, likes and boosts from the fediverse, sent to the actor
+// @blog@yasiu.pl (see "Fediverse" in README.md). src/app.js fills the parts with data-views-path
+// and data-comments-slug from the backend. The card always tells how to comment; the text "be the
+// first" shows only when the backend answers with no comments.
+// Without the actor (no public key, see build/activitypub.js), the card has only the email link.
+function renderFooter(p, { fediverse = false } = {}) {
   const w = words(p.lang);
   const subject = encodeURIComponent(p.title);
+  const forms = (prefix, list) => Object.entries(list).map(([form, word]) => ` data-${prefix}-${form}="${escape(word)}"`).join('');
+  const email = `<a href="mailto:${EMAIL}?subject=${subject}">${EMAIL}</a>`;
+  const comments = fediverse ? `<section class="card post-comments" data-comments-slug="${escape(p.slug)}"${forms('likes', w.likes)}${forms('boosts', w.boosts)}>
+            <div class="card-content">
+              <h2 class="eyebrow">${escape(w.comments)}</h2>
+              <p class="post-reactions" hidden></p>
+              <ol class="post-comments-list" hidden></ol>
+              <p class="post-comments-empty" hidden>${escape(w.empty)}</p>
+              <div class="post-comments-how">
+                <p>${escape(w.howTo)}</p>
+                <ol class="post-comments-steps">
+                  <li>${escape(w.steps[0])} <span class="post-copy"><code class="post-copy-url">${escape(SITE + p.url)}</code> <button class="post-copy-link" type="button" data-copied="${escape(w.copied)}" hidden>${escape(w.copy)}</button></span></li>
+                  <li>${escape(w.steps[1])}</li>
+                  <li>${escape(w.steps[2])}</li>
+                </ol>
+                <p class="post-comments-more">${escape(w.follow)} <code>@blog@yasiu.pl</code>. ${escape(w.email)} ${email}</p>
+              </div>
+            </div>
+          </section>` : `<section class="card post-comments">
+            <div class="card-content">
+              <h2 class="eyebrow">${escape(w.comments)}</h2>
+              <p>${escape(w.noFediverse)} ${email}</p>
+            </div>
+          </section>`;
   return `<aside class="post-footer" lang="${escape(p.lang)}">
           <p class="post-views" data-views-path="${escape(p.url)}"${Object.entries(w.views).map(([form, word]) => ` data-${form}="${escape(word)}"`).join('')} hidden><span class="post-views-count"></span> <span class="post-views-word"></span></p>
-          <div class="post-footer-grid">
-            <section class="card post-footer-card">
-              <div class="card-content">
-                <h2 class="eyebrow">${escape(w.comments)}</h2>
-                <p>${escape(w.commentsText)}</p>
-                <p class="post-footer-links"><a href="${MASTODON.url}">${escape(MASTODON.handle)}</a> <a href="mailto:${EMAIL}?subject=${subject}">${EMAIL}</a></p>
-              </div>
-            </section>
-            <section class="card post-footer-card">
-              <div class="card-content">
-                <h2 class="eyebrow">${escape(w.support)}</h2>
-                <p>${escape(w.supportText)}</p>
-                <p class="post-footer-links"><a class="post-footer-button" href="${PATREON}" target="_blank" rel="noopener">${escape(w.patreon)}</a></p>
-              </div>
-            </section>
-          </div>
+          ${comments}
+          <section class="card post-footer-card">
+            <div class="card-content">
+              <h2 class="eyebrow">${escape(w.support)}</h2>
+              <p>${escape(w.supportText)}</p>
+              <p class="post-footer-links"><a class="post-footer-button" href="${PATREON}" target="_blank" rel="noopener">${escape(w.patreon)}</a></p>
+            </div>
+          </section>
         </aside>`;
 }
 
-function renderPost(p, newer, older, author) {
+function renderPost(p, newer, older, author, { fediverse = false } = {}) {
   const link = (q, rel, label) => q
     ? `<a class="post-nav-${rel}" href="${q.url}" rel="${rel}"><span class="eyebrow">${label}</span><span lang="${escape(q.lang)}">${escape(q.title)}</span></a>`
     : '<span></span>';
@@ -383,7 +427,7 @@ ${p.html}
           </div>${p.updated || p.aiLabel ? `
           <p class="post-notes">${p.updated ? `${escape(words(p.lang).updated)}: <time class="dt-updated" datetime="${escape(p.updated)}">${escape(p.displayUpdated)}</time>.` : ''}${p.updated && p.aiLabel ? ' ' : ''}${p.aiLabel ? `${escape(p.aiLabel)}.` : ''}</p>` : ''}
         </article>
-        ${renderFooter(p)}
+        ${renderFooter(p, { fediverse })}
         <nav class="post-nav" aria-label="More posts">
           ${link(older, 'prev', '← Older')}
           ${link(newer, 'next', 'Newer →')}
@@ -469,4 +513,4 @@ ${pages.map((u) => `  <url><loc>${escape(u.loc)}</loc>${u.lastmod ? `<lastmod>${
 `;
 }
 
-module.exports = { SITE, IMAGE_WIDTHS, loadPosts, renderCards, renderPost, renderFeed, renderRobots, renderSitemap, robots, escape };
+module.exports = { SITE, IMAGE_WIDTHS, loadPosts, renderCards, renderPost, renderFeed, renderRobots, renderSitemap, robots, escape, absoluteUrls };

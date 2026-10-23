@@ -9,6 +9,7 @@ const { renderProjects } = require('./build/projects');
 const { renderTimeline } = require('./build/timeline');
 const { renderProfile, renderProfileJsonLd, authorData } = require('./build/profile');
 const blog = require('./build/blog');
+const activitypub = require('./build/activitypub');
 const { wkdFiles } = require('./build/keys');
 const { parseCv } = require('./build/cv');
 
@@ -51,6 +52,8 @@ function blogPage(filename, page) {
                     url: e(blog.SITE + p.url),
                     image: e(p.image || blog.SITE + '/assets/meirl.png'),
                     robots: e(p.robots || ''),
+                    // The ActivityPub object of a post (see build/activitypub.js).
+                    activity: e(p.activity || ''),
                     // A post page has a narrow column of text. The list of posts (/blog/) has the full width,
                     // like the home page.
                     narrow: Boolean(p.narrow),
@@ -92,7 +95,8 @@ const postPages = startPosts.map(({ slug }) => blogPage(`./blog/${slug}/index.ht
         url: p.url,
         image: p.image && p.image.share,
         robots: blog.robots(p),
-        main: blog.renderPost(p, all[i - 1], all[i + 1], authorData(CV_FILE, TIMELINE_FILE))
+        activity: activitypub.hasKey() ? activitypub.objectId(p) : '',
+        main: blog.renderPost(p, all[i - 1], all[i + 1], authorData(CV_FILE, TIMELINE_FILE), { fediverse: activitypub.hasKey() })
     };
 }));
 
@@ -110,6 +114,9 @@ class BlogFeedPlugin {
                 compilation.emitAsset('blog/feed.xml', new RawSource(blog.renderFeed(all)));
                 compilation.emitAsset('robots.txt', new RawSource(blog.renderRobots(all)));
                 compilation.emitAsset('sitemap.xml', new RawSource(blog.renderSitemap(all)));
+                // The static part of the actor @blog@yasiu.pl (see "Fediverse" in README.md).
+                const actor = activitypub.actorFiles(all, { author: authorData(CV_FILE, TIMELINE_FILE), summary: BLOG_INTRO });
+                for (const [file, content] of Object.entries(actor)) compilation.emitAsset(file, new RawSource(content));
             });
         });
     }
