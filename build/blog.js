@@ -206,6 +206,16 @@ function firstImage(tokens) {
   return found;
 }
 
+// The images of the post text as absolute URLs of JPEG files up to 1600 px wide, with their alt
+// text. The fediverse gets them as attachments of the post (see build/activitypub.js).
+function bodyImages(tokens, cdn) {
+  const list = [];
+  marked.walkTokens(tokens, (t) => {
+    if (t.type === 'image') list.push({ url: absolute(scaled(t.pic, cdn, [1600], '', null, undefined, 'jpg').src), alt: t.text || '' });
+  });
+  return list;
+}
+
 function formatDate(date, lang) {
   return new Intl.DateTimeFormat(lang, { dateStyle: 'long', timeZone: 'UTC' })
     .format(new Date(date.slice(0, 10)));
@@ -308,6 +318,10 @@ function loadPosts(dir, { cdn = false } = {}) {
         // Link previews: JPEG, because not all sites that show previews accept WebP.
         share: absolute(scaled(header, cdn, [1200], '', 1200 / 630, crop, 'jpg').src)
       },
+      // For the fediverse (build/activitypub.js): the date of the last edit, also on the day of
+      // publication, and the images of the text, which a Note sends as attachments.
+      modified: updated,
+      images: bodyImages(tokens, cdn),
       html: marked.parser(tokens)
     };
   });

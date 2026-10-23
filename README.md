@@ -307,7 +307,7 @@ If the site `yasiu.pl` is not in Plausible, add it there before you deploy. Plau
 
 The site has two fediverse handles:
 
-- `@blog@yasiu.pl`: the actor of the blog. It publishes each post as an ActivityPub `Article`. The replies, likes and boosts of a post show under the post.
+- `@blog@yasiu.pl`: the actor of the blog. It publishes each post as an ActivityPub `Note` with the full text. The replies, likes and boosts of a post show under the post.
 - `@yasiu@yasiu.pl`: an alias of the Mastodon account `@yasiu@0x3c.pl`.
 
 The site redirects `/.well-known/webfinger` to the backend (`nitro.config.mjs`).
@@ -328,6 +328,14 @@ The addresses are in [`server/utils/blog-actor.json`](server/utils/blog-actor.js
 | Actor | `https://yasiu.pl/ap/blog.json` | [`build/activitypub.js`](build/activitypub.js) (static) |
 | Outbox: all posts | `https://yasiu.pl/ap/blog/outbox.json` | `build/activitypub.js` (static) |
 | One object for each post | `https://yasiu.pl/ap/blog/posts/<slug>.json` | `build/activitypub.js` (static) |
+
+Each post is a `Note`, not an `Article`: Mastodon shows only the title and a link for an `Article`, but the full text of a `Note`.
+Mastodon keeps only simple HTML (paragraphs, links, emphasis, lists, quotes and code). Thus the build changes the text of the post for the fediverse:
+
+- The title is the first paragraph, in bold. The headings are bold paragraphs.
+- The images are attachments, not part of the text: the header image first, then the images of the text. Mastodon shows at most four.
+- A YouTube player is a link to the video.
+- The last paragraph is the link to the post page, with all images.
 | Inbox | `https://api.yasiu.pl/ap/blog/inbox` | [`server/routes/ap/blog/inbox.post.js`](server/routes/ap/blog/inbox.post.js) |
 | Followers: the number only | `https://api.yasiu.pl/ap/blog/followers` | `server/routes/ap/blog/followers.get.js` |
 
@@ -351,7 +359,7 @@ Two tasks run on the backend (the scheduled tasks in `nitro.config.mjs`):
 - `blog:deliver`, each minute: sends the delivery queue. If a delivery fails, the next attempt is later each time, up to 6 hours. After about three days, the backend stops.
 
 Thus, a new post reaches the followers some minutes after the deployment of the site.
-To send a changed post again, set `updated` in its front matter.
+To send a changed post again, set `updated` in its front matter. A time on the day of publication is enough: the post page does not show it, but the fediverse gets the change.
 
 ### The key of the actor
 

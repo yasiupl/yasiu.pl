@@ -9,7 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const AP = require('../server/utils/blog-actor.json');
-const { absoluteUrls } = require('./blog');
+const { absoluteUrls, escape } = require('./blog');
 
 // The public key of the actor. The private key is a secret of the backend (see README.md,
 // "Fediverse"). Without the public key, the build makes no actor files.
@@ -32,21 +32,58 @@ function publicKey() {
   }
 }
 
+// The fediverse gets each post as a Note with the full text. Mastodon shows only the title and a
+// link for an Article, but the full content of a Note. Mastodon keeps only simple HTML in a post
+// (paragraphs, links, emphasis, lists, quotes and code). Thus:
+// - the title is the first paragraph, in bold, and the headings are bold paragraphs;
+// - the images are attachments (at most MAX_ATTACHMENTS, the header image first), not <img>;
+// - a YouTube player is a link to the video;
+// - the last paragraph links to the post page.
+const MAX_ATTACHMENTS = 4;
+const youtubeLink = (id, title) => `<p><a href="https://www.youtube.com/watch?v=${id}">▶ ${title || 'YouTube'}</a></p>`;
+
+function noteContent(p) {
+  const html = absoluteUrls(p.html)
+    .replace(/<a\b[^>]*>\s*<img\b[^>]*>\s*<\/a>/g, '')
+    .replace(/<img\b[^>]*>/g, '')
+    .replace(/<h[1-6]\b[^>]*>([\s\S]*?)<\/h[1-6]>/g, '<p><strong>$1</strong></p>')
+    .replace(/<iframe\b[^>]*\bsrc="[^"]*\/embed\/([A-Za-z0-9_-]{11})[^"]*"[^>]*?(?:\btitle="([^"]*)")?[^>]*>\s*<\/iframe>/g,
+      (m, id, title) => youtubeLink(id, title))
+    .replace(/<p>\s*<\/p>/g, '')
+    .trim();
+  const url = AP.site + p.url;
+  return [
+    `<p><strong>${escape(p.title)}</strong></p>`,
+    p.video ? youtubeLink(p.video.id, escape(p.title)) : '',
+    html,
+    `<p><a href="${url}">${url}</a></p>`
+  ].filter(Boolean).join('\n');
+}
+
+function attachments(p) {
+  const list = [
+    ...(p.image ? [{ url: p.image.share, alt: '' }] : []),
+    ...(p.images || [])
+  ];
+  return list.slice(0, MAX_ATTACHMENTS).map((i) => ({ type: 'Document', mediaType: 'image/jpeg', url: i.url, name: i.alt }));
+}
+
 function postObject(p) {
-  const html = absoluteUrls((p.image ? `<p><img src="${p.image.share}" alt=""></p>\n` : '') + p.html);
+  const content = noteContent(p);
+  const files = attachments(p);
   return {
     id: objectId(p),
-    type: 'Article',
+    type: 'Note',
     attributedTo: AP.actor,
-    name: p.title,
-    content: html,
-    contentMap: { [p.lang]: html },
+    content,
+    contentMap: { [p.lang]: content },
     url: AP.site + p.url,
     published: iso(p.date),
-    ...(p.updated && { updated: iso(p.updated) }),
+    ...(p.modified && { updated: iso(p.modified) }),
     to: [PUBLIC],
     cc: [AP.followers],
-    ...(p.image && { image: { type: 'Image', mediaType: 'image/jpeg', url: p.image.share } })
+    sensitive: false,
+    ...(files.length && { attachment: files })
   };
 }
 
