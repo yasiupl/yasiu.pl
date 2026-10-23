@@ -18,6 +18,8 @@ W trakcie studiów i podróży dookoła świata spotkałem wielu inspirujących 
 
 Dlatego rozpocząłem współpracę z Iławskim Instytutem Idei i Krzysztofem Kurpieckim, aby to zmienić. Opisaliśmy pomysł na „Otwarte Pracownie Eksperymentu” (po mojemu: hackerspace) - wspólny warsztat dla dzieci, młodzieży i dorosłych, prowadzony przez ludzi, którzy z niego korzystają. Na wzór hackerspace'ów, które odwiedzałem w Gdańsku, [Sztokholmie](/blog/zwiedzamy-makerspace-stockholm/) czy [San Francisco](/blog/zwiedzamy-makerspace-human-made-w-san-francisco/).
 
+To nie jest pomysł z zewnątrz - to powrót do iławskiej tradycji. Już w latach 50. w domu kultury działał młodzieżowy klub modelarski, a później klub łączności, pracownia modelarska i fotograficzna. W 1987 roku w budynku dawnej kotłowni powstała pracownia politechniczna, którą prowadził mój tata, a obok niej klub komputerowy. W 1991 roku pasjonaci uruchomili w domu kultury Radio Komunalne Iława, pierwsze lokalne radio w mieście. Część tej tradycji żyje do dziś: działa klub krótkofalowców SP4KVA, a miłośnicy kolejek co roku organizują wystawę makiet. Brakuje tylko miejsca, które znów połączy te pasje pod jednym dachem.
+
 Nie zbieramy pieniędzy, tylko poparcie. Jeśli uważacie, że takie miejsce przyda się w Iławie, przeczytajcie opis i podpiszcie formularz. A jeśli macie sprzęt lub wiedzę i chcecie współtworzyć tę przestrzeń, odezwijcie się 🙂
 
 👉 **[Otwarte Pracownie Eksperymentu - poprzyj pomysł](https://www.instytut.ilawa.pl/aktualnosci/otwarte-pracownie-eksperymentu/)**
