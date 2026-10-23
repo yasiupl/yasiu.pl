@@ -225,8 +225,16 @@ Under each post, the page shows a footer (`renderFooter` in `build/blog.js`):
 
 - The number of views. The element `.post-views` has the path of the post in `data-views-path` and stays hidden until a script writes the number into `.post-views-count`.
   `src/app.js` gets the numbers from the backend (`/api/views`, see "API routes"). Without an answer, or with 0 views, the number stays hidden.
-- Comments: the replies, likes and boosts from the fediverse (see "Fediverse"). The element `.post-comments` has the slug of the post in `data-comments-slug`. `src/app.js` writes the data from `/api/comments` into it. If the post has no replies, the card shows "be the first". The card always shows the steps to comment from a fediverse app, with a button that copies the address of the post, and a link for email (the subject is the post title).
-  Without the public key of the actor (see "The key of the actor"), the card shows only the link for email.
+- Comments. The card `.post-comments` shows the comments from two sources. `src/app.js` gets the data and writes it into the card:
+  - The fediverse: the replies, likes and boosts that the actor of the blog receives (see "Fediverse"). The card has the slug of the post in `data-comments-slug`. The script gets the data from `/api/comments`.
+  - Webmentions: the replies, mentions, likes and reposts that webmention.io receives for the address of the post (see "Webmentions and link previews"). The card has the address of the post in `data-webmention-target`. The script gets the data from the API of webmention.io (`/api/mentions.jf2`), in the browser of the reader.
+
+  The card shows one number of likes and one number of boosts: the sum of the two sources.
+  The card shows the replies of the two sources in one list, by date. A reply that comes from the two sources shows one time (the script compares the addresses of the replies).
+  The script shows only the text of a webmention, not its HTML. It cuts a long text and adds a link to the full text.
+  If the post has no replies, the card shows "be the first". If no source answers, the card shows only how to comment.
+  The card always shows how to comment: the steps for a fediverse app (with a button that copies the address of the post), a form that sends a webmention to webmention.io, and a link for email (the subject is the post title).
+  Without the public key of the actor (see "The key of the actor"), the card has no `data-comments-slug` and no steps for the fediverse. The webmentions, the form and the link for email stay.
 - Support: a link to Patreon.
 
 The texts of the footer are in English and in Polish (`WORDS` in `build/blog.js`). The footer is not in the Atom feed.
@@ -380,6 +388,15 @@ Do not change the key after the first deployment: other servers keep the public 
 ### Webmentions and link previews
 
 The site receives webmentions at webmention.io (see the `rel="webmention"` links in `src/index.html` and `src/blog.html`).
+The account on webmention.io has the name `yasiu.pl`. The endpoint `https://webmention.io/yasiu.pl/webmention` must use this name.
+To sign in to webmention.io, use the address `yasiu.pl`. The sign-in uses the `rel="me"` links on the home page.
+
+The footer of each post shows the webmentions of the post and has a form that sends a webmention (see "Post footer").
+
+webmention.io receives the reactions from the fediverse and from Bluesky only through Bridgy (https://brid.gy).
+Bridgy reads the replies, likes and boosts of a connected account and sends them as webmentions, if the reacted post has a link to a page of this site.
+To get these reactions, connect the account in Bridgy (one time, "Listen" only).
+The reactions to the actor of the blog do not need Bridgy: the actor receives them (see "The actor of the blog").
 
 The blog pages also have the tag `<meta name="fediverse:creator" content="@yasiu@0x3c.pl">`.
 With this tag, Mastodon shows `@yasiu@0x3c.pl` as the author on link previews of the blog.

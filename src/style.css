@@ -357,7 +357,12 @@ header.hero { background-color: var(--header-band); }
 .post-copy { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; max-width: 100%; }
 .post-copy-url { overflow-wrap: anywhere; user-select: all; font-size: 0.85rem; }
 .post-copy-link { padding: 2px 12px; border: 1px solid var(--text-orange); border-radius: 999px; background: none; color: var(--text-orange); font: inherit; font-size: 0.85rem; cursor: pointer; }
-.post-copy-link:hover { background: var(--text-orange); color: var(--md-sys-color-surface); }
+.post-copy-link:hover, .post-webmention-send:hover { background: var(--text-orange); color: var(--md-sys-color-surface); }
+.post-webmention { display: flex; flex-direction: column; gap: 8px; margin: 0; }
+.post-webmention-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.post-webmention-row input[type="url"] { flex: 1 1 16rem; min-width: 0; height: auto; margin: 0; padding: 4px 0; font: inherit; color: inherit; }
+.post-webmention-send { padding: 2px 12px; border: 1px solid var(--text-orange); border-radius: 999px; background: none; color: var(--text-orange); font: inherit; font-size: 0.85rem; cursor: pointer; }
+.post-comment-more { white-space: nowrap; }
 
 /* Replies and reactions from the fediverse (src/app.js). */
 .post-comments h2 { margin: 0; font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }

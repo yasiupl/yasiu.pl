@@ -29,7 +29,11 @@ const WORDS = {
     ],
     follow: 'To get new posts, follow',
     email: 'Or write to me:',
-    noFediverse: 'Write to me:',
+    webmention: 'Did you write about this post on your own website? Send the address of your post (webmention):',
+    webmentionUrl: 'The address of your post',
+    send: 'Send',
+    mentioned: 'Mentioned this post',
+    more: 'Read more',
     copy: 'Copy',
     copied: 'Copied',
     likes: { one: 'like', other: 'likes' },
@@ -52,7 +56,11 @@ const WORDS = {
     ],
     follow: 'Nowe wpisy dostaniesz, obserwując',
     email: 'Albo napisz do mnie:',
-    noFediverse: 'Napisz do mnie:',
+    webmention: 'Napisałeś o tym wpisie na swojej stronie? Wyślij adres swojego wpisu (webmention):',
+    webmentionUrl: 'Adres twojego wpisu',
+    send: 'Wyślij',
+    mentioned: 'Wspomniał(a) o tym wpisie',
+    more: 'Czytaj dalej',
     copy: 'Kopiuj',
     copied: 'Skopiowano',
     likes: { one: 'polubienie', few: 'polubienia', many: 'polubień', other: 'polubienia' },
@@ -65,6 +73,8 @@ const WORDS = {
 };
 // The contact links of the post footer.
 const EMAIL = 'contact@yasiu.pl';
+// webmention.io receives the webmentions of the site (see "Webmentions" in README.md).
+const WEBMENTION = 'https://webmention.io/yasiu.pl/webmention';
 const PATREON = 'https://www.patreon.com/yasiupl';
 const words = (lang) => WORDS[lang] || WORDS.en;
 const CROPS = ['top', 'center', 'bottom'];
@@ -371,36 +381,45 @@ function authorCard(author, lang) {
 }
 
 // The footer under each post: the number of views, the comments and the support on Patreon.
-// The comments are the replies, likes and boosts from the fediverse, sent to the actor
-// @blog@yasiu.pl (see "Fediverse" in README.md). src/app.js fills the parts with data-views-path
-// and data-comments-slug from the backend. The card always tells how to comment; the text "be the
-// first" shows only when the backend answers with no comments.
-// Without the actor (no public key, see build/activitypub.js), the card has only the email link.
+// The comments come from two sources (see "Post footer" in README.md):
+// - the replies, likes and boosts from the fediverse, sent to the actor @blog@yasiu.pl,
+// - the webmentions from webmention.io (other websites, and the fediverse through Bridgy).
+// src/app.js fills the parts with data-views-path, data-comments-slug and data-webmention-target.
+// The card always tells how to comment; the text "be the first" shows only when a source answers
+// with no comments. Without the actor (no public key, see build/activitypub.js), the card has no
+// data-comments-slug and no steps for the fediverse.
 function renderFooter(p, { fediverse = false } = {}) {
   const w = words(p.lang);
   const subject = encodeURIComponent(p.title);
+  const target = SITE + p.url;
   const forms = (prefix, list) => Object.entries(list).map(([form, word]) => ` data-${prefix}-${form}="${escape(word)}"`).join('');
   const email = `<a href="mailto:${EMAIL}?subject=${subject}">${EMAIL}</a>`;
-  const comments = fediverse ? `<section class="card post-comments" data-comments-slug="${escape(p.slug)}"${forms('likes', w.likes)}${forms('boosts', w.boosts)}>
+  const slug = fediverse ? ` data-comments-slug="${escape(p.slug)}"` : '';
+  const steps = fediverse ? `<p>${escape(w.howTo)}</p>
+                <ol class="post-comments-steps">
+                  <li>${escape(w.steps[0])} <span class="post-copy"><code class="post-copy-url">${escape(target)}</code> <button class="post-copy-link" type="button" data-copied="${escape(w.copied)}" hidden>${escape(w.copy)}</button></span></li>
+                  <li>${escape(w.steps[1])}</li>
+                  <li>${escape(w.steps[2])}</li>
+                </ol>
+                <p class="post-comments-more">${escape(w.follow)} <code>@blog@yasiu.pl</code>.</p>
+                ` : '';
+  const comments = `<section class="card post-comments"${slug} data-webmention-target="${escape(target)}" data-mentioned="${escape(w.mentioned)}" data-more="${escape(w.more)}"${forms('likes', w.likes)}${forms('boosts', w.boosts)}>
             <div class="card-content">
               <h2 class="eyebrow">${escape(w.comments)}</h2>
               <p class="post-reactions" hidden></p>
               <ol class="post-comments-list" hidden></ol>
               <p class="post-comments-empty" hidden>${escape(w.empty)}</p>
               <div class="post-comments-how">
-                <p>${escape(w.howTo)}</p>
-                <ol class="post-comments-steps">
-                  <li>${escape(w.steps[0])} <span class="post-copy"><code class="post-copy-url">${escape(SITE + p.url)}</code> <button class="post-copy-link" type="button" data-copied="${escape(w.copied)}" hidden>${escape(w.copy)}</button></span></li>
-                  <li>${escape(w.steps[1])}</li>
-                  <li>${escape(w.steps[2])}</li>
-                </ol>
-                <p class="post-comments-more">${escape(w.follow)} <code>@blog@yasiu.pl</code>. ${escape(w.email)} ${email}</p>
+                ${steps}<form class="post-webmention" action="${WEBMENTION}" method="post">
+                  <label for="post-webmention-source">${escape(w.webmention)}</label>
+                  <div class="post-webmention-row">
+                    <input id="post-webmention-source" type="url" name="source" required placeholder="https://…" aria-label="${escape(w.webmentionUrl)}">
+                    <input type="hidden" name="target" value="${escape(target)}">
+                    <button class="post-webmention-send" type="submit">${escape(w.send)}</button>
+                  </div>
+                </form>
+                <p>${escape(w.email)} ${email}</p>
               </div>
-            </div>
-          </section>` : `<section class="card post-comments">
-            <div class="card-content">
-              <h2 class="eyebrow">${escape(w.comments)}</h2>
-              <p>${escape(w.noFediverse)} ${email}</p>
             </div>
           </section>`;
   return `<aside class="post-footer" lang="${escape(p.lang)}">
