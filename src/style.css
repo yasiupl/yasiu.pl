@@ -355,6 +355,23 @@ header.hero { background-color: var(--header-band); }
 .post-footer-card .post-footer-links { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: auto; padding-top: 8px; overflow-wrap: anywhere; }
 .post-footer-button { display: inline-block; padding: 8px 20px; border-radius: 999px; background: #ff4f00; color: #fff !important; font-weight: 500; }
 .post-footer-button:hover { background: #e04500; }
+.post-copy-link { padding: 0; border: 0; background: none; color: var(--text-orange); font: inherit; cursor: pointer; }
+.post-copy-link:hover { text-decoration: underline; }
+
+/* Replies and reactions from the fediverse (src/app.js). */
+.post-comments h2 { margin: 0 0 8px; font-size: 0.85rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
+.post-reactions { margin: 0 0 8px; color: var(--ink-muted); }
+.post-comments-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.post-comment { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; overflow-wrap: anywhere; }
+.post-comment.is-reply { margin-left: 24px; padding-left: 12px; border-left: 2px solid var(--md-sys-color-outline-variant); }
+.post-comment-author { display: flex; align-items: center; gap: 8px; min-width: 0; color: inherit !important; }
+.post-comment-author img { border-radius: 6px; flex: none; }
+.post-comment-name { font-weight: 500; }
+.post-comment-handle, .post-comment-date { font-size: 0.85rem; color: var(--ink-muted) !important; }
+.post-comment-content, .post-comment details { grid-column: 1 / -1; }
+.post-comment-content p { margin: 0 0 8px; }
+.post-comment-content .invisible { display: none; }
+.post-comment-content .ellipsis::after { content: "…"; }
 .author-card { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin: 0 0 16px; }
 .author-card img { flex: none; width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
 .author-text { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; min-width: 0; }

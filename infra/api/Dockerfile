@@ -13,7 +13,10 @@ RUN NITRO_PRESET=node-server npx nitro build
 FROM docker.io/library/node:22-alpine
 WORKDIR /app
 COPY --from=build /src/.output ./
-ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000
+# The database of the actor @blog@yasiu.pl. A new named volume at /data gets this owner.
+RUN mkdir /data && chown node:node /data
+# node:sqlite (the database) writes a warning that it is experimental. The warning is not an error.
+ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000 NODE_OPTIONS=--disable-warning=ExperimentalWarning
 # uid 1000 = node in the image = yasiu on blade12. The sops secrets belong to uid 1000.
 USER node
 EXPOSE 3000

@@ -1,0 +1,13 @@
+{
+  "site": "https://yasiu.pl",
+  "username": "blog",
+  "domain": "yasiu.pl",
+  "actor": "https://yasiu.pl/ap/blog.json",
+  "key": "https://yasiu.pl/ap/blog.json#main-key",
+  "profile": "https://yasiu.pl/blog/",
+  "outbox": "https://yasiu.pl/ap/blog/outbox.json",
+  "following": "https://yasiu.pl/ap/blog/following.json",
+  "objects": "https://yasiu.pl/ap/blog/posts/",
+  "inbox": "https://api.yasiu.pl/ap/blog/inbox",
+  "followers": "https://api.yasiu.pl/ap/blog/followers"
+}

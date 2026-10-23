@@ -20,7 +20,12 @@ const WORDS = {
     // The forms of Intl.PluralRules: the script that writes the number selects one.
     views: { one: 'view', other: 'views' },
     comments: 'Comments',
-    commentsText: 'Soon you will be able to comment on this post and react to it from Mastodon and the rest of the fediverse. Until then, write to me:',
+    commentsText: 'Reply from Mastodon or another fediverse account: paste the address of this post into the search of your app. Your reply, like or boost then shows here. To get new posts, follow @blog@yasiu.pl.',
+    reply: 'Comment',
+    copy: 'Copy the address',
+    copied: 'Copied',
+    likes: { one: 'like', other: 'likes' },
+    boosts: { one: 'boost', other: 'boosts' },
     support: 'Support',
     supportText: 'Do you like what I do? Support me on Patreon. It helps me find time for new projects, videos and posts.',
     patreon: 'Become a patron',
@@ -30,7 +35,12 @@ const WORDS = {
     updated: 'Ostatnia edycja',
     views: { one: 'wyświetlenie', few: 'wyświetlenia', many: 'wyświetleń', other: 'wyświetlenia' },
     comments: 'Komentarze',
-    commentsText: 'Wkrótce skomentujesz ten wpis i zareagujesz na niego z Mastodona i reszty fediwersum. Do tego czasu napisz do mnie:',
+    commentsText: 'Odpowiedz z Mastodona lub innego konta w fediwersum: wklej adres tego wpisu w wyszukiwarkę swojej aplikacji. Twoja odpowiedź, polubienie lub podbicie pojawi się tutaj. Nowe wpisy dostaniesz, obserwując @blog@yasiu.pl.',
+    reply: 'Skomentuj',
+    copy: 'Kopiuj adres',
+    copied: 'Skopiowano',
+    likes: { one: 'polubienie', few: 'polubienia', many: 'polubień', other: 'polubienia' },
+    boosts: { one: 'podbicie', few: 'podbicia', many: 'podbić', other: 'podbicia' },
     support: 'Wsparcie',
     supportText: 'Podoba Ci się to, co robię? Wesprzyj mnie na Patreonie. Dzięki temu znajduję czas na nowe projekty, filmy i wpisy.',
     patreon: 'Zostań patronem',
@@ -38,7 +48,6 @@ const WORDS = {
   }
 };
 // The contact links of the post footer.
-const MASTODON = { handle: '@yasiu@0x3c.pl', url: 'https://0x3c.pl/@yasiu' };
 const EMAIL = 'contact@yasiu.pl';
 const PATREON = 'https://www.patreon.com/yasiupl';
 const words = (lang) => WORDS[lang] || WORDS.en;
@@ -331,20 +340,29 @@ function authorCard(author, lang) {
           </a>`;
 }
 
-// The footer under each post: the number of views, the comments and the support on Patreon.
-// The number of views stays hidden until src/app.js fills it (data-views-path). The comments
-// will come from the fediverse (ActivityPub). Until then, the footer links to Mastodon and email.
+// The footer under each post: the number of views, the replies and reactions from the fediverse,
+// and the support on Patreon. src/app.js fills the parts with data-views-path and
+// data-comments-slug from the backend; they stay hidden without data.
+// The replies and reactions come to the actor @blog@yasiu.pl (see "Fediverse" in README.md).
 function renderFooter(p) {
   const w = words(p.lang);
   const subject = encodeURIComponent(p.title);
+  const forms = (prefix, list) => Object.entries(list).map(([form, word]) => ` data-${prefix}-${form}="${escape(word)}"`).join('');
   return `<aside class="post-footer" lang="${escape(p.lang)}">
           <p class="post-views" data-views-path="${escape(p.url)}"${Object.entries(w.views).map(([form, word]) => ` data-${form}="${escape(word)}"`).join('')} hidden><span class="post-views-count"></span> <span class="post-views-word"></span></p>
+          <section class="card post-comments" data-comments-slug="${escape(p.slug)}"${forms('likes', w.likes)}${forms('boosts', w.boosts)} hidden>
+            <div class="card-content">
+              <h2 class="eyebrow">${escape(w.comments)}</h2>
+              <p class="post-reactions" hidden></p>
+              <ol class="post-comments-list"></ol>
+            </div>
+          </section>
           <div class="post-footer-grid">
             <section class="card post-footer-card">
               <div class="card-content">
-                <h2 class="eyebrow">${escape(w.comments)}</h2>
+                <h2 class="eyebrow">${escape(w.reply)}</h2>
                 <p>${escape(w.commentsText)}</p>
-                <p class="post-footer-links"><a href="${MASTODON.url}">${escape(MASTODON.handle)}</a> <a href="mailto:${EMAIL}?subject=${subject}">${EMAIL}</a></p>
+                <p class="post-footer-links"><button class="post-copy-link" type="button" data-url="${escape(SITE + p.url)}" data-copied="${escape(w.copied)}" hidden>${escape(w.copy)}</button> <a href="mailto:${EMAIL}?subject=${subject}">${EMAIL}</a></p>
               </div>
             </section>
             <section class="card post-footer-card">
@@ -469,4 +487,4 @@ ${pages.map((u) => `  <url><loc>${escape(u.loc)}</loc>${u.lastmod ? `<lastmod>${
 `;
 }
 
-module.exports = { SITE, IMAGE_WIDTHS, loadPosts, renderCards, renderPost, renderFeed, renderRobots, renderSitemap, robots, escape };
+module.exports = { SITE, IMAGE_WIDTHS, loadPosts, renderCards, renderPost, renderFeed, renderRobots, renderSitemap, robots, escape, absoluteUrls };
