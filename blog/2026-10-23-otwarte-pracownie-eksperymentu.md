@@ -29,4 +29,5 @@ Nie zbieramy pieniędzy, tylko poparcie. Jeśli uważacie, że takie miejsce prz
 
 - [Otwarte Pracownie Eksperymentu](https://www.instytut.ilawa.pl/aktualnosci/otwarte-pracownie-eksperymentu/) na stronie Iławskiego Instytutu Idei.
 - [Formularz poparcia](https://forms.gle/KCrEhJLVn9QECQGP9).
+- [Dyskusja pod postem na Facebooku](https://www.facebook.com/marcin.jasiukowicz/posts/pfbid0AwiuepU4EvDDEtDB7stZniLuFgoGbUJh2N3f9EvEQ7woa4xdfJzDTtGdWFgjcSLwl).
 - [Pięć lat w Hackerspace Pomorze](/blog/piec-lat-w-hackerspace-pomorze/).
