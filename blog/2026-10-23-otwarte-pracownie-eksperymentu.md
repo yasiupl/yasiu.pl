@@ -1,6 +1,7 @@
 ---
 title: "Otwarte Pracownie Eksperymentu"
 date: 2026-10-23T15:30:00+02:00
+updated: 2026-10-23T17:30:00+02:00
 ai: edited
 lang: pl
 description: "Mówi się, że w małym mieście „nie ma co robić”. Zamiast wyjeżdżać, biorę sprawy w swoje ręce: razem z Iławskim Instytutem Idei chcemy otworzyć w Iławie hackerspace."
