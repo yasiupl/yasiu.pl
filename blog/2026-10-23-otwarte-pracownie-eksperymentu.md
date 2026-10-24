@@ -1,11 +1,11 @@
 ---
-title: "Otwarte Pracownie Eksperymentu"
+title: "Iława potrzebuje miejsca dla ludzi, którzy chcą więcej"
 date: 2026-10-23T15:30:00+02:00
 updated: 2026-10-23T17:30:00+02:00
 ai: edited
 lang: pl
 description: "Mówi się, że w małym mieście „nie ma co robić”. Zamiast wyjeżdżać, biorę sprawy w swoje ręce: razem z Iławskim Instytutem Idei chcemy otworzyć w Iławie hackerspace."
-image: header.png
+image: header.jpg
 ---
 
 Przeprowadziłem się do Iławy.
@@ -24,7 +24,7 @@ To nie jest pomysł z zewnątrz - to powrót do iławskiej tradycji. Już w lata
 
 Nie zbieramy pieniędzy, tylko poparcie. Jeśli uważacie, że takie miejsce przyda się w Iławie, przeczytajcie opis i podpiszcie formularz. A jeśli macie sprzęt lub wiedzę i chcecie współtworzyć tę przestrzeń, odezwijcie się 🙂
 
-👉 **[Otwarte Pracownie Eksperymentu - poprzyj pomysł](https://www.instytut.ilawa.pl/aktualnosci/otwarte-pracownie-eksperymentu/)**
+👉 **[Iława potrzebuje miejsca dla ludzi, którzy chcą więcej](https://www.instytut.ilawa.pl/aktualnosci/otwarte-pracownie-eksperymentu/)**
 
 *Ten wpis po raz pierwszy pojawił się [na Facebooku](https://www.facebook.com/marcin.jasiukowicz/posts/pfbid0AwiuepU4EvDDEtDB7stZniLuFgoGbUJh2N3f9EvEQ7woa4xdfJzDTtGdWFgjcSLwl).*
 
