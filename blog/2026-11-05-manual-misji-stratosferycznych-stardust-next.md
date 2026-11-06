@@ -3,7 +3,7 @@ title: "Stardust NEXT: manual misji stratosferycznych"
 date: 2026-11-05T22:45:00+01:00
 ai: edited
 lang: pl
-description: "Dekadę po pierwszych balonach SimLE spisałem wszystko, czego nauczyliśmy się na balonach stratosferycznych Stardust: od planowania i zgłoszenia w PAŻP, przez tankowanie i odcinacz, po formularze do wypełnienia w terenie. Pierwsze wydanie manuala jest publiczne."
+description: "Dekadę po pierwszych misjach SimLE spisałem wszystko, czego nauczyliśmy się na balonach stratosferycznych Stardust: od planowania i zgłoszenia w PAŻP, przez tankowanie i odcinacz, po formularze do wypełnienia w terenie. Pierwsze wydanie manuala jest publiczne."
 image: header.jpg
 ---
 
