@@ -13,7 +13,7 @@ Zajęło mi to trzy lata. Oto pierwsze wydanie: **Stardust NEXT – Podręcznik 
 
 📥 **[Pobierz najnowszą wersję (PDF)](https://github.com/simle-stardust/Manual/releases/latest/download/Stardust-NEXT-Podrecznik.pdf)**
 
-Tak się składa, że to równo dekada od pierwszych misji Stardust (2016–2026). Musiało się wydarzyć przed końcem jubileuszowego roku 🙂 Niech podręcznik posłuży na kolejne 10 lat misji stratosferycznych SimLE. Dobre towarzystwo: rok wcześniej NASA wydała [Scientific Ballooning Handbook](https://ntrs.nasa.gov/citations/20240004989) na 50-lecie jego pierwszego wydania z 1975 roku. Odwołania do niego znajdziecie też w naszym podręczniku.
+Tak się składa, że to równo dekada od pierwszych misji Stardust (2016–2026). Musiało się wydarzyć przed końcem jubileuszowego roku 🙂  Mam nadzieję, że podręcznik posłuży na kolejne 10 lat misji stratosferycznych SimLE. Dobre towarzystwo: rok wcześniej NASA wydała [Scientific Ballooning Handbook](https://ntrs.nasa.gov/citations/20240004989) na 50-lecie jego pierwszego wydania z 1975 roku.
 
 ![Okładka podręcznika Stardust NEXT](okladka.jpg)
 
@@ -47,13 +47,11 @@ Podręcznik nie ma leżeć w szufladzie. Jest przygotowany do druku dwustronnego
 
 Na końcu są formularze F0–F14, każdy na jednej stronie: karta misji, role i macierz RACI, dziennik predykcji, procedury tankowania i startu, raport po locie. Każdy formularz ma rolę, która go prowadzi, miejsce na komentarze i podpisy. Za nimi są puste strony na notatki terenowe. Po misji notatki wracają do dokumentu, a dokument staje się lepszy.
 
-![Formularz F0 – karta misji](formularz-karta-misji.jpg)
-
 ## Najpierw bezpieczeństwo
 
-Balon stratosferyczny to nie zabawka. Lata w przestrzeni powietrznej, a gondola spada z 30 km. Dlatego podręcznik zaczyna się od bezpieczeństwa i rozsądku, a dopiero potem przechodzi do techniki. Ale już na pierwszych stronach jest też druga zasada, która towarzyszyła nam na każdej misji: *stay curious, have fun*.
+Balon stratosferyczny to nie zabawka. Lata w przestrzeni powietrznej, a gondola spada z 30 km. Dlatego podręcznik zaczyna się od bezpieczeństwa i rozsądku, a dopiero potem przechodzi do techniki. Ale już na pierwszych stronach jest też druga zasada, która towarzyszy mi przy każdym projekcie: *stay curious, have fun*.
 
-To pierwsze wydanie i na pewno ma błędy. Jeśli znajdziecie błąd albo puszczacie własne balony i chcecie dopisać swoje wnioski – otwórzcie pull request w [repozytorium podręcznika](https://github.com/simle-stardust/Manual) albo napiszcie na [stardust@simle.pl](mailto:stardust@simle.pl).
+To pierwsze wydanie i na pewno ma błędy. Jeśli znajdziecie błąd albo puszczacie własne balony i chcecie dopisać swoje wnioski – otwórzcie pull request w [repozytorium podręcznika](https://github.com/simle-stardust/Manual) albo napiszcie na [stardust@simle.pl](mailto:stardust@simle.pl) lub do mnie osobiście.
 
 Ku chwale kolejnym pokoleniom baloniarzy! 🎈
 
