@@ -1,6 +1,6 @@
 ---
 title: "Stardust NEXT: podręcznik misji stratosferycznych"
-date: 2026-11-05T22:45:00+01:00
+date: 2026-11-06T11:30:00+01:00
 ai: edited
 lang: pl
 description: "Dekadę po pierwszych misjach SimLE spisałem wszystko, czego nauczyliśmy się na balonach stratosferycznych Stardust: od planowania i zgłoszenia w PAŻP, przez tankowanie i odcinacz, po formularze do wypełnienia w terenie. Pierwsze wydanie podręcznika jest publiczne."
@@ -10,6 +10,8 @@ image: header.jpg
 W maju 2023 roku [puściliśmy z Iławy balon Stardust NEXT](/blog/stardust-balloon-mission-from-ilawa/) na wysokość 34 km. Kilka miesięcy później [odszedłem z SimLE](/blog/stepping-down-from-simle/). Wiedza o tym, jak taką misję przygotować, została w głowach kilku osób, w notatkach i na czatach. Obiecałem sobie, że ją spiszę.
 
 Zajęło mi to trzy lata. Oto pierwsze wydanie: **Stardust NEXT – Podręcznik misji stratosferycznych**.
+
+📥 **[Pobierz najnowszą wersję (PDF)](https://github.com/simle-stardust/Manual/releases/latest/download/Stardust-NEXT-Podrecznik.pdf)**
 
 Tak się składa, że to równo dekada od pierwszych misji Stardust (2016–2026). Musiało się wydarzyć przed końcem jubileuszowego roku 🙂 Niech podręcznik posłuży na kolejne 10 lat misji stratosferycznych SimLE.
 
@@ -55,7 +57,9 @@ To pierwsze wydanie i na pewno ma błędy. Jeśli znajdziecie błąd albo puszcz
 
 Ku chwale kolejnym pokoleniom baloniarzy! 🎈
 
-👉 **[Pobierz podręcznik (PDF)](https://github.com/simle-stardust/Manual/releases/latest)**
+👉 **[Pobierz najnowszą wersję podręcznika (PDF)](https://github.com/simle-stardust/Manual/releases/latest/download/Stardust-NEXT-Podrecznik.pdf)**
+
+Wszystkie wydania i lista zmian są na stronie [wydań w repozytorium](https://github.com/simle-stardust/Manual/releases).
 
 ## Więcej
 
