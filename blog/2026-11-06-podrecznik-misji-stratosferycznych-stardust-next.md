@@ -13,7 +13,7 @@ Zajęło mi to trzy lata. Oto pierwsze wydanie: **Stardust NEXT – Podręcznik 
 
 📥 **[Pobierz najnowszą wersję (PDF)](https://github.com/simle-stardust/Manual/releases/latest/download/Stardust-NEXT-Podrecznik.pdf)**
 
-Tak się składa, że to równo dekada od pierwszych misji Stardust (2016–2026). Musiało się wydarzyć przed końcem jubileuszowego roku 🙂 Niech podręcznik posłuży na kolejne 10 lat misji stratosferycznych SimLE.
+Tak się składa, że to równo dekada od pierwszych misji Stardust (2016–2026). Musiało się wydarzyć przed końcem jubileuszowego roku 🙂 Niech podręcznik posłuży na kolejne 10 lat misji stratosferycznych SimLE. Dobre towarzystwo: rok wcześniej NASA wydała [Scientific Ballooning Handbook](https://ntrs.nasa.gov/citations/20240004989) na 50-lecie jego pierwszego wydania z 1975 roku. Odwołania do niego znajdziecie też w naszym podręczniku.
 
 ![Okładka podręcznika Stardust NEXT](okladka.jpg)
 
@@ -64,6 +64,7 @@ Wszystkie wydania i lista zmian są na stronie [wydań w repozytorium](https://g
 ## Więcej
 
 - [Repozytorium podręcznika](https://github.com/simle-stardust/Manual) – źródła, instrukcja edycji i wszystkie wydania.
+- [NASA Scientific Ballooning Handbook – 50th Anniversary Edition](https://ntrs.nasa.gov/citations/20240004989) (2025).
 - [Koło Naukowe SimLE](https://www.simle.pl).
 - [Stardust balloon mission from Iława](/blog/stardust-balloon-mission-from-ilawa/) – misja z maja 2023 roku.
 - [SimLE Stardust mission](/blog/simle-stardust-mission/) – misja z lutego 2022 roku.
