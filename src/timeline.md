@@ -89,7 +89,7 @@ Text outside the lists is ignored.
 - type: talk
 - org: 75th International Astronautical Congress
 - start: 2024-10
-- url: https://www.linkedin.com/feed/update/urn:li:activity:7254219714267070465/
+- url: /blog/ops-sat-sdr-iac-2024-milan/
 - text: Presented "Software Defined Radio data processing on board OPS-SAT Space Laboratory".
 
 ## Startup School One
