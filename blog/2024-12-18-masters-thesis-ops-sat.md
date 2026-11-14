@@ -1,7 +1,7 @@
 ---
 title: "Master's Thesis: SDR Data Processing on board OPS-SAT"
 date: 2024-12-18T18:00:00+01:00
-updated: 2026-10-01
+updated: 2026-11-14
 ai: written
 image: ops-sat-mission-control-team.jpg
 description: "My master's thesis at Gdańsk Tech: Experiment 266, which records and processes radio signals on board the OPS-SAT satellite of ESA."
@@ -38,3 +38,5 @@ More about the work on OPS-SAT: [My OPS-SAT Adventures](/blog/my-ops-sat-adventu
 **Update, January 2025:** I received my master's diploma. I completed the thesis with the grade "very good" (5.0). Gdańsk Tech also gave me the Golden Badge of the Graduate (Złota Odznaka Absolwenta) for my work during the studies. During the master's studies, I spent one semester at Hochschule Bremen in the double-degree programme Engineering and Management of Space Systems. In 2024, I was also the Deputy Chair for Finance of the Student Government of Gdańsk Tech. [Read the original post on LinkedIn](https://www.linkedin.com/feed/update/urn:li:activity:7284875592074690560/) (in Polish).
 
 **Update, March 2025:** The thesis received the "Dyplom Roku" (Diploma of the Year) award of the Faculty of Mechanical Engineering and Ship Technology. This award is a distinction of the Rector of Gdańsk Tech for the authors of the best master's theses of 2024. I received it on 5 March 2025, during the ceremonial session of the University Senate. [Read the news from the faculty](https://wimio.pg.edu.pl/aktualnosci/2025-03/za-nami-uroczyste-posiedzenie-senatu-pg-z-okazji-promocji-akademickich) (in Polish). You can also read [the leaflet from my entry to the competition](masters_promo.pdf) (PDF, 6.9 MB, in Polish).
+
+**Update, November 2026:** The thesis is now open access on Zenodo (CC BY 4.0): [doi.org/10.5281/zenodo.24229605](https://doi.org/10.5281/zenodo.24229605). In October 2024, I also presented it as a poster at [IAC 2024 in Milan](/blog/ops-sat-sdr-iac-2024-milan/).
